@@ -37,7 +37,6 @@ set(SOURCE_FILES
         src/salmon.cpp
         src/turtle.cpp
         src/world.cpp
-
         src/project_path.hpp
         src/common.hpp
         src/fish.hpp
