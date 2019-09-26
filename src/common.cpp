@@ -295,3 +295,8 @@ void Entity::Transform::end()
 {
 	//
 }
+
+bool Entity::Collision::collides_with(Entity &e) {
+    // TODO: implement when doing collisions
+    return false;
+}
