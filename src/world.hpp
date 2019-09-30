@@ -2,9 +2,11 @@
 
 // internal
 #include "common.hpp"
-#include "salmon.hpp"
+#include "player.hpp"
 #include "turtle.hpp"
 #include "fish.hpp"
+
+#include "background.hpp"
 
 // stlib
 #include <vector>
@@ -58,7 +60,11 @@ private:
 	GLuint m_frame_buffer;
 	Texture m_screen_tex;
 
+	// Background
+	Background m_water;
+
 	// Game entities
+	Player m_player;
 
 //	Mix_Music* m_background_music;
 //	Mix_Chunk* m_salmon_dead_sound;

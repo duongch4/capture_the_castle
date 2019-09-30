@@ -1,5 +1,5 @@
 // Header
-#include "salmon.hpp"
+#include "player.hpp"
 
 // internal
 #include "turtle.hpp"
@@ -9,13 +9,13 @@
 #include <string>
 #include <algorithm>
 
-bool Salmon::init()
+bool Player::init()
 {
     m_vertices.clear();
     m_indices.clear();
 
 	// Reads the salmon mesh from a file, which contains a list of vertices and indices
-	FILE* mesh_file = fopen(mesh_path("salmon.mesh"), "r");
+	FILE* mesh_file = fopen(mesh_path("player.mesh"), "r");
 	if (mesh_file == nullptr)
 		return false;
 
@@ -68,7 +68,7 @@ bool Salmon::init()
 		return false;
 
 	// Loading shaders
-	if (!effect.load_from_file(shader_path("salmon.vs.glsl"), shader_path("salmon.fs.glsl")))
+	if (!effect.load_from_file(shader_path("player.vs.glsl"), shader_path("player.fs.glsl")))
 		return false;
 	
 	// Setting initial values
@@ -85,7 +85,7 @@ bool Salmon::init()
 }
 
 // Releases all graphics resources
-void Salmon::destroy()
+void Player::destroy()
 {
 	glDeleteBuffers(1, &mesh.vbo);
 	glDeleteBuffers(1, &mesh.ibo);
@@ -97,7 +97,7 @@ void Salmon::destroy()
 }
 
 // Called on each frame by World::update()
-void Salmon::update(float ms)
+void Player::update(float ms)
 {
 	float step = motion.speed * (ms / 1000);
 	if (m_is_alive)
@@ -117,7 +117,7 @@ void Salmon::update(float ms)
 		m_light_up_countdown_ms -= ms;
 }
 
-void Salmon::draw(const mat3& projection)
+void Player::draw(const mat3& projection)
 {
 	transform.begin();
 
@@ -193,7 +193,7 @@ void Salmon::draw(const mat3& projection)
 // This is a SUPER APPROXIMATE check that puts a circle around the bounding boxes and sees
 // if the center point of either object is inside the other's bounding-box-circle. You don't
 // need to try to use this technique.
-bool Salmon::collides_with(const Turtle& turtle)
+bool Player::collides_with(const Turtle& turtle)
 {
 	float dx = motion.position.x - turtle.get_position().x;
 	float dy = motion.position.y - turtle.get_position().y;
@@ -207,7 +207,7 @@ bool Salmon::collides_with(const Turtle& turtle)
 	return false;
 }
 
-bool Salmon::collides_with(const Fish& fish)
+bool Player::collides_with(const Fish& fish)
 {
 	float dx = motion.position.x - fish.get_position().x;
 	float dy = motion.position.y - fish.get_position().y;
@@ -228,35 +228,35 @@ bool Salmon::collides_with(const Fish& fish)
 // salmon - wall collisions.
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-vec2 Salmon::get_position() const
+vec2 Player::get_position() const
 {
 	return motion.position;
 }
 
-void Salmon::move(vec2 off)
+void Player::move(vec2 off)
 {
 	motion.position.x += off.x; 
 	motion.position.y += off.y; 
 }
 
-void Salmon::set_rotation(float radians)
+void Player::set_rotation(float radians)
 {
 	motion.radians = radians;
 }
 
-bool Salmon::is_alive() const
+bool Player::is_alive() const
 {
 	return m_is_alive;
 }
 
 // Called when the salmon collides with a turtle
-void Salmon::kill()
+void Player::kill()
 {
 	m_is_alive = false;
 }
 
 // Called when the salmon collides with a fish
-void Salmon::light_up()
+void Player::light_up()
 {
 	m_light_up_countdown_ms = 1500.f;
 }

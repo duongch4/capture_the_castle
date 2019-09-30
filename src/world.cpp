@@ -117,7 +117,7 @@ bool World::init(vec2 screen)
 //	fprintf(stderr, "Loaded music\n");
 
 	// TODO: CALL INIT ON ALL GAME ENTITIES
-	return true;
+	return m_player.init() && m_water.init();
 }
 
 // Releases all the associated resources
@@ -184,6 +184,7 @@ void World::draw()
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
 	// TODO: DRAW GAME ENTITIES USING projection_2D
+	m_player.draw(projection_2D);
 
 	/////////////////////
 	// Truely render to the screen
@@ -199,6 +200,9 @@ void World::draw()
 	// Bind our texture in Texture Unit 0
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
+
+	// Background
+	m_water.draw(projection_2D);
 
 	//////////////////
 	// Presenting
