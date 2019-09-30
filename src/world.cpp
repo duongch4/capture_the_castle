@@ -99,15 +99,15 @@ bool World::init(vec2 screen)
 
     // TODO: Uncomment and modify to add background music
 //	m_background_music = Mix_LoadMUS(audio_path("music.wav"));
-//	m_salmon_dead_sound = Mix_LoadWAV(audio_path("salmon_dead.wav"));
-//	m_salmon_eat_sound = Mix_LoadWAV(audio_path("salmon_eat.wav"));
+//	m_player_dead_sound = Mix_LoadWAV(audio_path("player_dead.wav"));
+//	m_player_eat_sound = Mix_LoadWAV(audio_path("player_eat.wav"));
 //
-//	if (m_background_music == nullptr || m_salmon_dead_sound == nullptr || m_salmon_eat_sound == nullptr)
+//	if (m_background_music == nullptr || m_player_dead_sound == nullptr || m_player_eat_sound == nullptr)
 //	{
 //		fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n make sure the data directory is present",
 //			audio_path("music.wav"),
-//			audio_path("salmon_dead.wav"),
-//			audio_path("salmon_eat.wav"));
+//			audio_path("player_dead.wav"),
+//			audio_path("player_eat.wav"));
 //		return false;
 //	}
 //
@@ -117,7 +117,7 @@ bool World::init(vec2 screen)
 //	fprintf(stderr, "Loaded music\n");
 
 	// TODO: CALL INIT ON ALL GAME ENTITIES
-	return m_player.init() && m_water.init();
+	return m_player.init() && m_background.init();
 }
 
 // Releases all the associated resources
@@ -144,6 +144,28 @@ bool World::update(float elapsed_ms)
 
 	// TODO: SPAWN GAME ENTITIES
 
+	// Player update
+	if (m_player.is_alive()) {
+		const float offset_x = 100.f;
+		const float offset_y = 80.f;
+		if (m_player.get_position().x > (screen.x - offset_x)) {
+			//m_player.set_direction(GLFW_KEY_LEFT);
+			m_player.set_position({ screen.x - offset_x, m_player.get_position().y });
+		}
+		else if (m_player.get_position().x < (0 + offset_x)) {
+			//m_player.set_direction(GLFW_KEY_RIGHT);
+			m_player.set_position({ 0 + offset_x, m_player.get_position().y });
+		}
+		else if (m_player.get_position().y > (screen.y - offset_y)) {
+			//m_player.set_rotation(GLFW_KEY_UP);
+			m_player.set_position({ m_player.get_position().x, screen.y - offset_y });
+		}
+		else if (m_player.get_position().y < (0 + offset_y)) {
+			//m_player.set_direction(GLFW_KEY_DOWN);
+			m_player.set_position({ m_player.get_position().x, 0 + offset_y });
+		}
+	}
+	m_player.update(elapsed_ms);
 	return true;
 }
 
@@ -202,11 +224,12 @@ void World::draw()
 	glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
 
 	// Background
-	m_water.draw(projection_2D);
+	m_background.draw(projection_2D);
 
 	//////////////////
 	// Presenting
 	glfwSwapBuffers(m_window);
+
 }
 
 // Should the game be over ?
@@ -219,9 +242,53 @@ bool World::is_over() const
 void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 {
     // TODO: HANDLE KEY INPUTS
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// HANDLE SALMON MOVEMENT HERE
+	// key is of 'type' GLFW_KEY_
+	// action can be GLFW_PRESS GLFW_RELEASE GLFW_REPEAT
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+	if (action == GLFW_RELEASE) {
+		m_player.set_direction(GLFW_KEY_S);
+	}
+
+	if (
+		action == GLFW_PRESS &&
+		(
+			key == GLFW_KEY_DOWN || key == GLFW_KEY_UP ||
+			key == GLFW_KEY_LEFT || key == GLFW_KEY_RIGHT || key == GLFW_KEY_S
+			)
+		)
+	{
+		m_player.set_direction(key);
+	}
+
+	// Resetting game
+	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
+	{
+		reset();
+	}
+
+	// Control the current speed with `<` `>`
+	if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_COMMA)
+		m_current_speed -= 0.1f;
+	if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_PERIOD)
+		m_current_speed += 0.1f;
+
+	m_current_speed = fmax(0.f, m_current_speed);
 }
 
 void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 {
 	// TODO: HANDLE MOUSE MOVE (IF NECESSARY)
+}
+
+void World::reset()
+{
+	int w, h;
+	glfwGetWindowSize(m_window, &w, &h);
+	m_player.destroy();
+	m_player.init();
+	m_background.reset_player_dead_time();
+	m_current_speed = 1.f;
 }

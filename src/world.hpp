@@ -50,6 +50,9 @@ private:
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
+	// Reset
+	void reset();
+
 private:
 	// Window handle
 	GLFWwindow* m_window;
@@ -61,14 +64,16 @@ private:
 	Texture m_screen_tex;
 
 	// Background
-	Background m_water;
+	Background m_background;
 
 	// Game entities
 	Player m_player;
 
+	float m_current_speed;
+
 //	Mix_Music* m_background_music;
-//	Mix_Chunk* m_salmon_dead_sound;
-//	Mix_Chunk* m_salmon_eat_sound;
+//	Mix_Chunk* m_player_dead_sound;
+//	Mix_Chunk* m_player_eat_sound;
 
 	// C++ rng
 	std::default_random_engine m_rng;

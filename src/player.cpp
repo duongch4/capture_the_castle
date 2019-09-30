@@ -14,7 +14,7 @@ bool Player::init()
     m_vertices.clear();
     m_indices.clear();
 
-	// Reads the salmon mesh from a file, which contains a list of vertices and indices
+	// Reads the player mesh from a file, which contains a list of vertices and indices
 	FILE* mesh_file = fopen(mesh_path("player.mesh"), "r");
 	if (mesh_file == nullptr)
 		return false;
@@ -103,8 +103,22 @@ void Player::update(float ms)
 	if (m_is_alive)
 	{
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		// UPDATE SALMON POSITION HERE BASED ON KEY PRESSED (World::on_key())
+		// UPDATE player POSITION HERE BASED ON KEY PRESSED (World::on_key())
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		switch (currDir) {
+		case DOWN:
+			move({ 0.f, step });
+			break;
+		case UP:
+			move({ 0.f, -step });
+			break;
+		case LEFT:
+			move({ -step, 0.f });
+			break;
+		case RIGHT:
+			move({ step, 0.f });
+			break;
+		}
 	}
 	else
 	{
@@ -122,7 +136,7 @@ void Player::draw(const mat3& projection)
 	transform.begin();
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// SALMON TRANSFORMATION CODE HERE
+	// player TRANSFORMATION CODE HERE
 
 	// see Transformations and Rendering in the specification pdf
 	// the following functions are available:
@@ -132,8 +146,15 @@ void Player::draw(const mat3& projection)
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// REMOVE THE FOLLOWING LINES BEFORE ADDING ANY TRANSFORMATION CODE
-	transform.translate({ 100.0f, 100.0f });
-	transform.scale(physics.scale);
+	transform.translate({ motion.position.x, motion.position.y });
+	transform.rotate(motion.radians);
+
+	if (prevDir == LEFT) {
+		transform.scale({ -physics.scale.x, physics.scale.y });
+	}
+	else {
+		transform.scale(physics.scale);
+	}
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	transform.end();
@@ -167,13 +188,13 @@ void Player::draw(const mat3& projection)
 	// Setting uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform.out);
 
-	// !!! Salmon Color
+	// !!! player Color
 	float color[] = { 1.f, 1.f, 1.f };
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// HERE TO SET THE CORRECTLY LIGHT UP THE SALMON IF HE HAS EATEN RECENTLY
+	// HERE TO SET THE CORRECTLY LIGHT UP THE player IF HE HAS EATEN RECENTLY
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	int light_up = 0;
 	glUniform1iv(light_up_uloc, 1, &light_up);
@@ -222,10 +243,10 @@ bool Player::collides_with(const Fish& fish)
 }
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// HANDLE SALMON - WALL COLLISIONS HERE
+// HANDLE player - WALL COLLISIONS HERE
 // DON'T WORRY ABOUT THIS UNTIL ASSIGNMENT 2
 // You will want to write new functions from scratch for checking/handling 
-// salmon - wall collisions.
+// player - wall collisions.
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 vec2 Player::get_position() const
@@ -249,14 +270,42 @@ bool Player::is_alive() const
 	return m_is_alive;
 }
 
-// Called when the salmon collides with a turtle
+// Called when the player collides with a turtle
 void Player::kill()
 {
 	m_is_alive = false;
 }
 
-// Called when the salmon collides with a fish
+// Called when the player collides with a fish
 void Player::light_up()
 {
 	m_light_up_countdown_ms = 1500.f;
+}
+
+// Set direction
+void Player::set_direction(int key) {
+	switch (key) {
+	case GLFW_KEY_DOWN:
+		currDir = DOWN;
+		break;
+	case GLFW_KEY_UP:
+		currDir = UP;
+		break;
+	case GLFW_KEY_LEFT:
+		prevDir = LEFT;
+		currDir = LEFT;
+		break;
+	case GLFW_KEY_RIGHT:
+		prevDir = RIGHT;
+		currDir = RIGHT;
+		break;
+	default:
+		currDir = STAY;
+		break;
+	}
+}
+
+// Set position
+void Player::set_position(vec2 position) {
+	motion.position = position;
 }

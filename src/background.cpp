@@ -44,15 +44,15 @@ void Background::destroy() {
 	glDeleteShader(effect.program);
 }
 
-void Background::set_salmon_dead() {
+void Background::set_player_dead() {
 	m_dead_time = glfwGetTime();
 }
 
-void Background::reset_salmon_dead_time() {
+void Background::reset_player_dead_time() {
 	m_dead_time = -1;
 }
 
-float Background::get_salmon_dead_time() const {
+float Background::get_player_dead_time() const {
 	return glfwGetTime() - m_dead_time;
 }
 
