@@ -117,6 +117,8 @@ bool World::init(vec2 screen)
 //	fprintf(stderr, "Loaded music\n");
 
 	// TODO: CALL INIT ON ALL GAME ENTITIES
+	p1_castle.init(true);
+	p2_castle.init(false);
 	return true;
 }
 
@@ -143,7 +145,7 @@ bool World::update(float elapsed_ms)
 	// TODO: COLLISION DETECTIONS
 
 	// TODO: SPAWN GAME ENTITIES
-
+	
 	return true;
 }
 
@@ -184,6 +186,8 @@ void World::draw()
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
 	// TODO: DRAW GAME ENTITIES USING projection_2D
+	p1_castle.draw(projection_2D);
+	p2_castle.draw(projection_2D);
 
 	/////////////////////
 	// Truely render to the screen

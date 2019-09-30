@@ -5,6 +5,7 @@
 #include "salmon.hpp"
 #include "turtle.hpp"
 #include "fish.hpp"
+#include "castle.hpp"
 
 // stlib
 #include <vector>
@@ -59,6 +60,8 @@ private:
 	Texture m_screen_tex;
 
 	// Game entities
+	Castle p1_castle;
+	Castle p2_castle;
 
 //	Mix_Music* m_background_music;
 //	Mix_Chunk* m_salmon_dead_sound;
