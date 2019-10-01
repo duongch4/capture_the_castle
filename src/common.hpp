@@ -46,6 +46,12 @@ float len(vec2 a);
 void gl_flush_errors();
 bool gl_has_errors();
 
+enum class Team {
+    PLAYER1,
+    PLAYER2,
+    BANDIT
+};
+
 // Single Vertex Buffer element for non-textured meshes (coloured.vs.glsl & salmon.vs.glsl)
 struct Vertex
 {
@@ -82,21 +88,21 @@ struct Texture
 struct Entity {
 	// projection contains the orthographic projection matrix. As every Entity::draw()
 	// renders itself it needs it to correctly bind it to its shader.
-	virtual void init() = 0;
+	virtual bool init() = 0;
 	virtual void draw(const mat3& projection) = 0;
 	virtual void update(float ms) = 0;
 	virtual void destroy() = 0;
 
 protected:
 	// Sprite component of Entity for texture
-	struct Sprite {
+	struct SpriteComponent {
 		Texture texture;
 	} sprite;
 
     // A Mesh is a collection of a VertexBuffer and an IndexBuffer. A VAO
     // represents a Vertex Array Object and is the container for 1 or more Vertex Buffers and
     // an Index Buffer.
-    struct Mesh {
+    struct MeshComponent {
         GLuint vao;
         GLuint vbo;
         GLuint ibo;
@@ -104,7 +110,7 @@ protected:
 
     // Effect component of Entity for Vertex and Fragment shader, which are then put(linked) together in a
 	// single program that is then bound to the pipeline.
-	struct Effect {
+	struct EffectComponent {
 		GLuint vertex;
 		GLuint fragment;
 		GLuint program;
@@ -114,46 +120,43 @@ protected:
 	} effect;
 
 	// All data relevant to the motion of the salmon.
-	struct Motion {
+	struct MotionComponent {
 	    vec2 direction;
 		float speed;
 	} motion;
 
 	// Position of an entity
-	struct Position {
+	struct PositionComponent {
 	    float pos_x;
 	    float pos_y;
 	} position;
 
 	// Scale is used in the bounding box calculations, 
 	// and so contextually belongs here (for now).
-	struct Physics {
+	struct PhysicsComponent {
 		vec2 scale;
 	} physics;
 
 	// Transform component handles transformations passed to the Vertex shader.
 	// gl Immediate mode equivalent, see the Rendering and Transformations section in the
 	// specification pdf.
-	struct Transform {
+	struct TransformComponent {
 		mat3 out;
 
 		void begin();
 		void scale(vec2 scale);
-		void rotate(float radians);
 		void translate(vec2 offset);
 		void end();
 	} transform;
 
 	// Collision component of an entity handles collision testing and collision handling
-	struct Collision {
+	struct CollisionComponent {
 	    bool collides_with(Entity &e);
 	    void on_collide();
 	} collision;
 
 	// Team component to specify an entity belongs to a team
-	enum class Team {
-        PLAYER1,
-        PLAYER2,
-        BANDIT
+	struct TeamComponent {
+	    Team assigned;
     }team;
 };
