@@ -37,7 +37,6 @@ set(SOURCE_FILES
         src/salmon.cpp
         src/turtle.cpp
         src/world.cpp
-
         src/project_path.hpp
         src/common.hpp
         src/fish.hpp
@@ -45,6 +44,11 @@ set(SOURCE_FILES
         src/turtle.hpp
         src/world.hpp
         )
+
+if (IS_OS_MAC)
+    include_directories(/usr/local/include)
+    link_directories(/usr/local/lib)
+endif()
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC src/)
