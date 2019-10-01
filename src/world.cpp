@@ -151,19 +151,15 @@ bool World::update(float elapsed_ms)
 		const float offset_x = 100.f;
 		const float offset_y = 80.f;
 		if (m_player.get_position().x > (screen.x - offset_x)) {
-			//m_player.set_direction(GLFW_KEY_LEFT);
 			m_player.set_position({ screen.x - offset_x, m_player.get_position().y });
 		}
 		else if (m_player.get_position().x < (0 + offset_x)) {
-			//m_player.set_direction(GLFW_KEY_RIGHT);
 			m_player.set_position({ 0 + offset_x, m_player.get_position().y });
 		}
 		else if (m_player.get_position().y > (screen.y - offset_y)) {
-			//m_player.set_rotation(GLFW_KEY_UP);
 			m_player.set_position({ m_player.get_position().x, screen.y - offset_y });
 		}
 		else if (m_player.get_position().y < (0 + offset_y)) {
-			//m_player.set_direction(GLFW_KEY_DOWN);
 			m_player.set_position({ m_player.get_position().x, 0 + offset_y });
 		}
 	}
