@@ -5,11 +5,11 @@
 // Castle
 class Castle : public Entity
 {
-	Texture castle_texture;
+	static Texture castle_texture;
 
 public:
 	// Creates all the associated render resources and default transform
-	bool init(bool team);
+	bool init(bool team, float x, float y);
 
 	// Releases all the associated resources
 	void destroy();
@@ -32,5 +32,5 @@ public:
 	vec2 get_bounding_box() const;
 
 private:
-	bool is_red_team;
+	bool is_red_team; // true if team is red
 };

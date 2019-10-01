@@ -1,5 +1,5 @@
 // Header
-#include "salmon.hpp"
+#include "player.hpp"
 
 // internal
 #include "turtle.hpp"
@@ -9,13 +9,13 @@
 #include <string>
 #include <algorithm>
 
-bool Salmon::init()
+bool Player::init()
 {
     m_vertices.clear();
     m_indices.clear();
 
-	// Reads the salmon mesh from a file, which contains a list of vertices and indices
-	FILE* mesh_file = fopen(mesh_path("salmon.mesh"), "r");
+	// Reads the player mesh from a file, which contains a list of vertices and indices
+	FILE* mesh_file = fopen(mesh_path("player.mesh"), "r");
 	if (mesh_file == nullptr)
 		return false;
 
@@ -68,7 +68,7 @@ bool Salmon::init()
 		return false;
 
 	// Loading shaders
-	if (!effect.load_from_file(shader_path("salmon.vs.glsl"), shader_path("salmon.fs.glsl")))
+	if (!effect.load_from_file(shader_path("player.vs.glsl"), shader_path("player.fs.glsl")))
 		return false;
 	
 	// Setting initial values
@@ -85,7 +85,7 @@ bool Salmon::init()
 }
 
 // Releases all graphics resources
-void Salmon::destroy()
+void Player::destroy()
 {
 	glDeleteBuffers(1, &mesh.vbo);
 	glDeleteBuffers(1, &mesh.ibo);
@@ -97,14 +97,28 @@ void Salmon::destroy()
 }
 
 // Called on each frame by World::update()
-void Salmon::update(float ms)
+void Player::update(float ms)
 {
 	float step = motion.speed * (ms / 1000);
 	if (m_is_alive)
 	{
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		// UPDATE SALMON POSITION HERE BASED ON KEY PRESSED (World::on_key())
+		// UPDATE player POSITION HERE BASED ON KEY PRESSED (World::on_key())
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		switch (currDir) {
+		case DOWN:
+			move({ 0.f, step });
+			break;
+		case UP:
+			move({ 0.f, -step });
+			break;
+		case LEFT:
+			move({ -step, 0.f });
+			break;
+		case RIGHT:
+			move({ step, 0.f });
+			break;
+		}
 	}
 	else
 	{
@@ -117,12 +131,12 @@ void Salmon::update(float ms)
 		m_light_up_countdown_ms -= ms;
 }
 
-void Salmon::draw(const mat3& projection)
+void Player::draw(const mat3& projection)
 {
 	transform.begin();
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// SALMON TRANSFORMATION CODE HERE
+	// player TRANSFORMATION CODE HERE
 
 	// see Transformations and Rendering in the specification pdf
 	// the following functions are available:
@@ -132,8 +146,15 @@ void Salmon::draw(const mat3& projection)
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// REMOVE THE FOLLOWING LINES BEFORE ADDING ANY TRANSFORMATION CODE
-	transform.translate({ 100.0f, 100.0f });
-	transform.scale(physics.scale);
+	transform.translate({ motion.position.x, motion.position.y });
+	transform.rotate(motion.radians);
+
+	if (prevDir == LEFT) {
+		transform.scale({ -physics.scale.x, physics.scale.y });
+	}
+	else {
+		transform.scale(physics.scale);
+	}
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	transform.end();
@@ -167,13 +188,13 @@ void Salmon::draw(const mat3& projection)
 	// Setting uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform.out);
 
-	// !!! Salmon Color
+	// !!! player Color
 	float color[] = { 1.f, 1.f, 1.f };
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// HERE TO SET THE CORRECTLY LIGHT UP THE SALMON IF HE HAS EATEN RECENTLY
+	// HERE TO SET THE CORRECTLY LIGHT UP THE player IF HE HAS EATEN RECENTLY
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	int light_up = 0;
 	glUniform1iv(light_up_uloc, 1, &light_up);
@@ -193,7 +214,7 @@ void Salmon::draw(const mat3& projection)
 // This is a SUPER APPROXIMATE check that puts a circle around the bounding boxes and sees
 // if the center point of either object is inside the other's bounding-box-circle. You don't
 // need to try to use this technique.
-bool Salmon::collides_with(const Turtle& turtle)
+bool Player::collides_with(const Turtle& turtle)
 {
 	float dx = motion.position.x - turtle.get_position().x;
 	float dy = motion.position.y - turtle.get_position().y;
@@ -207,7 +228,7 @@ bool Salmon::collides_with(const Turtle& turtle)
 	return false;
 }
 
-bool Salmon::collides_with(const Fish& fish)
+bool Player::collides_with(const Fish& fish)
 {
 	float dx = motion.position.x - fish.get_position().x;
 	float dy = motion.position.y - fish.get_position().y;
@@ -222,41 +243,69 @@ bool Salmon::collides_with(const Fish& fish)
 }
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// HANDLE SALMON - WALL COLLISIONS HERE
+// HANDLE player - WALL COLLISIONS HERE
 // DON'T WORRY ABOUT THIS UNTIL ASSIGNMENT 2
 // You will want to write new functions from scratch for checking/handling 
-// salmon - wall collisions.
+// player - wall collisions.
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-vec2 Salmon::get_position() const
+vec2 Player::get_position() const
 {
 	return motion.position;
 }
 
-void Salmon::move(vec2 off)
+void Player::move(vec2 off)
 {
 	motion.position.x += off.x; 
 	motion.position.y += off.y; 
 }
 
-void Salmon::set_rotation(float radians)
+void Player::set_rotation(float radians)
 {
 	motion.radians = radians;
 }
 
-bool Salmon::is_alive() const
+bool Player::is_alive() const
 {
 	return m_is_alive;
 }
 
-// Called when the salmon collides with a turtle
-void Salmon::kill()
+// Called when the player collides with a turtle
+void Player::kill()
 {
 	m_is_alive = false;
 }
 
-// Called when the salmon collides with a fish
-void Salmon::light_up()
+// Called when the player collides with a fish
+void Player::light_up()
 {
 	m_light_up_countdown_ms = 1500.f;
+}
+
+// Set direction
+void Player::set_direction(int key) {
+	switch (key) {
+	case GLFW_KEY_DOWN:
+		currDir = DOWN;
+		break;
+	case GLFW_KEY_UP:
+		currDir = UP;
+		break;
+	case GLFW_KEY_LEFT:
+		prevDir = LEFT;
+		currDir = LEFT;
+		break;
+	case GLFW_KEY_RIGHT:
+		prevDir = RIGHT;
+		currDir = RIGHT;
+		break;
+	default:
+		currDir = STAY;
+		break;
+	}
+}
+
+// Set position
+void Player::set_position(vec2 position) {
+	motion.position = position;
 }

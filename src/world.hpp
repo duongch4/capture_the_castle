@@ -2,10 +2,12 @@
 
 // internal
 #include "common.hpp"
-#include "salmon.hpp"
+#include "player.hpp"
 #include "turtle.hpp"
 #include "fish.hpp"
 #include "castle.hpp"
+
+#include "background.hpp"
 
 // stlib
 #include <vector>
@@ -49,6 +51,9 @@ private:
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
+	// Reset
+	void reset();
+
 private:
 	// Window handle
 	GLFWwindow* m_window;
@@ -59,13 +64,19 @@ private:
 	GLuint m_frame_buffer;
 	Texture m_screen_tex;
 
+	// Background
+	Background m_background;
+
 	// Game entities
+	Player m_player;
 	Castle p1_castle;
 	Castle p2_castle;
 
+	float m_current_speed;
+
 //	Mix_Music* m_background_music;
-//	Mix_Chunk* m_salmon_dead_sound;
-//	Mix_Chunk* m_salmon_eat_sound;
+//	Mix_Chunk* m_player_dead_sound;
+//	Mix_Chunk* m_player_eat_sound;
 
 	// C++ rng
 	std::default_random_engine m_rng;

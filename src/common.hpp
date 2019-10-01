@@ -46,7 +46,7 @@ float len(vec2 a);
 void gl_flush_errors();
 bool gl_has_errors();
 
-// Single Vertex Buffer element for non-textured meshes (coloured.vs.glsl & salmon.vs.glsl)
+// Single Vertex Buffer element for non-textured meshes (coloured.vs.glsl & player.vs.glsl)
 struct Vertex
 {
 	vec3 position;
@@ -105,7 +105,7 @@ protected:
 		void release(); // release shaders and program
 	} effect;
 
-	// All data relevant to the motion of the salmon.
+	// All data relevant to the motion of the player.
 	struct Motion {
 		vec2 position;
 		float radians;

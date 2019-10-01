@@ -2,7 +2,7 @@
 
 #include "common.hpp"
 
-// Salmon food
+// player food
 class Fish : public Entity
 {
 	// Shared between all fish, no need to load one for each instance

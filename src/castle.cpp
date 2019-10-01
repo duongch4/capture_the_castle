@@ -6,15 +6,11 @@
 
 Texture Castle::castle_texture;
 
-bool Castle::init(bool team)
-
-	// assign castle's team
-	is_red_team = team;
-
+bool Castle::init(bool team, float x, float y)
+{
 	// Load shared texture
 	if (!castle_texture.is_valid())
 	{
-
 		if (!castle_texture.load_from_file(textures_path("castle/CaptureTheCastle_castle_blue.png")))
 		{
 			fprintf(stderr, "Failed to load castle texture!");
@@ -61,9 +57,15 @@ bool Castle::init(bool team)
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
-	// Setting initial values, scale is negative to make it face the opposite way
+	motion.position = { x, y };
+	motion.radians = 0.f;
+	motion.speed = 0;
+
 	// 1.0 would be as big as the original texture.
 	physics.scale = { 0.4f, 0.4f };
+	
+	// assign castle's team
+	is_red_team = team;
 
 	return true;
 }
