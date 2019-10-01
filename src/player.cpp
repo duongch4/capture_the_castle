@@ -11,6 +11,11 @@
 
 Texture Player::player_texture;
 
+
+//Player::Player(Team team) {
+//    this->team = team;
+//}
+
 bool Player::is_texture_loaded(const char* path) {
 	// Load shared texture
 	if (!player_texture.is_valid())
@@ -119,7 +124,6 @@ void Player::update(float ms)
 	else
 	{
 		// If dead we make it face upwards and sink deep down
-		set_rotation(3.1415f);
 		move({ 0.f, step });
 	}
 
@@ -253,10 +257,6 @@ void Player::move(vec2 off)
 	motion.position.y += off.y;
 }
 
-void Player::set_rotation(float radians)
-{
-	motion.radians = radians;
-}
 
 bool Player::is_alive() const
 {
@@ -301,4 +301,8 @@ void Player::set_direction(int key) {
 // Set position
 void Player::set_position(vec2 position) {
 	motion.position = position;
+}
+
+const Entity::Team Player::get_team(){
+    return team;
 }

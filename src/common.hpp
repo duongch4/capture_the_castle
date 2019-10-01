@@ -130,4 +130,10 @@ protected:
 		void translate(vec2 offset);
 		void end();
 	} transform;
+
+    enum Team {
+        PLAYER1,
+        PLAYER2,
+        BANDIT
+    }team;
 };
