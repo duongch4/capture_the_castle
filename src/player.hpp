@@ -8,17 +8,19 @@ class Fish;
 
 class Player : public Entity
 {
+	static Texture player_texture;
+
 public:
 	// Creates all the associated render resources and default transform
 	bool init();
 
 	// Releases all associated resources
 	void destroy();
-	
+
 	// Update player position based on direction
 	// ms represents the number of milliseconds elapsed from the previous update() call
 	void update(float ms);
-	
+
 	// Renders the player
 	void draw(const mat3& projection)override;
 
@@ -54,9 +56,11 @@ private:
 	float m_light_up_countdown_ms; // Used to keep track for how long the player should be lit up
 	bool m_is_alive; // True if the player is alive
 
-	enum direction { STAY, UP, DOWN, LEFT, RIGHT} currDir; // Direction of player
+	enum direction { STAY, UP, DOWN, LEFT, RIGHT } currDir; // Direction of player
 	direction prevDir; // Direction Used for Flipping
 
 	std::vector<Vertex> m_vertices;
 	std::vector<uint16_t> m_indices;
+
+	bool Player::is_texture_loaded(const char* path);
 };
