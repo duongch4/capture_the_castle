@@ -119,7 +119,9 @@ bool World::init(vec2 screen)
 	// TODO: CALL INIT ON ALL GAME ENTITIES
 	//p1_castle.init(true, 100.f, screen.y/2);
 	//p2_castle.init(false, screen.x - 100.f, screen.y/2);
-	return m_player.init() && m_background.init() && p1_castle.init(true, 100.f, screen.y / 2) && p2_castle.init(false, screen.x - 100.f, screen.y / 2);
+	return m_player.init() && m_background.init() &&
+		   p1_castle.init(Team::PLAYER1, 100.f, screen.y / 2) &&
+		   p2_castle.init(Team::PLAYER2, screen.x - 100.f, screen.y / 2);
 }
 
 // Releases all the associated resources

@@ -2,16 +2,26 @@
 #include "castle.hpp"
 
 #include <cmath>
-#include <string.h>
+#include <string>
 
 Texture Castle::castle_texture;
 
-bool Castle::init(bool team, float x, float y)
+bool Castle::init(Team team, float x, float y)
 {
 	// Load shared texture
 	if (!castle_texture.is_valid())
 	{
-		if (!castle_texture.load_from_file(textures_path("castle/CaptureTheCastle_castle_blue.png")))
+		std::string path;
+		if (team == Team::PLAYER1) {
+			path = "castle/CaptureTheCastle_castle_red.png";
+		}
+		else if (team == Team::PLAYER2) {
+			path = "castle/CaptureTheCastle_castle_blue.png";
+		}
+
+		char pathRef[path.size + 1];
+		std::copy(path.begin, path.end, pathRef);
+		if (!castle_texture.load_from_file(textures_path(*pathRef)))
 		{
 			fprintf(stderr, "Failed to load castle texture!");
 			return false;
@@ -57,15 +67,13 @@ bool Castle::init(bool team, float x, float y)
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
-	motion.position = { x, y };
-	motion.radians = 0.f;
-	motion.speed = 0;
+	position = { x, y };
 
 	// 1.0 would be as big as the original texture.
 	physics.scale = { 0.4f, 0.4f };
 	
 	// assign castle's team
-	is_red_team = team;
+	m_team = team;
 
 	return true;
 }
@@ -82,17 +90,17 @@ void Castle::destroy()
 	glDeleteShader(effect.program);
 }
 
-//void Castle::update(float ms)
-//{
-//	ANIMATION FOR CASTLE HERE FOR LATER
-//}
+void Castle::update(float ms)
+{
+	//ANIMATION FOR CASTLE HERE FOR LATER
+}
 
 void Castle::draw(const mat3& projection)
 {
 	// Transformation code, see Rendering and Transformation in the template specification for more info
 	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
 	transform.begin();
-	transform.translate(motion.position);
+	transform.translate({ position.pos_x, position.pos_y });
 	transform.scale(physics.scale);
 	transform.end();
 
@@ -137,12 +145,13 @@ void Castle::draw(const mat3& projection)
 
 vec2 Castle::get_position() const
 {
-	return motion.position;
+	return { position.pos_x, position.pos_y };
 }
 
-void Castle::set_position(vec2 position)
+void Castle::set_position(vec2 pos)
 {
-	motion.position = position;
+	position.pos_x = pos.x;
+	position.pos_y = pos.y;
 }
 
 vec2 Castle::get_bounding_box() const

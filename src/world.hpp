@@ -3,8 +3,6 @@
 // internal
 #include "common.hpp"
 #include "player.hpp"
-#include "turtle.hpp"
-#include "fish.hpp"
 #include "castle.hpp"
 
 #include "background.hpp"

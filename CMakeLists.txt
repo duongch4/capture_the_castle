@@ -34,18 +34,16 @@ set(SOURCE_FILES
         src/main.cpp
         src/common.cpp
 		src/castle.cpp
-        src/fish.cpp
         src/player.cpp
-        src/turtle.cpp
         src/world.cpp
 		src/background.cpp
         src/project_path.hpp
         src/common.hpp
-        src/fish.hpp
+		src/castle.hpp
         src/player.hpp
-        src/turtle.hpp
         src/world.hpp
 		src/background.hpp
+
 )
 
 if (IS_OS_MAC)

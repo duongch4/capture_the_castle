@@ -25,8 +25,8 @@ public:
 	void draw(const mat3& projection)override;
 
 	// Collision routines for turtles and fish
-	bool collides_with(const Turtle& turtle);
-	bool collides_with(const Fish& fish);
+	/*bool collides_with(const Turtle& turtle);
+	bool collides_with(const Fish& fish);*/
 
 	// Returns the current player position
 	vec2 get_position() const;
@@ -35,7 +35,7 @@ public:
 	void move(vec2 off);
 
 	// Set player rotation in radians
-	void set_rotation(float radians);
+	/*void set_rotation(float radians);*/
 
 	// True if the player is alive
 	bool is_alive()const;
@@ -50,7 +50,7 @@ public:
 	void set_direction(int key);
 
 	// Set position
-	void set_position(vec2 position);
+	void set_position(vec2 pos);
 
 private:
 	float m_light_up_countdown_ms; // Used to keep track for how long the player should be lit up

@@ -30,7 +30,7 @@ vec4 color_shift(vec4 in_color)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	vec4 color = in_color;
-	color *= vec4(clamp(sin(3.1415*time/60), 0.6, 0.8), clamp(sin(3.1415*time/60), 0.7, 0.9), 1, 1);
+//	color *= vec4(clamp(sin(3.1415*time/60), 0.6, 0.8), clamp(sin(3.1415*time/60), 0.7, 0.9), 1, 1);
 	return color;
 }
 
