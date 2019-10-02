@@ -39,11 +39,11 @@ public:
 	bool is_over()const;
 
 private:
-	// Generates a new turtle
-	bool spawn_turtle();
+	//// Generates a new turtle
+	//bool spawn_turtle();
 
-	// Generates a new fish
-	bool spawn_fish();
+	//// Generates a new fish
+	//bool spawn_fish();
 
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod);

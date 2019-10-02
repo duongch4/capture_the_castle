@@ -4,24 +4,21 @@
 #include <cmath>
 #include <string>
 
-Texture Castle::castle_texture;
 
 bool Castle::init(Team team, float x, float y)
 {
-	// Load shared texture
+	// Load texture
 	if (!castle_texture.is_valid())
 	{
-		std::string path;
+		char* path;
 		if (team == Team::PLAYER1) {
-			path = "castle/CaptureTheCastle_castle_red.png";
+			path = textures_path("castle/CaptureTheCastle_castle_red.png");
 		}
 		else if (team == Team::PLAYER2) {
-			path = "castle/CaptureTheCastle_castle_blue.png";
+			path = textures_path("castle/CaptureTheCastle_castle_blue.png");
 		}
 
-		char pathRef[path.size + 1];
-		std::copy(path.begin, path.end, pathRef);
-		if (!castle_texture.load_from_file(textures_path(*pathRef)))
+		if (!castle_texture.load_from_file(path))
 		{
 			fprintf(stderr, "Failed to load castle texture!");
 			return false;

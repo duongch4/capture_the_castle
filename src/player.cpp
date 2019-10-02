@@ -67,7 +67,7 @@ bool Player::init()
 	position = { 50.f, 100.f };
 	motion.speed = 200.f;
 
-	physics.scale = { 1.f, 1.f };
+	physics.scale = { 0.4f, 0.4f };
 
 	m_is_alive = true;
 	m_light_up_countdown_ms = -1.f;
@@ -245,11 +245,6 @@ void Player::move(vec2 off)
 	position.pos_x += off.x;
 	position.pos_y += off.y;
 }
-
-//void Player::set_rotation(float radians)
-//{
-//	motion.radians = radians;
-//}
 
 bool Player::is_alive() const
 {

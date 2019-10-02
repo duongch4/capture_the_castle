@@ -3,9 +3,6 @@
 #include "common.hpp"
 #include <vector>
 
-class Turtle;
-class Fish;
-
 class Player : public Entity
 {
 	static Texture player_texture;
