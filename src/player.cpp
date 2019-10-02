@@ -73,7 +73,10 @@ bool Player::init()
 	motion.speed = 200.f;
 
 	physics.scale = { 1.f, 1.f };
-
+	m_downDirection = false;
+	m_upDirection = false;
+	m_leftDirection = false;
+	m_rightDirection = false;
 	m_is_alive = true;
 	m_light_up_countdown_ms = -1.f;
 
@@ -101,20 +104,25 @@ void Player::update(float ms)
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		// UPDATE player POSITION HERE BASED ON KEY PRESSED (World::on_key())
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		switch (currDir) {
-		case DOWN:
-			move({ 0.f, step });
-			break;
-		case UP:
-			move({ 0.f, -step });
-			break;
-		case LEFT:
-			move({ -step, 0.f });
-			break;
-		case RIGHT:
-			move({ step, 0.f });
-			break;
+		vec2 moveVec = { 0, 0 };
+		if (m_downDirection)
+		{
+			moveVec.y += step;
 		}
+		if (m_upDirection)
+		{
+			moveVec.y -= step;
+		}
+		if (m_leftDirection)
+		{
+			moveVec.x -= step;
+		}
+		if (m_rightDirection)
+		{
+			moveVec.x += step;
+		}
+		move(moveVec);
+
 	}
 	else
 	{
@@ -145,7 +153,7 @@ void Player::draw(const mat3& projection)
 	transform.translate({ motion.position.x, motion.position.y });
 	transform.rotate(motion.radians);
 
-	if (prevDir == LEFT) {
+	if (currDir == LEFT) {
 		transform.scale({ -physics.scale.x, physics.scale.y });
 	}
 	else {
@@ -279,21 +287,25 @@ void Player::light_up()
 void Player::set_direction(int key) {
 	switch (key) {
 	case GLFW_KEY_DOWN:
-		currDir = DOWN;
+		m_downDirection = true;
 		break;
 	case GLFW_KEY_UP:
-		currDir = UP;
+		m_upDirection = true;
 		break;
 	case GLFW_KEY_LEFT:
-		prevDir = LEFT;
 		currDir = LEFT;
+		m_leftDirection = true;
 		break;
 	case GLFW_KEY_RIGHT:
-		prevDir = RIGHT;
 		currDir = RIGHT;
+		m_rightDirection = true;
 		break;
 	default:
 		currDir = STAY;
+		m_downDirection = false;
+		m_upDirection = false;
+		m_leftDirection = false;
+		m_rightDirection = false;
 		break;
 	}
 }
