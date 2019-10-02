@@ -32,6 +32,7 @@ World::~World()
 // World initialization
 bool World::init(vec2 screen)
 {
+     m_player = new Player(PLAYER1);
 	//-------------------------------------------------------------------------
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
@@ -117,7 +118,7 @@ bool World::init(vec2 screen)
 //	fprintf(stderr, "Loaded music\n");
 
 	// TODO: CALL INIT ON ALL GAME ENTITIES
-	return m_player.init() && m_background.init();
+	return m_player->init() && m_background.init();
 }
 
 // Releases all the associated resources
@@ -145,23 +146,23 @@ bool World::update(float elapsed_ms)
 	// TODO: SPAWN GAME ENTITIES
 
 	// Player update
-	if (m_player.is_alive()) {
+	if (m_player->is_alive()) {
 		const float offset_x = 100.f;
 		const float offset_y = 80.f;
-		if (m_player.get_position().x > (screen.x - offset_x)) {
-			m_player.set_position({ screen.x - offset_x, m_player.get_position().y });
+		if (m_player->get_position().x > (screen.x - offset_x)) {
+			m_player->set_position({ screen.x - offset_x, m_player->get_position().y });
 		}
-		else if (m_player.get_position().x < (0 + offset_x)) {
-			m_player.set_position({ 0 + offset_x, m_player.get_position().y });
+		else if (m_player->get_position().x < (0 + offset_x)) {
+			m_player->set_position({ 0 + offset_x, m_player->get_position().y });
 		}
-		else if (m_player.get_position().y > (screen.y - offset_y)) {
-			m_player.set_position({ m_player.get_position().x, screen.y - offset_y });
+		else if (m_player->get_position().y > (screen.y - offset_y)) {
+			m_player->set_position({ m_player->get_position().x, screen.y - offset_y });
 		}
-		else if (m_player.get_position().y < (0 + offset_y)) {
-			m_player.set_position({ m_player.get_position().x, 0 + offset_y });
+		else if (m_player->get_position().y < (0 + offset_y)) {
+			m_player->set_position({ m_player->get_position().x, 0 + offset_y });
 		}
 	}
-	m_player.update(elapsed_ms);
+	m_player->update(elapsed_ms);
 	return true;
 }
 
@@ -202,7 +203,7 @@ void World::draw()
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
 	// TODO: DRAW GAME ENTITIES USING projection_2D
-	m_player.draw(projection_2D);
+	m_player->draw(projection_2D);
 
 	/////////////////////
 	// Truely render to the screen
@@ -245,7 +246,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	if (action == GLFW_RELEASE) {
-		m_player.set_direction(GLFW_KEY_S);
+		m_player->set_direction(GLFW_KEY_S);
 	}
 
 	if (
@@ -256,7 +257,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 			)
 		)
 	{
-		m_player.set_direction(key);
+		m_player->set_direction(key);
 	}
 
 	// Resetting game
@@ -283,8 +284,8 @@ void World::reset()
 {
 	int w, h;
 	glfwGetWindowSize(m_window, &w, &h);
-	m_player.destroy();
-	m_player.init();
+	m_player->destroy();
+	m_player->init();
 	m_background.reset_player_dead_time();
 	m_current_speed = 1.f;
 }
