@@ -76,7 +76,11 @@ struct Texture
 	bool is_valid()const; // True if texture is valid
 	bool create_from_screen(GLFWwindow const * const window); // Screen texture
 };
-
+enum Team {
+    PLAYER1,
+    PLAYER2,
+    BANDIT
+};
 // An entity boils down to a collection of components,
 // organized by their in-game context (mesh, effect, motion, etc...)
 struct Entity {
@@ -131,9 +135,4 @@ protected:
 		void end();
 	} transform;
 
-    enum Team {
-        PLAYER1,
-        PLAYER2,
-        BANDIT
-    }team;
 };

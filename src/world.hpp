@@ -66,8 +66,8 @@ private:
 	// Background
 	Background m_background;
 
-	// Game entities
-	Player m_player;
+//	// Game entities
+	Player* m_player;
 
 	float m_current_speed;
 

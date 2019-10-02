@@ -12,9 +12,9 @@
 Texture Player::player_texture;
 
 
-//Player::Player(Team team) {
-//    this->team = team;
-//}
+Player::Player(Team team) {
+    this->team = team;
+}
 
 bool Player::is_texture_loaded(const char* path) {
 	// Load shared texture
@@ -303,6 +303,6 @@ void Player::set_position(vec2 position) {
 	motion.position = position;
 }
 
-const Entity::Team Player::get_team(){
+const Team Player::get_team(){
     return team;
 }

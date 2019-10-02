@@ -11,9 +11,9 @@ class Player : public Entity
     static Texture player_texture;
 
 public:
-//    Player(Team team);
-//
-//    ~Player();
+    Player(Team team);
+
+    ~Player();
 
 	// Creates all the associated render resources and default transform
 	bool init();
