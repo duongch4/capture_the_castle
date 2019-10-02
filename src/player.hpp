@@ -60,10 +60,14 @@ private:
 	float m_light_up_countdown_ms; // Used to keep track for how long the player should be lit up
 	bool m_is_alive; // True if the player is alive
 
-	enum direction { STAY, UP, DOWN, LEFT, RIGHT } currDir; // Direction of player
-	direction prevDir; // Direction Used for Flipping
-    Motion motion;
+  Motion motion;
 	Team team;
+	enum direction { STAY, UP, DOWN, LEFT, RIGHT } currDir; // Direction of player Used for Flipping
+	bool m_upDirection;
+	bool m_downDirection;
+	bool m_leftDirection;
+	bool m_rightDirection;
+
 	std::vector<Vertex> m_vertices;
 	std::vector<uint16_t> m_indices;
 
