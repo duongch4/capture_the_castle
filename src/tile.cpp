@@ -1,48 +1,48 @@
 // Header
-#include "turtle.hpp"
+#include "tile.hpp"
 
 #include <cmath>
 
-Texture Turtle::turtle_texture;
+Texture Tile::tile_texture;
 
-bool Turtle::init() { return false; }
+bool Tile::init() { return false; }
 
-bool Turtle::init(int id, int width, int height)
+bool Tile::init(int id, int width, int height)
 {
 	// Load shared texture
-	if (!turtle_texture.is_valid())
+	if (!tile_texture.is_valid())
 	{
-		if (!turtle_texture.load_from_file(textures_path("maze.png")))
+		if (!tile_texture.load_from_file(textures_path("maze.png")))
 		{
-			fprintf(stderr, "Failed to load turtle texture!");
+			fprintf(stderr, "Failed to load tile texture!");
 			return false;
 		}
 	}
 
 	// The position corresponds to the center of the texture
-	float wr = turtle_texture.width * 0.5f;
-	float hr = turtle_texture.height * 0.5f;
+	float wr = tile_texture.width * 0.5f;
+	float hr = tile_texture.height * 0.5f;
 
-	// Calculate the texture coordinate based on the id of the sprite
+	// Calculate the width & height of a sprite in a sprite sheet with the scale of [0..1]
 	float tile_width = 1.f / (float)width;
 	float tile_height = 1.f / (float)height;
-	float tile_act_width = tile_width * (144.f / 164.f); // Each sprite is 144pixel wide and 20 pixel gap between sprite
-	float tile_act_height = tile_height * (144.f / 164.f); //
+	// Calculate the actual width & height of the sprite excluding the gap between each sprite 
+	// Each sprite is 144pixel wide and 20 pixel gap between sprite
+	float tile_act_width = tile_width * (144.f / 164.f);
+	float tile_act_height = tile_height * (144.f / 164.f); 
 
+	// Calculate the texture coordinate based on the id, width, and height of the sprite
+	// Texture mapping start from the top left (0,0) to bottom right (1,1)
 	TexturedVertex vertices[4];
 	vertices[0].position = { -wr, +hr, -0.02f };
-	// +0.01f to prevent texture bleeding
-	vertices[0].texcoord = { ((id - 1) % width) * tile_width + 0.01f, int((id - 1) / width) * tile_height + tile_act_height }; //0.f, 0.5f
-	//vertices[0].texcoord = { 0.f, 0.5f };
+	// TODO: +0.01f to prevent texture bleeding for now, fix this later 
+	vertices[0].texcoord = { ((id - 1) % width) * tile_width + 0.01f, int((id - 1) / width) * tile_height + tile_act_height }; // Bottom left 
 	vertices[1].position = { +wr, +hr, -0.02f };
-	vertices[1].texcoord = { (((id - 1) % width) * tile_width) + tile_act_width + 0.01f, int((id - 1) / width) * tile_height + tile_act_height }; //0.5f, 0.5f
-	//vertices[1].texcoord = { 0.5f, 0.5f };
+	vertices[1].texcoord = { (((id - 1) % width) * tile_width) + tile_act_width + 0.01f, int((id - 1) / width) * tile_height + tile_act_height }; // Bottom right
 	vertices[2].position = { +wr, -hr, -0.02f };
-	vertices[2].texcoord = { (((id - 1) % width) * tile_width) + tile_act_width + 0.01f, int((id - 1) / width) * tile_height }; //0.5f, 0.f
-	//vertices[2].texcoord = { 0.5f, 0.f };
+	vertices[2].texcoord = { (((id - 1) % width) * tile_width) + tile_act_width + 0.01f, int((id - 1) / width) * tile_height }; // Top Right
 	vertices[3].position = { -wr, -hr, -0.02f };
-	vertices[3].texcoord = { ((id - 1) % width) * tile_width + 0.01f, int((id  - 1) / width) * tile_height }; //0.f, 0.f
-	//vertices[3].texcoord = { 0.f, 0.f };
+	vertices[3].texcoord = { ((id - 1) % width) * tile_width + 0.01f, int((id  - 1) / width) * tile_height }; // Top Left
 
 	// Counterclockwise as it's the default opengl front winding direction
 	uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
@@ -70,10 +70,11 @@ bool Turtle::init(int id, int width, int height)
 		return false;
 
 	// Setting initial values
+	// To set a default position, rotation and speed, uncomment the section below
 	//position.pos_x = 100.f;
 	//position.pos_y = 100.f;					  
 	//motion.radians = 0.f;
-	motion.speed = 0.f;
+	//motion.speed = 0.f;
 
 	// Setting initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
@@ -83,7 +84,7 @@ bool Turtle::init(int id, int width, int height)
 }
 
 // Releases all graphics resources
-void Turtle::destroy()
+void Tile::destroy()
 {
 	glDeleteBuffers(1, &mesh.vbo);
 	glDeleteBuffers(1, &mesh.ibo);
@@ -94,15 +95,12 @@ void Turtle::destroy()
 	glDeleteShader(effect.program);
 }
 
-void Turtle::update(float ms)
+void Tile::update(float ms)
 {
-	// Move fish along -X based on how much time has passed, this is to (partially) avoid
-	// having entities move at different speed based on the machine.
-	//float step = -1.0 * motion.speed * (ms / 1000);
-	//position.pos_x += step;
+	// Do nothing for now, but if we ever wanted to animate the tile, this can be used.
 }
 
-void Turtle::draw(const mat3& projection)
+void Tile::draw(const mat3& projection)
 {
 	// Transformation code, see Rendering and Transformation in the template specification for more info
 	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
@@ -139,7 +137,7 @@ void Turtle::draw(const mat3& projection)
 
 	// Enabling and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, turtle_texture.id);
+	glBindTexture(GL_TEXTURE_2D, tile_texture.id);
 
 	// Setting uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform.out);
@@ -151,20 +149,20 @@ void Turtle::draw(const mat3& projection)
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-vec2 Turtle::get_position()const
+vec2 Tile::get_position()const
 {
 	return vec2{ position.pos_x, position.pos_y };
 }
 
-void Turtle::set_position(vec2 position1)
+void Tile::set_position(vec2 position1)
 {
 	position.pos_x = position1.x;
 	position.pos_y = position1.y;
 }
 
-vec2 Turtle::get_bounding_box() const
+vec2 Tile::get_bounding_box() const
 {
-	// Returns the local bounding coordinates scaled by the current size of the turtle 
+	// Returns the local bounding coordinates scaled by the current size of the tile 
 	// fabs is to avoid negative scale due to the facing direction.
-	return { std::fabs(physics.scale.x) * turtle_texture.width, std::fabs(physics.scale.y) * turtle_texture.height };
+	return { std::fabs(physics.scale.x) * tile_texture.width, std::fabs(physics.scale.y) * tile_texture.height };
 }

@@ -33,11 +33,11 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/project_path.hpp.in" "${CMAKE_CU
 set(SOURCE_FILES
         src/main.cpp
         src/common.cpp
-        src/turtle.cpp
+        src/tile.cpp
         src/world.cpp
         src/project_path.hpp
         src/common.hpp
-        src/turtle.hpp
+        src/tile.hpp
         src/world.hpp
         )
 

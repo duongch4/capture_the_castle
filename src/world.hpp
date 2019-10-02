@@ -2,7 +2,7 @@
 
 // internal
 #include "common.hpp"
-#include "turtle.hpp"
+#include "tile.hpp"
 
 // stlib
 #include <vector>
@@ -36,8 +36,8 @@ public:
 	bool is_over()const;
 
 private:
-	// Generates a new turtle
-	bool spawn_turtle(int id, int width, int height);
+	// Generates a new tile
+	bool spawn_tile(int id, int width, int height);
 
 	// Generates a new fish
 	// bool spawn_fish();
@@ -57,7 +57,7 @@ private:
 	Texture m_screen_tex;
 
 	// Game entities
-	std::vector<Turtle> m_turtles;
+	std::vector<Tile> m_tiles;
 
 //	Mix_Music* m_background_music;
 //	Mix_Chunk* m_salmon_dead_sound;

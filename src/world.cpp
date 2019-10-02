@@ -116,7 +116,9 @@ bool World::init(vec2 screen)
 //
 //	fprintf(stderr, "Loaded music\n");
 
-	//maze data 
+	// Hardcoded maze data, created using Tiled 
+	// Each number represent the id of a tile 
+	// Id is the position of a sprite in a sprite sheet starting from left to right, top to bottom 
 	int data[] = {
 		19, 19, 19, 19, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 19, 19, 19, 19,
 		19, 19, 19, 19, 9, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 9, 19, 19, 19, 19,
@@ -139,42 +141,21 @@ bool World::init(vec2 screen)
 		19, 19, 19, 19, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 19, 19, 19, 19
 	};
 
+	// Create all the tiles based on the maze data we defined above
 	for (int j = 0; j < 19; j++) {
 		for (int i = 0; i < 30; i++) {
 			int iter = j * 30 + i;
-			if (!spawn_turtle(data[iter], 6, 4))
+			// First parameter is the id of the tile, second parameter is the number of tile horizontally in the sprite sheet
+			// Third parameter is the number of tile vertically in the sprite sheet.
+			if (!spawn_tile(data[iter], 6, 4))
 				return false;
 
-			Turtle& new_turtle = m_turtles.back();
+			Tile& new_tile = m_tiles.back();
 
-			// Setting random initial position
-			//new_turtle.set_position({ i * 91.f + 46.f, j * 86.f + 38.f }); //scale value in turtle.ccp {0.1f, 0.15f}
-			new_turtle.set_position({ i * 46.f + 23.f, j * 43.f + 19.f });
-
-			// Next spawn
-			//m_next_turtle_spawn = (TURTLE_DELAY_MS / 2) + m_dist(m_rng) * (TURTLE_DELAY_MS/2);
+			// Setting the tile initial position
+			new_tile.set_position({ i * 46.f + 23.f, j * 43.f + 19.f });
 		}
 	}
-
-	//for (int j = 0; j < 13; j++) {
-	//	for (int i = 0; i < 23; i++) {
-	//		
-	//	}
-	//}
-
-	//while (m_turtles.size() <= 15)
-	//{
-	//	if (!spawn_turtle())
-	//		return false;
-
-	//	Turtle& new_turtle = m_turtles.back();
-
-	//	// Setting random initial position
-	//	new_turtle.set_position({ screen.x - 200, 50 + m_dist(m_rng) * (screen.y - 100) });
-
-	//	// Next spawn
-	//	//m_next_turtle_spawn = (TURTLE_DELAY_MS / 2) + m_dist(m_rng) * (TURTLE_DELAY_MS/2);
-	//}
 
 	// TODO: CALL INIT ON ALL GAME ENTITIES
 	return true;
@@ -189,9 +170,11 @@ void World::destroy()
 	Mix_CloseAudio();
 
 	// TODO: DESTROY ALL GAME ENTITIES
-	for (auto& turtle : m_turtles)
-		turtle.destroy();
-	m_turtles.clear();
+	// If we move to the next level, destroy all the tiles 
+	for (auto& tile : m_tiles)
+		tile.destroy();
+	m_tiles.clear();
+
 	glfwDestroyWindow(m_window);
 }
 
@@ -203,13 +186,14 @@ bool World::update(float elapsed_ms)
 	vec2 screen = { (float)w / m_screen_scale, (float)h / m_screen_scale };
 
 	// TODO: COLLISION DETECTIONS
-	// Spawning new turtles
-
-
 
 	// TODO: SPAWN GAME ENTITIES
-	for (auto& turtle : m_turtles)
-		turtle.update(elapsed_ms);
+
+
+	// Update each of tiles, the update function is empty for now
+	// Can be used in the future to animate the tile
+	for (auto& tile : m_tiles)
+		tile.update(elapsed_ms);
 
 	return true;
 }
@@ -267,8 +251,10 @@ void World::draw()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
 
-	for (auto& turtle : m_turtles)
-		turtle.draw(projection_2D);
+	// Render all the tiles we have 
+	for (auto& tile : m_tiles)
+		tile.draw(projection_2D);
+
 	//////////////////
 	// Presenting
 	glfwSwapBuffers(m_window);
@@ -280,16 +266,16 @@ bool World::is_over() const
 	return glfwWindowShouldClose(m_window);
 }
 
-// Creates a new turtle and if successfull adds it to the list of turtles
-bool World::spawn_turtle(int id, int width, int height)
+// Creates a new tile and if successfull adds it to the list of tile
+bool World::spawn_tile(int id, int width, int height)
 {
-	Turtle turtle;
-	if (turtle.init(id, width, height)) //14,6,4
+	Tile tile;
+	if (tile.init(id, width, height))
 	{
-		m_turtles.emplace_back(turtle);
+		m_tiles.emplace_back(tile);
 		return true;
 	}
-	fprintf(stderr, "Failed to spawn turtle");
+	fprintf(stderr, "Failed to spawn tile");
 	return false;
 }
 // On key callback

@@ -2,34 +2,35 @@
 
 #include "common.hpp"
 
-// Salmon enemy 
-class Turtle : public Entity
+// Tile class
+class Tile : public Entity
 {
-	// Shared between all turtles, no need to load one for each instance
-	static Texture turtle_texture;
+	// Shared between all tiles, no need to load one for each instance
+	static Texture tile_texture;
 
 public:
 	// Creates all the associated render resources and default transform
 	bool init();
+	// Use the id to setup the rendering for part of the sprite sheet
 	bool init(int id, int width, int height);
 
 	// Releases all the associated resources
 	void destroy();
 
-	// Update turtle due to current
+	// Update tile due to current
 	// ms represents the number of milliseconds elapsed from the previous update() call
 	void update(float ms);
 
-	// Renders the salmon
+	// Renders the tile
 	// projection is the 2D orthographic projection matrix
 	void draw(const mat3& projection) override;
 
-	// Returns the current turtle position
+	// Returns the current tile position
 	vec2 get_position()const;
 
-	// Sets the new turtle position
+	// Sets the new tile position
 	void set_position(vec2 position);
 
-	// Returns the turtle' bounding box for collision detection, called by collides_with()
+	// Returns the tile's bounding box for collision detection, called by collides_with()
 	vec2 get_bounding_box() const;
 };
