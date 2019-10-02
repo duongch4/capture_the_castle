@@ -152,13 +152,13 @@ bool World::update(float elapsed_ms)
 		if (m_player->get_position().x > (screen.x - offset_x)) {
 			m_player->set_position({ screen.x - offset_x, m_player->get_position().y });
 		}
-		else if (m_player->get_position().x < (0 + offset_x)) {
+		if (m_player->get_position().x < (0 + offset_x)) {
 			m_player->set_position({ 0 + offset_x, m_player->get_position().y });
 		}
-		else if (m_player->get_position().y > (screen.y - offset_y)) {
+		if (m_player->get_position().y > (screen.y - offset_y)) {
 			m_player->set_position({ m_player->get_position().x, screen.y - offset_y });
 		}
-		else if (m_player->get_position().y < (0 + offset_y)) {
+		if (m_player->get_position().y < (0 + offset_y)) {
 			m_player->set_position({ m_player->get_position().x, 0 + offset_y });
 		}
 	}

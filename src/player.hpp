@@ -8,12 +8,12 @@ class Fish;
 
 class Player : public Entity
 {
-    static Texture player_texture;
+	static Texture player_texture;
 
 public:
-    Player(Team team);
+	Player(Team team);
 
-    ~Player();
+	~Player();
 
 	// Creates all the associated render resources and default transform
 	bool init();
@@ -60,13 +60,11 @@ private:
 	float m_light_up_countdown_ms; // Used to keep track for how long the player should be lit up
 	bool m_is_alive; // True if the player is alive
 
-  Motion motion;
+	Motion motion;
 	Team team;
-	enum direction { STAY, UP, DOWN, LEFT, RIGHT } currDir; // Direction of player Used for Flipping
-	bool m_upDirection;
-	bool m_downDirection;
-	bool m_leftDirection;
-	bool m_rightDirection;
+
+	struct direction { int up, down, left, right, flip; };
+	direction currDir;
 
 	std::vector<Vertex> m_vertices;
 	std::vector<uint16_t> m_indices;
