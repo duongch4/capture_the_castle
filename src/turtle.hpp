@@ -11,6 +11,7 @@ class Turtle : public Entity
 public:
 	// Creates all the associated render resources and default transform
 	bool init();
+	bool init(int id, int width, int height);
 
 	// Releases all the associated resources
 	void destroy();

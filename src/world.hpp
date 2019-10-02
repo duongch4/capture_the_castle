@@ -2,9 +2,7 @@
 
 // internal
 #include "common.hpp"
-#include "salmon.hpp"
 #include "turtle.hpp"
-#include "fish.hpp"
 
 // stlib
 #include <vector>
@@ -39,10 +37,10 @@ public:
 
 private:
 	// Generates a new turtle
-	bool spawn_turtle();
+	bool spawn_turtle(int id, int width, int height);
 
 	// Generates a new fish
-	bool spawn_fish();
+	// bool spawn_fish();
 
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
@@ -59,6 +57,7 @@ private:
 	Texture m_screen_tex;
 
 	// Game entities
+	std::vector<Turtle> m_turtles;
 
 //	Mix_Music* m_background_music;
 //	Mix_Chunk* m_salmon_dead_sound;
