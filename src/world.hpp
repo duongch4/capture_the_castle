@@ -3,8 +3,7 @@
 // internal
 #include "common.hpp"
 #include "player.hpp"
-#include "turtle.hpp"
-#include "fish.hpp"
+#include "castle.hpp"
 
 #include "background.hpp"
 
@@ -40,11 +39,11 @@ public:
 	bool is_over()const;
 
 private:
-	// Generates a new turtle
-	bool spawn_turtle();
+	//// Generates a new turtle
+	//bool spawn_turtle();
 
-	// Generates a new fish
-	bool spawn_fish();
+	//// Generates a new fish
+	//bool spawn_fish();
 
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
@@ -57,6 +56,8 @@ private:
 	// Window handle
 	GLFWwindow* m_window;
 	float m_screen_scale; // Screen to pixel coordinates scale factor
+	vec2 m_screen_size;
+	std::vector<vec2> m_start_position;
 
 	// Screen texture
 	// The draw loop first renders to this texture, then it is used for the water shader
@@ -66,8 +67,10 @@ private:
 	// Background
 	Background m_background;
 
-//	// Game entities
-	Player* m_player;
+	// Game entities
+	std::vector<Player*> players;
+	Castle p1_castle;
+	Castle p2_castle;
 
 	float m_current_speed;
 

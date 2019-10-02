@@ -35,6 +35,10 @@ bool Background::init() {
 	return true;
 }
 
+void Background::update(float ms) {
+	// possible background animation 
+}
+
 // Releases all graphics resources
 void Background::destroy() {
 	glDeleteBuffers(1, &mesh.vbo);

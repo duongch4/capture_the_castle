@@ -1,20 +1,19 @@
 // Header
 #include "player.hpp"
 
-// internal
-#include "turtle.hpp"
-#include "fish.hpp"
-
 // stlib
 #include <string>
 #include <algorithm>
 
-Texture Player::player_texture;
+#include <iostream>
 
+//Texture Player::player_texture;
 
 Player::Player(Team team) {
-    this->team = team;
+    this->team.assigned = team;
 }
+
+//Player::~Player() {}
 
 bool Player::is_texture_loaded(const char* path) {
 	// Load shared texture
@@ -29,9 +28,16 @@ bool Player::is_texture_loaded(const char* path) {
 	return true;
 }
 
-bool Player::init()
+bool Player::init(vec2 pos)
 {
-	is_texture_loaded(textures_path("blue_player/CaptureTheCastle_blue_player_right.png"));
+	switch (this->team.assigned) {
+	case Team::PLAYER1:
+		is_texture_loaded(textures_path("red_player/CaptureTheCastle_red_player_right.png"));
+		break;
+	case Team::PLAYER2:
+		is_texture_loaded(textures_path("blue_player/CaptureTheCastle_blue_player_right.png"));
+		break;
+	}
 
 	// The position corresponds to the center of the texture.
 	float wr = player_texture.width * 0.5f;
@@ -73,11 +79,11 @@ bool Player::init()
 		return false;
 
 	// Setting initial values
-	motion.position = { 50.f, 100.f };
-	motion.radians = 0.f;
+	position.pos_x = pos.x;
+	position.pos_y = pos.y;
 	motion.speed = 200.f;
 
-	physics.scale = { 1.f, 1.f };
+	physics.scale = { 0.4f, 0.4f };
 	currDir = { 0, 0, 0, 0, 0 };
 	m_is_alive = true;
 	m_light_up_countdown_ms = -1.f;
@@ -144,8 +150,7 @@ void Player::draw(const mat3& projection)
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// REMOVE THE FOLLOWING LINES BEFORE ADDING ANY TRANSFORMATION CODE
-	transform.translate({ motion.position.x, motion.position.y });
-	transform.rotate(motion.radians);
+	transform.translate({ position.pos_x, position.pos_y });
 
 	if (currDir.flip) {
 		transform.scale({ -physics.scale.x, physics.scale.y });
@@ -205,37 +210,37 @@ void Player::draw(const mat3& projection)
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-// Simple bounding box collision check
-// This is a SUPER APPROXIMATE check that puts a circle around the bounding boxes and sees
-// if the center point of either object is inside the other's bounding-box-circle. You don't
-// need to try to use this technique.
-bool Player::collides_with(const Turtle& turtle)
-{
-	float dx = motion.position.x - turtle.get_position().x;
-	float dy = motion.position.y - turtle.get_position().y;
-	float d_sq = dx * dx + dy * dy;
-	float other_r = std::max(turtle.get_bounding_box().x, turtle.get_bounding_box().y);
-	float my_r = std::max(physics.scale.x, physics.scale.y);
-	float r = std::max(other_r, my_r);
-	r *= 0.6f;
-	if (d_sq < r * r)
-		return true;
-	return false;
-}
+//// Simple bounding box collision check
+//// This is a SUPER APPROXIMATE check that puts a circle around the bounding boxes and sees
+//// if the center point of either object is inside the other's bounding-box-circle. You don't
+//// need to try to use this technique.
+//bool Player::collides_with(const Turtle& turtle)
+//{
+//	float dx = motion.position.x - turtle.get_position().x;
+//	float dy = motion.position.y - turtle.get_position().y;
+//	float d_sq = dx * dx + dy * dy;
+//	float other_r = std::max(turtle.get_bounding_box().x, turtle.get_bounding_box().y);
+//	float my_r = std::max(physics.scale.x, physics.scale.y);
+//	float r = std::max(other_r, my_r);
+//	r *= 0.6f;
+//	if (d_sq < r * r)
+//		return true;
+//	return false;
+//}
 
-bool Player::collides_with(const Fish& fish)
-{
-	float dx = motion.position.x - fish.get_position().x;
-	float dy = motion.position.y - fish.get_position().y;
-	float d_sq = dx * dx + dy * dy;
-	float other_r = std::max(fish.get_bounding_box().x, fish.get_bounding_box().y);
-	float my_r = std::max(physics.scale.x, physics.scale.y);
-	float r = std::max(other_r, my_r);
-	r *= 0.6f;
-	if (d_sq < r * r)
-		return true;
-	return false;
-}
+//bool Player::collides_with(const Fish& fish)
+//{
+//	float dx = motion.position.x - fish.get_position().x;
+//	float dy = motion.position.y - fish.get_position().y;
+//	float d_sq = dx * dx + dy * dy;
+//	float other_r = std::max(fish.get_bounding_box().x, fish.get_bounding_box().y);
+//	float my_r = std::max(physics.scale.x, physics.scale.y);
+//	float r = std::max(other_r, my_r);
+//	r *= 0.6f;
+//	if (d_sq < r * r)
+//		return true;
+//	return false;
+//}
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // HANDLE player - WALL COLLISIONS HERE
@@ -246,15 +251,14 @@ bool Player::collides_with(const Fish& fish)
 
 vec2 Player::get_position() const
 {
-	return motion.position;
+	return { position.pos_x, position.pos_y };
 }
 
 void Player::move(vec2 off)
 {
-	motion.position.x += off.x;
-	motion.position.y += off.y;
+	position.pos_x += off.x;
+	position.pos_y += off.y;
 }
-
 
 bool Player::is_alive() const
 {
@@ -297,10 +301,11 @@ void Player::set_direction(int key) {
 }
 
 // Set position
-void Player::set_position(vec2 position) {
-	motion.position = position;
+void Player::set_position(vec2 pos) {
+	position.pos_x = pos.x;
+	position.pos_y = pos.y;
 }
 
 const Team Player::get_team(){
-    return team;
+    return this->team.assigned;
 }

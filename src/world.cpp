@@ -32,7 +32,14 @@ World::~World()
 // World initialization
 bool World::init(vec2 screen)
 {
-     m_player = new Player(PLAYER1);
+	m_screen_size = screen;
+	
+	m_start_position.push_back({ 150.f, m_screen_size.y / 2 + 130.f });
+	m_start_position.push_back({ m_screen_size.x - 150.f, m_screen_size.y / 2 + 130.f });
+	
+	players.push_back(new Player(Team::PLAYER1));
+	players.push_back(new Player(Team::PLAYER2));
+
 	//-------------------------------------------------------------------------
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
@@ -98,7 +105,7 @@ bool World::init(vec2 screen)
 		return false;
 	}
 
-    // TODO: Uncomment and modify to add background music
+	// TODO: Uncomment and modify to add background music
 //	m_background_music = Mix_LoadMUS(audio_path("music.wav"));
 //	m_player_dead_sound = Mix_LoadWAV(audio_path("player_dead.wav"));
 //	m_player_eat_sound = Mix_LoadWAV(audio_path("player_eat.wav"));
@@ -118,7 +125,16 @@ bool World::init(vec2 screen)
 //	fprintf(stderr, "Loaded music\n");
 
 	// TODO: CALL INIT ON ALL GAME ENTITIES
-	return m_player->init() && m_background.init();
+
+	for (auto i : {0,1}) {
+		players[i]->init(m_start_position[i]);
+	}
+
+	m_background.init();
+	p1_castle.init(Team::PLAYER1, 150.f, screen.y / 2);
+	p2_castle.init(Team::PLAYER2, screen.x - 150.f, screen.y / 2);
+
+	return true;
 }
 
 // Releases all the associated resources
@@ -146,23 +162,25 @@ bool World::update(float elapsed_ms)
 	// TODO: SPAWN GAME ENTITIES
 
 	// Player update
-	if (m_player->is_alive()) {
-		const float offset_x = 100.f;
-		const float offset_y = 80.f;
-		if (m_player->get_position().x > (screen.x - offset_x)) {
-			m_player->set_position({ screen.x - offset_x, m_player->get_position().y });
+	for (auto player : players) {
+		if (player->is_alive()) {
+			const float offset_x = 100.f;
+			const float offset_y = 80.f;
+			if (player->get_position().x > (screen.x - offset_x)) {
+				player->set_position({ screen.x - offset_x, player->get_position().y });
+			}
+			if (player->get_position().x < (0 + offset_x)) {
+				player->set_position({ 0 + offset_x, player->get_position().y });
+			}
+			if (player->get_position().y > (screen.y - offset_y)) {
+				player->set_position({ player->get_position().x, screen.y - offset_y });
+			}
+			if (player->get_position().y < (0 + offset_y)) {
+				player->set_position({ player->get_position().x, 0 + offset_y });
+			}
 		}
-		if (m_player->get_position().x < (0 + offset_x)) {
-			m_player->set_position({ 0 + offset_x, m_player->get_position().y });
-		}
-		if (m_player->get_position().y > (screen.y - offset_y)) {
-			m_player->set_position({ m_player->get_position().x, screen.y - offset_y });
-		}
-		if (m_player->get_position().y < (0 + offset_y)) {
-			m_player->set_position({ m_player->get_position().x, 0 + offset_y });
-		}
+		player->update(elapsed_ms);
 	}
-	m_player->update(elapsed_ms);
 	return true;
 }
 
@@ -203,7 +221,12 @@ void World::draw()
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
 	// TODO: DRAW GAME ENTITIES USING projection_2D
-	m_player->draw(projection_2D);
+	p1_castle.draw(projection_2D);
+	p2_castle.draw(projection_2D);
+
+	for (auto player : players) {
+		player->draw(projection_2D);
+	}
 
 	/////////////////////
 	// Truely render to the screen
@@ -238,7 +261,7 @@ bool World::is_over() const
 // On key callback
 void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 {
-    // TODO: HANDLE KEY INPUTS
+	// TODO: HANDLE KEY INPUTS
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// HANDLE SALMON MOVEMENT HERE
 	// key is of 'type' GLFW_KEY_
@@ -246,7 +269,8 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	if (action == GLFW_RELEASE) {
-		m_player->set_direction(GLFW_KEY_S);
+		players[0]->set_direction(GLFW_KEY_S);
+		players[1]->set_direction(GLFW_KEY_S);
 	}
 
 	if (
@@ -257,7 +281,8 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 			)
 		)
 	{
-		m_player->set_direction(key);
+		players[0]->set_direction(key);
+		players[1]->set_direction(key);
 	}
 
 	// Resetting game
@@ -284,8 +309,12 @@ void World::reset()
 {
 	int w, h;
 	glfwGetWindowSize(m_window, &w, &h);
-	m_player->destroy();
-	m_player->init();
+	for (auto player : players) {
+		player->destroy();
+	}
+	for (auto i : { 0,1 }) {
+		players[i]->init(m_start_position[i]);
+	}
 	m_background.reset_player_dead_time();
 	m_current_speed = 1.f;
 }

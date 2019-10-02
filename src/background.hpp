@@ -15,6 +15,8 @@ public:
 	// Renders the water
 	void draw(const mat3& projection)override;
 
+	void update(float ms) override;
+
 	// player dead time getters and setters
 	void set_player_dead();
 	void reset_player_dead_time();

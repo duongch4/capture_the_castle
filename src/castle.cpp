@@ -1,25 +1,33 @@
 // Header
-#include "fish.hpp"
+#include "castle.hpp"
 
 #include <cmath>
+#include <string>
 
-Texture Fish::fish_texture;
 
-bool Fish::init()
+bool Castle::init(Team team, float x, float y)
 {
-	// Load shared texture
-	if (!fish_texture.is_valid())
+	// Load texture
+	if (!castle_texture.is_valid())
 	{
-		if (!fish_texture.load_from_file(textures_path("fish.png")))
+		char* path;
+		if (team == Team::PLAYER1) {
+			path = textures_path("castle/CaptureTheCastle_castle_red.png");
+		}
+		else if (team == Team::PLAYER2) {
+			path = textures_path("castle/CaptureTheCastle_castle_blue.png");
+		}
+
+		if (!castle_texture.load_from_file(path))
 		{
-			fprintf(stderr, "Failed to load turtle texture!");
+			fprintf(stderr, "Failed to load castle texture!");
 			return false;
 		}
 	}
 
 	// The position corresponds to the center of the texture.
-	float wr = fish_texture.width * 0.5f;
-	float hr = fish_texture.height * 0.5f;
+	float wr = castle_texture.width * 0.5f;
+	float hr = castle_texture.height * 0.5f;
 
 	TexturedVertex vertices[4];
 	vertices[0].position = { -wr, +hr, -0.01f };
@@ -56,18 +64,19 @@ bool Fish::init()
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
-	motion.radians = 0.f;
-	motion.speed = 380.f;
+	position = { x, y };
 
-	// Setting initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
-	physics.scale = { -0.4f, 0.4f };
+	physics.scale = { 0.4f, 0.4f };
+	
+	// assign castle's team
+	m_team = team;
 
 	return true;
 }
 
 // Releases all graphics resources
-void Fish::destroy()
+void Castle::destroy()
 {
 	glDeleteBuffers(1, &mesh.vbo);
 	glDeleteBuffers(1, &mesh.ibo);
@@ -78,28 +87,17 @@ void Fish::destroy()
 	glDeleteShader(effect.program);
 }
 
-void Fish::update(float ms)
+void Castle::update(float ms)
 {
-	// Move fish along -X based on how much time has passed, this is to (partially) avoid
-	// having entities move at different speed based on the machine.
-	float step = -1.0 * motion.speed * (ms / 1000);
-	motion.position.x += step;
-
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// HANDLE FISH AI HERE
-	// DON'T WORRY ABOUT THIS UNTIL ASSIGNMENT 2
-	// You will likely want to write new functions and need to create
-	// new data structures to implement a more sophisticated Fish AI. 
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	//ANIMATION FOR CASTLE HERE FOR LATER
 }
 
-void Fish::draw(const mat3& projection)
+void Castle::draw(const mat3& projection)
 {
 	// Transformation code, see Rendering and Transformation in the template specification for more info
 	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
 	transform.begin();
-	transform.translate(motion.position);
-	transform.rotate(motion.radians);
+	transform.translate({ position.pos_x, position.pos_y });
 	transform.scale(physics.scale);
 	transform.end();
 
@@ -130,7 +128,7 @@ void Fish::draw(const mat3& projection)
 
 	// Enabling and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, fish_texture.id);
+	glBindTexture(GL_TEXTURE_2D, castle_texture.id);
 
 	// Setting uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform.out);
@@ -142,19 +140,20 @@ void Fish::draw(const mat3& projection)
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-vec2 Fish::get_position() const
+vec2 Castle::get_position() const
 {
-	return motion.position;
+	return { position.pos_x, position.pos_y };
 }
 
-void Fish::set_position(vec2 position)
+void Castle::set_position(vec2 pos)
 {
-	motion.position = position;
+	position.pos_x = pos.x;
+	position.pos_y = pos.y;
 }
 
-vec2 Fish::get_bounding_box() const
+vec2 Castle::get_bounding_box() const
 {
 	// Returns the local bounding coordinates scaled by the current size of the fish 
 	// fabs is to avoid negative scale due to the facing direction.
-	return { std::fabs(physics.scale.x) * fish_texture.width, std::fabs(physics.scale.y) * fish_texture.height };
+	return { std::fabs(physics.scale.x) * castle_texture.width, std::fabs(physics.scale.y) * castle_texture.height };
 }

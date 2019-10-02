@@ -3,12 +3,9 @@
 #include "common.hpp"
 #include <vector>
 
-class Turtle;
-class Fish;
-
 class Player : public Entity
 {
-	static Texture player_texture;
+	//static Texture player_texture;
 
 public:
 	Player(Team team);
@@ -16,7 +13,8 @@ public:
 	~Player();
 
 	// Creates all the associated render resources and default transform
-	bool init();
+	//bool init(Team team, vec2 pos);
+	bool init(vec2 pos);
 
 	// Releases all associated resources
 	void destroy();
@@ -29,8 +27,8 @@ public:
 	void draw(const mat3& projection)override;
 
 	// Collision routines for turtles and fish
-	bool collides_with(const Turtle& turtle);
-	bool collides_with(const Fish& fish);
+	/*bool collides_with(const Turtle& turtle);
+	bool collides_with(const Fish& fish);*/
 
 	// Returns the current player position
 	vec2 get_position() const;
@@ -52,7 +50,7 @@ public:
 	void set_direction(int key);
 
 	// Set position
-	void set_position(vec2 position);
+	void set_position(vec2 pos);
 
 	const Team get_team();
 
@@ -60,8 +58,9 @@ private:
 	float m_light_up_countdown_ms; // Used to keep track for how long the player should be lit up
 	bool m_is_alive; // True if the player is alive
 
-	Motion motion;
-	Team team;
+	//Team m_team;
+
+	Texture player_texture;
 
 	struct direction { int up, down, left, right, flip; };
 	direction currDir;

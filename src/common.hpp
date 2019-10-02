@@ -46,6 +46,12 @@ float len(vec2 a);
 void gl_flush_errors();
 bool gl_has_errors();
 
+enum class Team {
+    PLAYER1,
+    PLAYER2,
+    BANDIT
+};
+
 // Single Vertex Buffer element for non-textured meshes (coloured.vs.glsl & player.vs.glsl)
 struct Vertex
 {
@@ -66,7 +72,7 @@ struct Texture
 	Texture();
 	~Texture();
 
-	GLuint id;
+	GLuint id = 0;
 	GLuint depth_render_buffer_id;
 	int width;
 	int height;
@@ -76,31 +82,35 @@ struct Texture
 	bool is_valid()const; // True if texture is valid
 	bool create_from_screen(GLFWwindow const * const window); // Screen texture
 };
-enum Team {
-    PLAYER1,
-    PLAYER2,
-    BANDIT
-};
+
 // An entity boils down to a collection of components,
 // organized by their in-game context (mesh, effect, motion, etc...)
 struct Entity {
 	// projection contains the orthographic projection matrix. As every Entity::draw()
 	// renders itself it needs it to correctly bind it to its shader.
+	// virtual bool init() = 0;
 	virtual void draw(const mat3& projection) = 0;
+	virtual void update(float ms) = 0;
+	virtual void destroy() = 0;
 
 protected:
-	// A Mesh is a collection of a VertexBuffer and an IndexBuffer. A VAO
-	// represents a Vertex Array Object and is the container for 1 or more Vertex Buffers and 
-	// an Index Buffer.
-	struct Mesh {
-		GLuint vao;
-		GLuint vbo;
-		GLuint ibo;
-	} mesh;
+	// Sprite component of Entity for texture
+	struct SpriteComponent {
+		Texture texture;
+	} sprite;
 
-	// Effect component of Entity for Vertex and Fragment shader, which are then put(linked) together in a
+    // A Mesh is a collection of a VertexBuffer and an IndexBuffer. A VAO
+    // represents a Vertex Array Object and is the container for 1 or more Vertex Buffers and
+    // an Index Buffer.
+    struct MeshComponent {
+        GLuint vao;
+        GLuint vbo;
+        GLuint ibo;
+    } mesh;
+
+    // Effect component of Entity for Vertex and Fragment shader, which are then put(linked) together in a
 	// single program that is then bound to the pipeline.
-	struct Effect {
+	struct EffectComponent {
 		GLuint vertex;
 		GLuint fragment;
 		GLuint program;
@@ -109,30 +119,44 @@ protected:
 		void release(); // release shaders and program
 	} effect;
 
-	// All data relevant to the motion of the player.
-	struct Motion {
-		vec2 position;
-		float radians;
+	// All data relevant to the motion of the salmon.
+	struct MotionComponent {
+	    vec2 direction;
 		float speed;
 	} motion;
 
+	// Position of an entity
+	struct PositionComponent {
+	    float pos_x;
+	    float pos_y;
+	} position;
+
 	// Scale is used in the bounding box calculations, 
 	// and so contextually belongs here (for now).
-	struct Physics {
+	struct PhysicsComponent {
 		vec2 scale;
 	} physics;
 
 	// Transform component handles transformations passed to the Vertex shader.
 	// gl Immediate mode equivalent, see the Rendering and Transformations section in the
 	// specification pdf.
-	struct Transform {
+	struct TransformComponent {
 		mat3 out;
 
 		void begin();
 		void scale(vec2 scale);
-		void rotate(float radians);
 		void translate(vec2 offset);
 		void end();
 	} transform;
 
+	// Collision component of an entity handles collision testing and collision handling
+	struct CollisionComponent {
+	    bool collides_with(Entity &e);
+	    void on_collide();
+	} collision;
+
+	// Team component to specify an entity belongs to a team
+	struct TeamComponent {
+	    Team assigned;
+    }team;
 };
