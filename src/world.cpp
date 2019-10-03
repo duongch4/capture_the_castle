@@ -141,16 +141,18 @@ bool World::init(vec2 screen)
 		19, 19, 19, 19, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 19, 19, 19, 19
 	};
 
+	// TODO: Refactor this later to move it into a TileMap class
 	// Create all the tiles based on the maze data we defined above
 	for (int j = 0; j < 19; j++) {
+		m_tiles.emplace_back(std::vector<Tile>(30));
 		for (int i = 0; i < 30; i++) {
 			int iter = j * 30 + i;
 			// First parameter is the id of the tile, second parameter is the number of tile horizontally in the sprite sheet
 			// Third parameter is the number of tile vertically in the sprite sheet.
-			if (!spawn_tile(data[iter], 6, 4))
+			if (!spawn_tile(data[iter], 6, 4, i, j))
 				return false;
 
-			Tile& new_tile = m_tiles.back();
+			Tile& new_tile = m_tiles[j][i];
 
 			// Setting the tile initial position
 			new_tile.set_position({ i * 46.f + 23.f, j * 43.f + 19.f });
@@ -171,8 +173,16 @@ void World::destroy()
 
 	// TODO: DESTROY ALL GAME ENTITIES
 	// If we move to the next level, destroy all the tiles 
-	for (auto& tile : m_tiles)
-		tile.destroy();
+	for (auto& vector : m_tiles) {
+		for (auto& tile : vector) {
+			tile.destroy();
+		}
+	}
+		
+	for (auto& vector : m_tiles) {
+		vector.clear();
+	}
+
 	m_tiles.clear();
 
 	glfwDestroyWindow(m_window);
@@ -192,8 +202,11 @@ bool World::update(float elapsed_ms)
 
 	// Update each of tiles, the update function is empty for now
 	// Can be used in the future to animate the tile
-	for (auto& tile : m_tiles)
-		tile.update(elapsed_ms);
+	for (auto& vector : m_tiles) {
+		for (auto& tile : vector) {
+			tile.update(elapsed_ms);
+		}
+	}
 
 	return true;
 }
@@ -252,9 +265,12 @@ void World::draw()
 	glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
 
 	// Render all the tiles we have 
-	for (auto& tile : m_tiles)
-		tile.draw(projection_2D);
-
+	for (auto& vector : m_tiles) {
+		for (auto& tile : vector) {
+			tile.draw(projection_2D);
+		}
+	}
+		
 	//////////////////
 	// Presenting
 	glfwSwapBuffers(m_window);
@@ -267,12 +283,12 @@ bool World::is_over() const
 }
 
 // Creates a new tile and if successfull adds it to the list of tile
-bool World::spawn_tile(int id, int width, int height)
+bool World::spawn_tile(int id, int width, int height, int gridX, int gridY)
 {
 	Tile tile;
 	if (tile.init(id, width, height))
 	{
-		m_tiles.emplace_back(tile);
+		m_tiles[gridY].emplace(m_tiles[gridY].begin() + gridX, tile);
 		return true;
 	}
 	fprintf(stderr, "Failed to spawn tile");

@@ -37,7 +37,7 @@ public:
 
 private:
 	// Generates a new tile
-	bool spawn_tile(int id, int width, int height);
+	bool spawn_tile(int id, int width, int height, int gridX, int gridY);
 
 	// Generates a new fish
 	// bool spawn_fish();
@@ -57,7 +57,7 @@ private:
 	Texture m_screen_tex;
 
 	// Game entities
-	std::vector<Tile> m_tiles;
+	std::vector<std::vector<Tile> > m_tiles;
 
 //	Mix_Music* m_background_music;
 //	Mix_Chunk* m_salmon_dead_sound;
