@@ -8,13 +8,13 @@ class Player : public Entity
 	//static Texture player_texture;
 
 public:
-	Player(Team team);
+	Player(Team team, vec2 position);
 
 	~Player();
 
 	// Creates all the associated render resources and default transform
 	//bool init(Team team, vec2 pos);
-	bool init(vec2 pos);
+	bool init();
 
 	// Releases all associated resources
 	void destroy();

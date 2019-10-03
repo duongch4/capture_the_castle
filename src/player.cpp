@@ -9,8 +9,10 @@
 
 //Texture Player::player_texture;
 
-Player::Player(Team team) {
+Player::Player(Team team, vec2 position) {
     this->team.assigned = team;
+	this->position.pos_x = position.x;
+	this->position.pos_y = position.y;
 }
 
 //Player::~Player() {}
@@ -28,7 +30,7 @@ bool Player::is_texture_loaded(const char* path) {
 	return true;
 }
 
-bool Player::init(vec2 pos)
+bool Player::init()
 {
 	switch (this->team.assigned) {
 	case Team::PLAYER1:
@@ -79,8 +81,6 @@ bool Player::init(vec2 pos)
 		return false;
 
 	// Setting initial values
-	position.pos_x = pos.x;
-	position.pos_y = pos.y;
 	motion.speed = 200.f;
 
 	physics.scale = { 0.4f, 0.4f };

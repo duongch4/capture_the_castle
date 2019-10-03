@@ -37,8 +37,8 @@ bool World::init(vec2 screen)
 	m_start_position.push_back({ 150.f, m_screen_size.y / 2 + 130.f });
 	m_start_position.push_back({ m_screen_size.x - 150.f, m_screen_size.y / 2 + 130.f });
 	
-	players.push_back(new Player(Team::PLAYER1));
-	players.push_back(new Player(Team::PLAYER2));
+	players.push_back(new Player(Team::PLAYER1, m_start_position[0]));
+	players.push_back(new Player(Team::PLAYER2, m_start_position[1]));
 
 	//-------------------------------------------------------------------------
 	// GLFW / OGL Initialization
@@ -126,8 +126,8 @@ bool World::init(vec2 screen)
 
 	// TODO: CALL INIT ON ALL GAME ENTITIES
 
-	for (auto i : {0,1}) {
-		players[i]->init(m_start_position[i]);
+	for (auto player : players) {
+		player->init();
 	}
 
 	m_background.init();
@@ -311,9 +311,7 @@ void World::reset()
 	glfwGetWindowSize(m_window, &w, &h);
 	for (auto player : players) {
 		player->destroy();
-	}
-	for (auto i : { 0,1 }) {
-		players[i]->init(m_start_position[i]);
+		player->init();
 	}
 	m_background.reset_player_dead_time();
 	m_current_speed = 1.f;
