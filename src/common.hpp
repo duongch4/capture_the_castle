@@ -52,7 +52,7 @@ enum class Team {
     BANDIT
 };
 
-// Single Vertex Buffer element for non-textured meshes (coloured.vs.glsl & salmon.vs.glsl)
+// Single Vertex Buffer element for non-textured meshes (coloured.vs.glsl & player.vs.glsl)
 struct Vertex
 {
 	vec3 position;
@@ -72,7 +72,7 @@ struct Texture
 	Texture();
 	~Texture();
 
-	GLuint id;
+	GLuint id = 0;
 	GLuint depth_render_buffer_id;
 	int width;
 	int height;
@@ -88,7 +88,7 @@ struct Texture
 struct Entity {
 	// projection contains the orthographic projection matrix. As every Entity::draw()
 	// renders itself it needs it to correctly bind it to its shader.
-	virtual bool init() = 0;
+	// virtual bool init() = 0;
 	virtual void draw(const mat3& projection) = 0;
 	virtual void update(float ms) = 0;
 	virtual void destroy() = 0;

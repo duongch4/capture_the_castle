@@ -34,12 +34,19 @@ set(SOURCE_FILES
         src/main.cpp
         src/common.cpp
         src/tile.cpp
+		src/castle.cpp
+        src/player.cpp
         src/world.cpp
+		src/background.cpp
         src/project_path.hpp
         src/common.hpp
         src/tile.hpp
+		src/castle.hpp
+        src/player.hpp
         src/world.hpp
-        )
+		src/background.hpp
+
+)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)
