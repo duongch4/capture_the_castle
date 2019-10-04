@@ -144,16 +144,18 @@ bool World::init(vec2 screen) {
 		19, 19, 19, 19, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 19, 19, 19, 19
 	};
 
-    // TODO: Refactor this later to move it into a TileMap class
-    // Create all the tiles based on the maze data we defined above
-    for (int j = 0; j < 19; j++) {
-        m_tiles.emplace_back(std::vector<Tile>(30));
-        for (int i = 0; i < 30; i++) {
-            int iter = j * 30 + i;
-            // First parameter is the id of the tile, second parameter is the number of tile horizontally in the sprite sheet
-            // Third parameter is the number of tile vertically in the sprite sheet.
-            if (!spawn_tile(data[iter], 6, 4, i, j))
-                return false;
+
+	// TODO: Refactor this later to move it into a TileMap class
+	// Create all the tiles based on the maze data we defined above
+	for (int j = 0; j < 19; j++) {
+		m_tiles.emplace_back(std::vector<Tile>(30));
+		for (int i = 0; i < 30; i++) {
+			int iter = j * 30 + i;
+			// First parameter is the id of the tile, second parameter is the number of tile horizontally in the sprite sheet
+			// Third parameter is the number of tile vertically in the sprite sheet.
+			if (!spawn_tile(data[iter], 6, 4, 68, 20, i, j)) {
+				return false;
+			}
 
             Tile &new_tile = m_tiles[j][i];
 
@@ -270,74 +272,74 @@ bool World::update(float elapsed_ms) {
 
 // Render our game world
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-14-render-to-texture/
-void World::draw() {
-    // Clearing error buffer
-    gl_flush_errors();
 
-    // Getting size of window
-    int w, h;
-    glfwGetFramebufferSize(m_window, &w, &h);
+void World::draw()
+{
+	// Clearing error buffer
+	gl_flush_errors();
 
-    /////////////////////////////////////
-    // First render to the custom framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, m_frame_buffer);
+	// Getting size of window
+	int w, h;
+	glfwGetFramebufferSize(m_window, &w, &h);
 
-    // Clearing backbuffer
-    glViewport(0, 0, w, h);
-    glDepthRange(0.00001, 10);
-    const float clear_color[3] = {0.3f, 0.3f, 0.8f};
-    glClearColor(clear_color[0], clear_color[1], clear_color[2], 1.0);
-    glClearDepth(1.f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	/////////////////////////////////////
+	// First render to the custom framebuffer
+	glBindFramebuffer(GL_FRAMEBUFFER, m_frame_buffer);
 
-    // Fake projection matrix, scales with respect to window coordinates
-    // PS: 1.f / w in [1][1] is correct.. do you know why ? (:
-    float left = 0.f;// *-0.5;
-    float top = 0.f;// (float)h * -0.5;
-    float right = (float) w / m_screen_scale;// *0.5;
-    float bottom = (float) h / m_screen_scale;// *0.5;
+	// Clearing backbuffer
+	glViewport(0, 0, w, h);
+	glDepthRange(0.00001, 10);
+	const float clear_color[3] = { 0.3f, 0.3f, 0.8f };
+	glClearColor(clear_color[0], clear_color[1], clear_color[2], 1.0);
+	glClearDepth(1.f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    float sx = 2.f / (right - left);
-    float sy = 2.f / (top - bottom);
-    float tx = -(right + left) / (right - left);
-    float ty = -(top + bottom) / (top - bottom);
-    mat3 projection_2D{{sx, 0.f, 0.f},
-                       {0.f, sy, 0.f},
-                       {tx, ty,  1.f}};
+	// Fake projection matrix, scales with respect to window coordinates
+	// PS: 1.f / w in [1][1] is correct.. do you know why ? (:
+	float left = 0.f;// *-0.5;
+	float top = 0.f;// (float)h * -0.5;
+	float right = (float)w / m_screen_scale;// *0.5;
+	float bottom = (float)h / m_screen_scale;// *0.5;
 
-    // TODO: DRAW GAME ENTITIES USING projection_2D
-    //p1_castle.draw(projection_2D);
-    //p2_castle.draw(projection_2D);
+	float sx = 2.f / (right - left);
+	float sy = 2.f / (top - bottom);
+	float tx = -(right + left) / (right - left);
+	float ty = -(top + bottom) / (top - bottom);
+	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
-    //for (auto player : players) {
-    //	player->draw(projection_2D);
-    //}
+	// TODO: DRAW GAME ENTITIES USING projection_2D
+	//p1_castle.draw(projection_2D);
+	//p2_castle.draw(projection_2D);
 
-    /////////////////////
-    // Truely render to the screen
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//for (auto player : players) {
+	//	player->draw(projection_2D);
+	//}
 
-    // Clearing backbuffer
-    glViewport(0, 0, w, h);
-    glDepthRange(0, 10);
-    glClearColor(0.43f, 0.92f, 0.51f, 1.0);
-    glClearDepth(1.f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	/////////////////////
+	// Truely render to the screen
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // Bind our texture in Texture Unit 0
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
+	// Clearing backbuffer
+	glViewport(0, 0, w, h);
+	glDepthRange(0, 10);
+	glClearColor(0.43f, 0.92f, 0.51f, 1.0);
+	glClearDepth(1.f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// Bind our texture in Texture Unit 0
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
 
 
-    // Background
-    //m_background.draw(projection_2D);
+	// Background
+	//m_background.draw(projection_2D);
 
-    // Render all the tiles we have
-    for (auto &vector : m_tiles) {
-        for (auto &tile : vector) {
-            tile.draw(projection_2D);
-        }
-    }
+	// Render all the tiles we have 
+	for (auto& vector : m_tiles) {
+		for (auto& tile : vector) {
+			tile.draw(projection_2D);
+		}
+	}
 
 	p1_castle.draw(projection_2D);
 	p2_castle.draw(projection_2D);
@@ -357,15 +359,18 @@ bool World::is_over() const {
     return glfwWindowShouldClose(m_window);
 }
 
-// Creates a new tile and if successful adds it to the list of tile
-bool World::spawn_tile(int id, int width, int height, int gridX, int gridY) {
-    Tile tile;
-    if (tile.init(id, width, height)) {
-        m_tiles[gridY].emplace(m_tiles[gridY].begin() + gridX, tile);
-        return true;
-    }
-    fprintf(stderr, "Failed to spawn tile");
-    return false;
+
+// Creates a new tile and if successfull adds it to the list of tile
+bool World::spawn_tile(int sprite_id, int num_horizontal, int num_vertical, int width, int gap_width, int gridX, int gridY)
+{
+	Tile tile;
+	if (tile.init(sprite_id, num_horizontal, num_vertical, width, gap_width))
+	{
+		m_tiles[gridY].emplace(m_tiles[gridY].begin() + gridX, tile);
+		return true;
+	}
+	fprintf(stderr, "Failed to spawn tile");
+	return false;
 }
 
 // On key callback

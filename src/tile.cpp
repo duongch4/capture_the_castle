@@ -7,12 +7,14 @@ Texture Tile::tile_texture;
 
 bool Tile::init() { return false; }
 
-bool Tile::init(int id, int width, int height)
+// This function take in an sprite_id (position of the sprite in a sprite sheet), number of horizontal tile, 
+// number of vertical tiles, width and height of a single tile. Create a tile with the correct sprite (texture coordinate)
+bool Tile::init(int sprite_id, int num_horizontal, int num_vertical, int width, int gap_width)
 {
 	// Load shared texture
 	if (!tile_texture.is_valid())
 	{
-		if (!tile_texture.load_from_file(textures_path("maze.png")))
+		if (!tile_texture.load_from_file(textures_path("maze_sheet.png")))
 		{
 			fprintf(stderr, "Failed to load tile texture!");
 			return false;
@@ -25,12 +27,12 @@ bool Tile::init(int id, int width, int height)
 	float hr = tile_texture.height * 0.5f;
 
 	// Calculate the width & height of a sprite in a sprite sheet with the scale of [0..1]
-	float tile_width = 1.f / (float)width;
-	float tile_height = 1.f / (float)height;
+	float tile_width = (float)(width + gap_width) /  (float)((num_horizontal * width) + ((num_horizontal - 1) * gap_width));
+	float tile_height = (float)(width + gap_width) / (float)((num_vertical * width) + ((num_vertical - 1) * gap_width));
 	// Calculate the actual width & height of the sprite excluding the gap between each sprite 
 	// Each sprite is 144pixel wide and 20 pixel gap between sprite
-	float tile_act_width = tile_width * (144.f / 164.f);
-	float tile_act_height = tile_height * (144.f / 164.f); 
+	float tile_act_width = (float)width / (float)((num_horizontal * width) + ((num_horizontal - 1) * gap_width));
+	float tile_act_height = (float)width / (float)((num_vertical * width) + ((num_vertical - 1) * gap_width));
 
 	if (id == 9){
 	    set_wall(true);
@@ -38,17 +40,18 @@ bool Tile::init(int id, int width, int height)
 	    set_wall(false);
 	}
 	// Calculate the texture coordinate based on the id, width, and height of the sprite
+
 	// Texture mapping start from the top left (0,0) to bottom right (1,1)
 	TexturedVertex vertices[4];
 	vertices[0].position = { -wr, +hr, -0.02f };
 	// TODO: +0.01f to prevent texture bleeding for now, fix this later 
-	vertices[0].texcoord = { ((id - 1) % width) * tile_width + 0.01f, int((id - 1) / width) * tile_height + tile_act_height }; // Bottom left 
+	vertices[0].texcoord = { ((sprite_id - 1) % num_horizontal) * tile_width, int((sprite_id - 1) / num_horizontal) * tile_height + tile_act_height }; // Bottom left 
 	vertices[1].position = { +wr, +hr, -0.02f };
-	vertices[1].texcoord = { (((id - 1) % width) * tile_width) + tile_act_width + 0.01f, int((id - 1) / width) * tile_height + tile_act_height }; // Bottom right
+	vertices[1].texcoord = { (((sprite_id - 1) % num_horizontal) * tile_width) + tile_act_width, int((sprite_id - 1) / num_horizontal) * tile_height + tile_act_height }; // Bottom right
 	vertices[2].position = { +wr, -hr, -0.02f };
-	vertices[2].texcoord = { (((id - 1) % width) * tile_width) + tile_act_width + 0.01f, int((id - 1) / width) * tile_height }; // Top Right
+	vertices[2].texcoord = { (((sprite_id - 1) % num_horizontal) * tile_width) + tile_act_width, int((sprite_id - 1) / num_horizontal) * tile_height }; // Top Right
 	vertices[3].position = { -wr, -hr, -0.02f };
-	vertices[3].texcoord = { ((id - 1) % width) * tile_width + 0.01f, int((id  - 1) / width) * tile_height }; // Top Left
+	vertices[3].texcoord = { ((sprite_id - 1) % num_horizontal) * tile_width, int((sprite_id  - 1) / num_horizontal) * tile_height }; // Top Left
 
 	// Counterclockwise as it's the default opengl front winding direction
 	uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
@@ -84,7 +87,8 @@ bool Tile::init(int id, int width, int height)
 
 	// Setting initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
-	physics.scale = { 0.05f, 0.075f };
+	// To make a square, scale the x and y based on the width:height ratio of the sprite sheet 
+	physics.scale = { 0.048f, 0.072f };
 
 	return true;
 }
