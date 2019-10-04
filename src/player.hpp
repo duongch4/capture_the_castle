@@ -1,11 +1,12 @@
 #pragma once
 
 #include "common.hpp"
+#include "tile.hpp"
 #include <vector>
 
 class Player : public Entity
 {
-	//static Texture player_texture;
+//	static Texture player_texture;
 
 public:
 	Player(Team team, vec2 position);
@@ -32,7 +33,7 @@ public:
 
 	// Returns the current player position
 	vec2 get_position() const;
-
+	
 	// Moves the player's position by the specified offset
 	void move(vec2 off);
 
@@ -54,6 +55,21 @@ public:
 
 	const Team get_team();
 
+	bool collides_with_tile(const Tile& tile);
+
+	vec2 get_bounding_box();
+	
+//	void change_color(bool colliding);
+
+    bool is_left();
+
+    bool is_right();
+
+    bool is_up();
+
+    bool is_down();
+
+
 private:
 	float m_light_up_countdown_ms; // Used to keep track for how long the player should be lit up
 	bool m_is_alive; // True if the player is alive
@@ -62,6 +78,8 @@ private:
 
 	Texture player_texture;
 
+//	vec3 player_color;
+//
 	struct direction { int up, down, left, right, flip; };
 	direction currDir;
 
