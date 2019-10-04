@@ -33,16 +33,18 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/project_path.hpp.in" "${CMAKE_CU
 set(SOURCE_FILES
         src/main.cpp
         src/common.cpp
-        src/fish.cpp
-        src/salmon.cpp
-        src/turtle.cpp
+        src/castle.cpp
+        src/player.cpp
         src/world.cpp
+        src/background.cpp
+        src/tile.cpp
         src/project_path.hpp
         src/common.hpp
-        src/fish.hpp
-        src/salmon.hpp
-        src/turtle.hpp
+        src/castle.hpp
+        src/player.hpp
         src/world.hpp
+        src/background.hpp
+        src/tile.hpp
         )
 
 if (IS_OS_MAC)
