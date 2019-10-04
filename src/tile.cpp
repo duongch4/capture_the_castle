@@ -34,9 +34,9 @@ bool Tile::init(int sprite_id, int num_horizontal, int num_vertical, int width, 
 	float tile_act_width = (float)width / (float)((num_horizontal * width) + ((num_horizontal - 1) * gap_width));
 	float tile_act_height = (float)width / (float)((num_vertical * width) + ((num_vertical - 1) * gap_width));
 
-	if (id == 9){
+	if (sprite_id == 9){
 	    set_wall(true);
-	} else if (id == 19){
+	} else if (sprite_id == 19){
 	    set_wall(false);
 	}
 	// Calculate the texture coordinate based on the id, width, and height of the sprite
