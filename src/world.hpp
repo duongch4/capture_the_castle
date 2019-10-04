@@ -7,7 +7,7 @@
 
 #include "player.hpp"
 #include "castle.hpp"
-
+#include "itemBoard.hpp"
 #include "background.hpp"
 
 
@@ -82,6 +82,8 @@ private:
 	std::vector<Player*> players;
 	Castle p1_castle;
 	Castle p2_castle;
+	ItemBoard* p1_board;
+	ItemBoard* p2_board;
 
 	float m_current_speed;
 

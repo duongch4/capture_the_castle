@@ -38,6 +38,7 @@ set(SOURCE_FILES
         src/player.cpp
         src/world.cpp
 		src/background.cpp
+		src/itemBoard.cpp
         src/project_path.hpp
         src/common.hpp
         src/tile.hpp
@@ -45,6 +46,7 @@ set(SOURCE_FILES
         src/player.hpp
         src/world.hpp
 		src/background.hpp
+		src/itemBoard.hpp
 
 )
 

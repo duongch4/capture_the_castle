@@ -163,7 +163,7 @@ bool World::init(vec2 screen)
 			Tile& new_tile = m_tiles[j][i];
 
 			// Setting the tile initial position
-			new_tile.set_position({ i * 46.f + 23.f, j * 43.f + 19.f });
+			new_tile.set_position({ i * 46.f + 23.f, j * 43.f + 72.f });
 		}
 	}
 
@@ -176,6 +176,12 @@ bool World::init(vec2 screen)
 	m_background.init();
 	p1_castle.init(Team::PLAYER1, 150.f, screen.y / 2);
 	p2_castle.init(Team::PLAYER2, screen.x - 150.f, screen.y / 2);
+
+	p1_board = new ItemBoard(Team::PLAYER1, { 175.f, 53.f });
+	p2_board = new ItemBoard(Team::PLAYER2, { screen.x - 175.f, 53.f });
+
+	p1_board->init();
+	p2_board->init();
 
 	return true;
 }
@@ -314,7 +320,7 @@ void World::draw()
 	// Render all the tiles we have 
 	for (auto& vector : m_tiles) {
 		for (auto& tile : vector) {
-			//tile.draw(projection_2D);
+			tile.draw(projection_2D);
 		}
 	}
 
@@ -324,6 +330,9 @@ void World::draw()
 	for (auto player : players) {
 		player->draw(projection_2D);
 	}
+
+	p1_board->draw(projection_2D);
+	p2_board->draw(projection_2D);
 
 
 	//////////////////
@@ -369,12 +378,32 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 		action == GLFW_PRESS &&
 		(
 			key == GLFW_KEY_DOWN || key == GLFW_KEY_UP ||
-			key == GLFW_KEY_LEFT || key == GLFW_KEY_RIGHT || key == GLFW_KEY_S
+			key == GLFW_KEY_LEFT || key == GLFW_KEY_RIGHT
 			)
 		)
 	{
-		players[0]->set_direction(key);
 		players[1]->set_direction(key);
+	}
+
+	if (action == GLFW_PRESS)
+	{
+		switch (key)
+		{
+		case GLFW_KEY_S:
+			players[0]->set_direction(GLFW_KEY_DOWN);
+			break;
+		case GLFW_KEY_W:
+			players[0]->set_direction(GLFW_KEY_UP);
+			break;
+		case GLFW_KEY_D:
+			players[0]->set_direction(GLFW_KEY_RIGHT);
+			break;
+		case GLFW_KEY_A:
+			players[0]->set_direction(GLFW_KEY_LEFT);
+			break;
+		default:
+			break;
+		}
 	}
 
 	// Resetting game
