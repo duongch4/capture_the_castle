@@ -33,22 +33,19 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/project_path.hpp.in" "${CMAKE_CU
 set(SOURCE_FILES
         src/main.cpp
         src/common.cpp
-        src/tile.cpp
-		src/castle.cpp
+        src/castle.cpp
         src/player.cpp
         src/world.cpp
-		src/background.cpp
-		src/itemBoard.cpp
+        src/background.cpp
+        src/tile.cpp
         src/project_path.hpp
         src/common.hpp
-        src/tile.hpp
-		src/castle.hpp
+        src/castle.hpp
         src/player.hpp
         src/world.hpp
-		src/background.hpp
-		src/itemBoard.hpp
-
-)
+        src/background.hpp
+        src/tile.hpp
+        )
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

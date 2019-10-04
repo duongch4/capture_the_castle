@@ -12,7 +12,7 @@ public:
 	// Creates all the associated render resources and default transform
 	bool init();
 	// Use the id to setup the rendering for part of the sprite sheet
-	bool init(int id, int width, int height);
+	bool init(int sprite_id, int num_horizontal, int num_vertical, int width, int gap_width);
 
 	// Releases all the associated resources
 	void destroy();

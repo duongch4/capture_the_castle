@@ -157,8 +157,9 @@ bool World::init(vec2 screen)
 			int iter = j * 30 + i;
 			// First parameter is the id of the tile, second parameter is the number of tile horizontally in the sprite sheet
 			// Third parameter is the number of tile vertically in the sprite sheet.
-			if (!spawn_tile(data[iter], 6, 4, i, j))
+			if (!spawn_tile(data[iter], 6, 4, 68, 20, i, j)) {
 				return false;
+			}
 
 			Tile& new_tile = m_tiles[j][i];
 
@@ -348,10 +349,10 @@ bool World::is_over() const
 }
 
 // Creates a new tile and if successfull adds it to the list of tile
-bool World::spawn_tile(int id, int width, int height, int gridX, int gridY)
+bool World::spawn_tile(int sprite_id, int num_horizontal, int num_vertical, int width, int gap_width, int gridX, int gridY)
 {
 	Tile tile;
-	if (tile.init(id, width, height))
+	if (tile.init(sprite_id, num_horizontal, num_vertical, width, gap_width))
 	{
 		m_tiles[gridY].emplace(m_tiles[gridY].begin() + gridX, tile);
 		return true;
