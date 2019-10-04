@@ -1,12 +1,5 @@
 #include "itemBoard.hpp"
 
-ItemBoard::ItemBoard()
-{
-	this->team.assigned = Team::PLAYER1;
-	this->position.pos_x = 10.f;
-	this->position.pos_y = 5.f;
-}
-
 ItemBoard::ItemBoard(Team team, vec2 position)
 {
 	this->team.assigned = team;

@@ -4,9 +4,6 @@
 class ItemBoard :public Entity
 {
 public:
-
-
-	ItemBoard::ItemBoard();
 	ItemBoard(Team team, vec2 position);
 	~ItemBoard();
 

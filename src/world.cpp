@@ -163,7 +163,7 @@ bool World::init(vec2 screen)
 			Tile& new_tile = m_tiles[j][i];
 
 			// Setting the tile initial position
-			new_tile.set_position({ i * 46.f + 23.f, j * 43.f + 72.f });
+			new_tile.set_position({ i * 46.f + 23.f, j * 43.f + 19.f });
 		}
 	}
 
