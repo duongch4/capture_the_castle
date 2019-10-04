@@ -40,6 +40,7 @@ bool ItemBoard::init()
 	switch (this->team.assigned) {
 	case Team::PLAYER1:
 		is_board_texture_loaded(textures_path("ui/CaptureTheCastle_player_tile_red.png"));
+		// set the item texture to player's texture for testing, didn't draw it in this milestone
 		load_item_texture(textures_path("blue_player/CaptureTheCastle_blue_player_right.png"));
 		break;
 	case Team::PLAYER2:

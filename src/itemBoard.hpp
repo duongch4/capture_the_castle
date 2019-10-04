@@ -1,6 +1,6 @@
 #pragma once
 #include "common.hpp"
-#include "player.hpp"
+#include <vector>
 class ItemBoard :public Entity
 {
 public:
@@ -19,11 +19,13 @@ public:
 	// Renders the player
 	void draw(const mat3& projection)override;
 
+	//update item texture
 	void update_item(Texture it);
 
 	const Team get_team();
 
 private:
+	// texture of item will be displayed in the white circle, maybe replaced with a pointer to item later
 	Texture item_texture;
 
 	Texture board_texture;
@@ -32,6 +34,7 @@ private:
 	std::vector<uint16_t> m_indices;
 
 	bool is_board_texture_loaded(const char* path);
+	// load/set item texture from given path
 	bool load_item_texture(const char* path);
 };
 
