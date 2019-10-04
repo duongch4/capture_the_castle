@@ -1,0 +1,5 @@
+﻿  itemBoard.cpp
+itemBoard.obj : error LNK2001: unresolved external symbol "public: virtual void __thiscall ItemBoard::destroy(void)" (?destroy@ItemBoard@@UAEXXZ)
+itemBoard.obj : error LNK2001: unresolved external symbol "public: virtual void __thiscall ItemBoard::update(float)" (?update@ItemBoard@@UAEXM@Z)
+itemBoard.obj : error LNK2001: unresolved external symbol "public: virtual void __thiscall ItemBoard::draw(struct mat3 const &)" (?draw@ItemBoard@@UAEXABUmat3@@@Z)
+D:\documents\cpsc427\team2\build\Debug\capture_the_castle.exe : fatal error LNK1120: 3 unresolved externals

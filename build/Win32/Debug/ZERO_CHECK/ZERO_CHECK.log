@@ -1,0 +1,9 @@
+﻿  Checking Build System
+  CMake is re-running because D:/documents/cpsc427/team2/build/CMakeFiles/generate.stamp is out-of-date.
+    the file 'D:/documents/cpsc427/team2/CMakeLists.txt'
+    is newer than 'D:/documents/cpsc427/team2/build/CMakeFiles/generate.stamp.depend'
+    result='-1'
+  -- Selecting Windows SDK version 10.0.17763.0 to target Windows 10.0.18362.
+  -- Configuring done
+  -- Generating done
+  -- Build files have been written to: D:/documents/cpsc427/team2/build

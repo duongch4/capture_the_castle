@@ -1,0 +1,3 @@
+D:/documents/cpsc427/team2/build/CMakeFiles/capture_the_castle.dir
+D:/documents/cpsc427/team2/build/CMakeFiles/ALL_BUILD.dir
+D:/documents/cpsc427/team2/build/CMakeFiles/ZERO_CHECK.dir
