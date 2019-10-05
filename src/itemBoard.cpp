@@ -1,44 +1,62 @@
-// Header
-#include "castle.hpp"
+#include "itemBoard.hpp"
 
-#include <cmath>
-#include <string>
-
-Castle::Castle(Team team, vec2 position) {
-    this->team.assigned = team;
-    this->position.pos_x = position.x;
-    this->position.pos_y = position.y;
+ItemBoard::ItemBoard(Team team, vec2 position)
+{
+	this->team.assigned = team;
+	this->position.pos_x = position.x;
+	this->position.pos_y = position.y;
 }
 
-bool Castle::init()
-{
-	// Load texture
-	if (!castle_texture.is_valid())
-	{
-		char* path;
-		if (this->team.assigned == Team::PLAYER1) {
-			path = textures_path("castle/CaptureTheCastle_castle_red.png");
-		}
-		else if (this->team.assigned == Team::PLAYER2) {
-			path = textures_path("castle/CaptureTheCastle_castle_blue.png");
-		}
 
-		if (!castle_texture.load_from_file(path))
+ItemBoard::~ItemBoard()
+{
+}
+
+bool ItemBoard::is_board_texture_loaded(const char* path)
+{
+	if (!board_texture.is_valid())
+	{
+		if (!board_texture.load_from_file(path))
 		{
-			fprintf(stderr, "Failed to load castle texture!");
+			fprintf(stderr, "Failed to load player texture!");
 			return false;
 		}
 	}
+	return true;
+}
 
-	// The position corresponds to the center of the texture.
-	float wr = castle_texture.width * 0.5f;
-	float hr = castle_texture.height * 0.5f;
+bool ItemBoard::load_item_texture(const char* path)
+{
+	if (!item_texture.load_from_file(path))
+	{
+		fprintf(stderr, "Failed to load player texture!");
+		return false;
+	}
+	return true;
+}
+
+bool ItemBoard::init()
+{
+	switch (this->team.assigned) {
+	case Team::PLAYER1:
+		is_board_texture_loaded(textures_path("ui/CaptureTheCastle_player_tile_red.png"));
+		// set the item texture to player's texture for testing, didn't draw it in this milestone
+		load_item_texture(textures_path("blue_player/CaptureTheCastle_blue_player_right.png"));
+		break;
+	case Team::PLAYER2:
+		is_board_texture_loaded(textures_path("ui/CaptureTheCastle_player_tile_blue.png"));
+		load_item_texture(textures_path("red_player/CaptureTheCastle_red_player_right.png"));
+		break;
+	}
+
+	float wr = board_texture.width * 0.5f;
+	float hr = board_texture.height * 0.5f;
 
 	TexturedVertex vertices[4];
 	vertices[0].position = { -wr, +hr, -0.01f };
 	vertices[0].texcoord = { 0.f, 1.f };
 	vertices[1].position = { +wr, +hr, -0.01f };
-	vertices[1].texcoord = { 1.f, 1.f,  };
+	vertices[1].texcoord = { 1.f, 1.f, };
 	vertices[2].position = { +wr, -hr, -0.01f };
 	vertices[2].texcoord = { 1.f, 0.f };
 	vertices[3].position = { -wr, -hr, -0.01f };
@@ -69,14 +87,10 @@ bool Castle::init()
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
-	// 1.0 would be as big as the original texture.
-	physics.scale = { 0.4f, 0.4f };
-
 	return true;
 }
 
-// Releases all graphics resources
-void Castle::destroy()
+void ItemBoard::destroy()
 {
 	glDeleteBuffers(1, &mesh.vbo);
 	glDeleteBuffers(1, &mesh.ibo);
@@ -87,18 +101,29 @@ void Castle::destroy()
 	glDeleteShader(effect.program);
 }
 
-void Castle::update(float ms)
+void ItemBoard::update(float ms)
 {
-	//ANIMATION FOR CASTLE HERE FOR LATER
+	
 }
 
-void Castle::draw(const mat3& projection)
+void ItemBoard::draw(const mat3& projection)
 {
-	// Transformation code, see Rendering and Transformation in the template specification for more info
-	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
 	transform.begin();
+
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// player TRANSFORMATION CODE HERE
+
+	// see Transformations and Rendering in the specification pdf
+	// the following functions are available:
+	// translate()
+	// rotate()
+	// scale()
+
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// REMOVE THE FOLLOWING LINES BEFORE ADDING ANY TRANSFORMATION CODE
 	transform.translate({ position.pos_x, position.pos_y });
-	transform.scale(physics.scale);
+	transform.scale({ 0.4, 0.4 });
+
 	transform.end();
 
 	// Setting shaders
@@ -108,7 +133,7 @@ void Castle::draw(const mat3& projection)
 	glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_DEPTH_TEST);
 
-	// Getting uniform locations for glUniform* calls
+	// Getting uniform locations
 	GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
 	GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
 	GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
@@ -128,32 +153,29 @@ void Castle::draw(const mat3& projection)
 
 	// Enabling and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, castle_texture.id);
+	glBindTexture(GL_TEXTURE_2D, board_texture.id);
 
 	// Setting uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform.out);
+	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)& transform.out);
+
+	// !!! player Color
 	float color[] = { 1.f, 1.f, 1.f };
 	glUniform3fv(color_uloc, 1, color);
-	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
+	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)& projection);
+
+
 
 	// Drawing!
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-vec2 Castle::get_position() const
+void ItemBoard::update_item(Texture it)
 {
-	return { position.pos_x, position.pos_y };
+	if (it.is_valid())
+		item_texture = it;
 }
 
-void Castle::set_position(vec2 pos)
+const Team ItemBoard::get_team()
 {
-	position.pos_x = pos.x;
-	position.pos_y = pos.y;
-}
-
-vec2 Castle::get_bounding_box() const
-{
-	// Returns the local bounding coordinates scaled by the current size of the fish 
-	// fabs is to avoid negative scale due to the facing direction.
-	return { std::fabs(physics.scale.x) * castle_texture.width, std::fabs(physics.scale.y) * castle_texture.height };
+	return this->team.assigned;
 }
