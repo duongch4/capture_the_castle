@@ -272,7 +272,8 @@ bool World::update(float elapsed_ms) {
     // Player update
     for (auto player : players) {
             const float offset_x = 100.f;
-            const float offset_y = 80.f;
+            const float bottom_offset_y = 80.f;
+            const float top_offset_y = 150.f;
 
             if (player->get_position().x > (screen.x - offset_x)) {
                 player->set_position({screen.x - offset_x, player->get_position().y});
@@ -280,11 +281,11 @@ bool World::update(float elapsed_ms) {
             if (player->get_position().x < (0 + offset_x)) {
                 player->set_position({0 + offset_x, player->get_position().y});
             }
-            if (player->get_position().y > (screen.y - offset_y)) {
-                player->set_position({player->get_position().x, screen.y - offset_y});
+            if (player->get_position().y > (screen.y - bottom_offset_y)) {
+                player->set_position({player->get_position().x, screen.y - bottom_offset_y});
             }
-            if (player->get_position().y < (0 + offset_y)) {
-                player->set_position({player->get_position().x, 0 + offset_y});
+            if (player->get_position().y < (0 + top_offset_y)) {
+                player->set_position({player->get_position().x, 0 + top_offset_y});
             }
         }
 
