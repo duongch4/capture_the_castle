@@ -292,8 +292,10 @@ bool World::update(float elapsed_ms) {
             for (auto &tile : tile_list) {
                 if (tile.is_wall()) {
                     for (auto player : players) {
-                        if (player->collides_with_tile(tile)) {
-                            player->handle_wall_collision();
+                        if (player->collides_with_tile(tile) && !player->is_stuck()) {
+                            player->handle_wall_collision(tile);
+                        } else {
+                            player->set_stuck(false);
                         }
                     }
                     for (auto bandit: bandits) {

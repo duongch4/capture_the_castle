@@ -175,7 +175,7 @@ vec2 Tile::get_bounding_box() const
 {
 	// Returns the local bounding coordinates scaled by the current size of the tile 
 	// fabs is to avoid negative scale due to the facing direction.
-	return { std::fabs(physics.scale.x) * tile_texture.width * 0.8f, std::fabs(physics.scale.y) * tile_texture.height * 0.8f};
+	return { std::fabs(physics.scale.x) * tile_texture.width * 0.75f, std::fabs(physics.scale.y) * tile_texture.height * 0.75f};
 }
 
 bool Tile::is_wall() const {

@@ -53,7 +53,7 @@ public:
 
 	bool collides_with_tile(const Tile& tile);
 
-	void handle_wall_collision();
+	void handle_wall_collision(const Tile& tile);
 
 	vec2 get_bounding_box();
 	
@@ -67,11 +67,17 @@ public:
 
     bool is_down();
 
+    bool is_stuck();
+
+    void set_stuck(bool stuck);
+
 
 private:
 	bool m_is_alive; // True if the player is alive
 
 	//Team m_team;
+
+	bool stuck;
 
 	Texture player_texture;
 
