@@ -5,7 +5,6 @@
 
 class Player : public Entity
 {
-	//static Texture player_texture;
 
 public:
 	Player(Team team, vec2 position);

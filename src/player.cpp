@@ -83,7 +83,7 @@ bool Player::init()
 	// Setting initial values
 	motion.speed = 200.f;
 
-	physics.scale = { 0.4f, 0.4f };
+	physics.scale = { 0.3f, 0.3f };
 	currDir = { 0, 0, 0, 0, 0 };
 	m_is_alive = true;
 	m_light_up_countdown_ms = -1.f;

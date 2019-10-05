@@ -4,17 +4,22 @@
 #include <cmath>
 #include <string>
 
+Castle::Castle(Team team, vec2 position) {
+    this->team.assigned = team;
+    this->position.pos_x = position.x;
+    this->position.pos_y = position.y;
+}
 
-bool Castle::init(Team team, float x, float y)
+bool Castle::init()
 {
 	// Load texture
 	if (!castle_texture.is_valid())
 	{
 		char* path;
-		if (team == Team::PLAYER1) {
+		if (this->team.assigned == Team::PLAYER1) {
 			path = textures_path("castle/CaptureTheCastle_castle_red.png");
 		}
-		else if (team == Team::PLAYER2) {
+		else if (this->team.assigned == Team::PLAYER2) {
 			path = textures_path("castle/CaptureTheCastle_castle_blue.png");
 		}
 
@@ -64,13 +69,8 @@ bool Castle::init(Team team, float x, float y)
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
-	position = { x, y };
-
 	// 1.0 would be as big as the original texture.
 	physics.scale = { 0.4f, 0.4f };
-	
-	// assign castle's team
-	m_team = team;
 
 	return true;
 }
