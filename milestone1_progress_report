@@ -1,6 +1,6 @@
-In this milestone, our goals and completed goals were:
+In Milestone 1, our goals and completed goals were:
 - Set up one hard-coded maze (no good visuals needed yet)
-  - we have provided a hard-coded maze and also added in sprites for the tiles
+  - we have provided a hard-coded maze and also added in sprites for the tiles with adequate UI implementation.  
 - Prepare basic sprites (player-1, player-2, castle, soldiers)
   - player-1, player-2, castle, soldier sprites are completed for both teams (red and blue), plus bandits and some menu ui sprites as well.
 - Add Player-1, Player-2, Player movement (on-key)
@@ -8,8 +8,19 @@ In this milestone, our goals and completed goals were:
 - Research random maze generation
   - Research for random maze generation is ongoing, we have a few possible options we started looking into.
 - Wall/Character collision (can use hard-coded maze)
+  - Defined movable region on the screen, so the player will not move off the screen.
   - The bandits and both the players are able to detect collision with maze tiles and respond appropriately.
   - But since we currently use simple bounding box collision, we are looking into possible enhancement by switching the player to use circle collision.
-- Define maze regions: No Man's land, Player-1 zone, Player-2 zone.
-  - This has not been implemented as we prioritized getting the maze textures. We will instead move this task to Week
 - Add Soldiers and their movement (with hard-coded initial position)
+  - We have set up the soldier class and are now able to position soldiers in the maze with hard-coded position.
+
+Discrepancy in Week 1 ~ 2 from project proposal
+Left to do:
+- Define maze regions: No Man's land, Player-1 zone, Player-2 zone.
+  - This has not been implemented as we prioritized getting the maze textures. We will instead move this task to Week 3.
+- Random maze generation
+  - After more research, random maze generation has proven to take significantly more commitment, so we are scheduling it as stretch goal
+    and a continuous task throughout the rest of the milestones. 
+Did more:
+- Implemented Bandit movement and spawning mechanism (originally scheduled in week 5)
+- Add sprites to maze (tile sprites) (originally scheduled in week 7)
