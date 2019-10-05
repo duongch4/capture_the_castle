@@ -13,7 +13,7 @@ using Clock = std::chrono::high_resolution_clock;
 
 // Global 
 World world;
-const int width = 1200;
+const int width = 1385;
 const int height = 800;
 
 // Entry point

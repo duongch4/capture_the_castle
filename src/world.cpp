@@ -29,28 +29,34 @@ World::~World() {
 }
 
 // World initialization
-bool World::init(vec2 screen) {
-    m_screen_size = screen;
 
-    m_start_position.push_back({150.f, m_screen_size.y / 2 + 130.f});
-    m_start_position.push_back({m_screen_size.x - 150.f, m_screen_size.y / 2 + 130.f});
+bool World::init(vec2 screen)
+{
+	m_screen_size = screen;
 
-    players.push_back(new Player(Team::PLAYER1, m_start_position[0]));
-    players.push_back(new Player(Team::PLAYER2, m_start_position[1]));
+	m_start_position.push_back({ 120.f, m_screen_size.y / 2 + 130.f });
+	m_start_position.push_back({ m_screen_size.x - 120.f, m_screen_size.y / 2 + 130.f });
 
-    //-------------------------------------------------------------------------
-    // GLFW / OGL Initialization
-    // Core Opengl 3.
-    glfwSetErrorCallback(glfw_err_cb);
-    if (!glfwInit()) {
-        fprintf(stderr, "Failed to initialize GLFW");
-        return false;
-    }
+	players.push_back(new Player(Team::PLAYER1, m_start_position[0]));
+	players.push_back(new Player(Team::PLAYER2, m_start_position[1]));
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
+	castles.push_back(new Castle(Team::PLAYER1, { 120.f, m_screen_size.y / 2 }));
+	castles.push_back(new Castle(Team::PLAYER2, {m_screen_size.x - 120.f, m_screen_size.y / 2}));
+
+	//-------------------------------------------------------------------------
+	// GLFW / OGL Initialization
+	// Core Opengl 3.
+	glfwSetErrorCallback(glfw_err_cb);
+	if (!glfwInit())
+	{
+		fprintf(stderr, "Failed to initialize GLFW");
+		return false;
+	}
+
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
 #if __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
@@ -129,25 +135,25 @@ bool World::init(vec2 screen) {
 	// Each number represent the id of a tile 
 	// Id is the position of a sprite in a sprite sheet starting from left to right, top to bottom 
 	int data[] = {
-		19, 19, 19, 19, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 19, 19, 19, 19,
-		19, 19, 19, 19, 9, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 9, 19, 19, 19, 19,
-		19, 19, 19, 19, 9, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 9, 19, 19, 19, 19,
-		19, 19, 19, 19, 9, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 9, 19, 19, 19, 19,
-		19, 19, 19, 19, 9, 19, 19, 19, 9, 9, 9, 9, 9, 9, 19, 19, 19, 19, 9, 9, 9, 9, 9, 9, 19, 9, 19, 19, 19, 19,
-		19, 19, 19, 19, 9, 19, 19, 9, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 9, 19, 9, 19, 19, 19, 19,
-		19, 19, 19, 19, 9, 19, 19, 9, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 9, 19, 9, 19, 19, 19, 19,
-		19, 19, 19, 19, 9, 19, 19, 9, 19, 19, 19, 19, 19, 9, 19, 19, 19, 19, 9, 19, 19, 19, 19, 19, 19, 9, 19, 19, 19, 19,
-		19, 19, 19, 19, 19, 19, 19, 9, 19, 19, 19, 19, 19, 9, 19, 19, 19, 19, 9, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
-		19, 19, 19, 19, 19, 19, 19, 9, 19, 19, 19, 19, 19, 9, 19, 19, 19, 19, 9, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
-		19, 19, 19, 19, 19, 19, 19, 9, 19, 19, 19, 19, 19, 9, 19, 19, 19, 19, 9, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
-		19, 19, 19, 19, 9, 19, 19, 19, 9, 9, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 9, 19, 19, 19, 19,
-		19, 19, 19, 19, 9, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 9, 19, 19, 19, 19,
-		19, 19, 19, 19, 9, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 9, 19, 19, 19, 19,
-		19, 19, 19, 19, 9, 19, 19, 19, 19, 19, 19, 19, 9, 19, 19, 19, 19, 19, 19, 19, 9, 19, 19, 19, 19, 9, 19, 19, 19, 19,
-		19, 19, 19, 19, 9, 19, 19, 19, 19, 19, 19, 19, 19, 9, 9, 9, 9, 9, 9, 9, 19, 19, 19, 19, 19, 9, 19, 19, 19, 19,
-		19, 19, 19, 19, 9, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 9, 19, 19, 19, 19,
-		19, 19, 19, 19, 9, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 9, 19, 19, 19, 19,
-		19, 19, 19, 19, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 19, 19, 19, 19
+            19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
+            19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
+            19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
+            19, 19, 19, 19, 19,  1,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  3, 19, 19, 19, 19, 19,
+            19, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19,
+            19, 19, 19, 19, 19,  6, 19,  5, 19,  5, 19, 19, 19,  5, 19,  1, 11,  3, 19, 19, 19,  1, 12, 19,  6, 19, 19, 19, 19, 19,
+            19, 19, 19, 19, 19,  7, 11, 15, 19, 13, 11, 11, 11,  6, 19,  6, 19,  6, 19, 10, 11,  9, 19, 19,  6, 19, 19, 19, 19, 19,
+            19, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19, 19, 19, 19, 19,  6, 19, 17, 19, 19, 19,  6, 19, 19,  6, 19, 19, 19, 19, 19,
+            19, 19, 19, 19, 19,  7, 11, 11, 12, 19, 19, 10, 11,  9, 19,  6, 19, 19, 19,  5, 19,  6, 19, 19,  6, 19, 19, 19, 19, 19,
+            19, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19, 19, 19,  6, 19, 13, 11, 11, 11,  9, 19, 17, 19, 19,  6, 19, 19, 19, 19, 19,
+            19, 19, 19, 19, 19,  6, 19,  1, 12, 19, 10, 11, 11,  9, 19, 19, 19, 19, 19,  6, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19,
+            19, 19, 19, 19, 19,  6, 19,  6, 19, 19, 19, 19, 19,  6, 19, 19, 19,  5, 19,  6, 19, 10, 12, 19,  6, 19, 19, 19, 19, 19,
+            19, 19, 19, 19, 19, 19, 19,  6, 19, 19, 19,  5, 19, 17, 19, 10, 11,  9, 19,  6, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
+            19, 19, 19, 19, 19,  6, 19,  6, 19, 10, 11,  9, 19, 19, 19, 19, 19,  6, 19,  7, 11, 11, 12, 19,  6, 19, 19, 19, 19, 19,
+            19, 19, 19, 19, 19,  6, 19,  6, 19, 19, 19,  6, 19, 19, 19,  5, 19,  6, 19,  6, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19,
+            19, 19, 19, 19, 19,  6, 19, 13, 11, 11, 11, 14, 11, 11, 11, 15, 19,  6, 19,  5, 19,  5, 19, 19,  6, 19, 19, 19, 19, 19,
+            19, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,  6, 19, 19, 19,  6, 19, 19,  6, 19, 19, 19, 19, 19,
+            19, 19, 19, 19, 19, 13, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 14, 11, 11, 11, 11, 11, 11, 15, 19, 19, 19, 19, 19,
+            19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
 	};
 
 	// TODO: Refactor this later to move it into a TileMap class
@@ -175,9 +181,18 @@ bool World::init(vec2 screen) {
         player->init();
     }
 
-    m_background.init();
-    p1_castle.init(Team::PLAYER1, 150.f, screen.y / 2);
-    p2_castle.init(Team::PLAYER2, screen.x - 150.f, screen.y / 2);
+
+	for (auto castle : castles) {
+	    castle->init();
+	}
+
+	m_background.init();
+
+	p1_board = new ItemBoard(Team::PLAYER1, { 180.f, 65 });
+	p2_board = new ItemBoard(Team::PLAYER2, { screen.x - 180.f, 65.f });
+
+	p1_board->init();
+	p2_board->init();
 
     return true;
 }
@@ -207,6 +222,13 @@ void World::destroy() {
 
     m_tiles.clear();
 
+    for (auto player: players) {
+        player->destroy();
+    }
+
+    for (auto castle: castles) {
+        castle->destroy();
+    }
     glfwDestroyWindow(m_window);
 }
 
@@ -238,7 +260,7 @@ bool World::update(float elapsed_ms) {
         Bandit* new_bandit = bandits.back();
 
         // Setting random initial position
-        new_bandit->set_position({ screen.x / 2 + 100.f, screen.y / 2 });
+        new_bandit->set_position({ 299, 191});
 
         // Setting random initial direction
         new_bandit->set_direction(get_random_direction());
@@ -327,14 +349,6 @@ void World::draw()
 	float ty = -(top + bottom) / (top - bottom);
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
-	// TODO: DRAW GAME ENTITIES USING projection_2D
-	//p1_castle.draw(projection_2D);
-	//p2_castle.draw(projection_2D);
-
-	//for (auto player : players) {
-	//	player->draw(projection_2D);
-	//}
-
 	/////////////////////
 	// Truely render to the screen
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -361,16 +375,22 @@ void World::draw()
 		}
 	}
 
-	p1_castle.draw(projection_2D);
-	p2_castle.draw(projection_2D);
+	for (auto castle : castles) {
+	    castle->draw(projection_2D);
+	}
 
-    for (auto player : players) {
-        player->draw(projection_2D);
-    }
+
+	for (auto player : players) {
+		player->draw(projection_2D);
+	}
 
 	for (auto bandit: bandits) {
 	    bandit->draw(projection_2D);
 	}
+
+	p1_board->draw(projection_2D);
+	p2_board->draw(projection_2D);
+
 
     //////////////////
     // Presenting
@@ -422,29 +442,51 @@ void World::on_key(GLFWwindow *, int key, int, int action, int mod) {
         players[1]->set_direction(GLFW_KEY_S);
     }
 
-    if (
-            action == GLFW_PRESS &&
-            (
-                    key == GLFW_KEY_DOWN || key == GLFW_KEY_UP ||
-                    key == GLFW_KEY_LEFT || key == GLFW_KEY_RIGHT || key == GLFW_KEY_S
-            )
-            ) {
-        players[0]->set_direction(key);
-        players[1]->set_direction(key);
-    }
+	if (
+		action == GLFW_PRESS &&
+		(
+			key == GLFW_KEY_DOWN || key == GLFW_KEY_UP ||
+			key == GLFW_KEY_LEFT || key == GLFW_KEY_RIGHT
+			)
+		)
+	{
+		players[1]->set_direction(key);
+	}
 
-    // Resetting game
-    if (action == GLFW_RELEASE && key == GLFW_KEY_R) {
-        reset();
-    }
+	if (action == GLFW_PRESS)
+	{
+		switch (key)
+		{
+		case GLFW_KEY_S:
+			players[0]->set_direction(GLFW_KEY_DOWN);
+			break;
+		case GLFW_KEY_W:
+			players[0]->set_direction(GLFW_KEY_UP);
+			break;
+		case GLFW_KEY_D:
+			players[0]->set_direction(GLFW_KEY_RIGHT);
+			break;
+		case GLFW_KEY_A:
+			players[0]->set_direction(GLFW_KEY_LEFT);
+			break;
+		default:
+			break;
+		}
+	}
 
-    // Control the current speed with `<` `>`
-    if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_COMMA)
-        m_current_speed -= 0.1f;
-    if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_PERIOD)
-        m_current_speed += 0.1f;
+	// Resetting game
+	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
+	{
+		reset();
+	}
 
-    m_current_speed = fmax(0.f, m_current_speed);
+	// Control the current speed with `<` `>`
+	if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_COMMA)
+		m_current_speed -= 0.1f;
+	if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_PERIOD)
+		m_current_speed += 0.1f;
+
+	m_current_speed = fmax(0.f, m_current_speed);
 }
 
 void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {

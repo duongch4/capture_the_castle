@@ -7,7 +7,7 @@
 
 #include "player.hpp"
 #include "castle.hpp"
-
+#include "itemBoard.hpp"
 #include "background.hpp"
 #include "bandit.hpp"
 
@@ -51,9 +51,6 @@ private:
 	//// Generates a new turtle
 	bool spawn_bandit();
 
-	//// Generates a new fish
-	//bool spawn_fish();
-
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
@@ -69,7 +66,6 @@ private:
 	std::vector<vec2> m_start_position;
 
 	// Screen texture
-	// The draw loop first renders to this texture, then it is used for the water shader
 	GLuint m_frame_buffer;
 	Texture m_screen_tex;
 
@@ -77,13 +73,12 @@ private:
 	Background m_background;
 
 	// Game entities
-
 	std::vector<std::vector<Tile> > m_tiles;
-
 	std::vector<Player*> players;
     std::vector<Bandit*> bandits;
-	Castle p1_castle;
-	Castle p2_castle;
+	std::vector<Castle*> castles;
+    ItemBoard* p1_board;
+    ItemBoard* p2_board;
 
 	float m_current_speed;
     float m_next_bandit_spawn;

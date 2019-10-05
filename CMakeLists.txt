@@ -40,6 +40,7 @@ set(SOURCE_FILES
         src/tile.cpp
         src/bandit.cpp
         src/soldier.cpp
+        src/itemBoard.cpp
         src/project_path.hpp
         src/common.hpp
         src/castle.hpp
@@ -49,6 +50,7 @@ set(SOURCE_FILES
         src/tile.hpp
         src/bandit.hpp
         src/soldier.hpp
+        src/itemBoard.hpp
         )
 
 if (IS_OS_MAC)

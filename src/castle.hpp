@@ -7,10 +7,12 @@ class Castle : public Entity
 {
 
 public:
+    Castle (Team team, vec2 position);
 
-    bool init();
+    ~Castle();
+
 	// Creates all the associated render resources and default transform
-	bool init(Team team, float x, float y);
+	bool init();
 
 	// Releases all the associated resources
 	void destroy();
@@ -33,8 +35,6 @@ public:
 	vec2 get_bounding_box() const;
 
 private:
-	// Team that the castle belongs to
-	Team m_team;
 	
 	// Each castle has a different texture depending on the team
 	Texture castle_texture;
