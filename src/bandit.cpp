@@ -178,13 +178,7 @@ bool Bandit:: collides_with_tile(const Tile& tile){
 }
 
 void Bandit::handle_wall_collision() {
-    mat3 rotation;
-    rotation.c0 = {0, 1, 0};
-    rotation.c1 = {-1, 0, 0};
-    rotation.c2 = {0, 0, 1};
-    vec3 currDir = {motion.direction.x, motion.direction.y, 1.f};
-    vec3 newDir = mul(rotation, currDir);
-   motion.direction = {newDir.x, newDir.y};
+   motion.direction = {-motion.direction.x, motion.direction.y};
 }
 
 

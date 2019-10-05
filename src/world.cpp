@@ -262,8 +262,8 @@ bool World::update(float elapsed_ms) {
         // Setting random initial position
         new_bandit->set_position({ 299, 191});
 
-        // Setting random initial direction
-        new_bandit->set_direction(get_random_direction());
+        // Setting random initial direction to right
+        new_bandit->set_direction({1, 0});
 
         // Next spawn
         m_next_bandit_spawn = (BANDIT_DELAY_MS / 2) + m_real_dist(m_rng) * (BANDIT_DELAY_MS / 2);
@@ -286,31 +286,31 @@ bool World::update(float elapsed_ms) {
             if (player->get_position().y < (0 + offset_y)) {
                 player->set_position({player->get_position().x, 0 + offset_y});
             }
-    }
+        }
 
-    for (auto &&tile_list : m_tiles) {
-        for (auto &tile : tile_list) {
-            if (tile.is_wall()) {
-                for (auto player : players) {
-                    if (player->collides_with_tile(tile)) {
-                        player->handle_wall_collision();
+        for (auto &&tile_list : m_tiles) {
+            for (auto &tile : tile_list) {
+                if (tile.is_wall()) {
+                    for (auto player : players) {
+                        if (player->collides_with_tile(tile)) {
+                            player->handle_wall_collision();
+                        }
                     }
-                }
-                for (auto bandit: bandits) {
-                    if (bandit->collides_with_tile(tile)) {
-                        bandit->handle_wall_collision();
+                    for (auto bandit: bandits) {
+                        if (bandit->collides_with_tile(tile)) {
+                            bandit->handle_wall_collision();
+                        }
                     }
                 }
             }
         }
-    }
-    for (auto player : players) {
-        player->update(elapsed_ms);
-    }
-    for (auto bandit: bandits) {
-        bandit->update(elapsed_ms);
-    }
-	return true;
+        for (auto player : players) {
+            player->update(elapsed_ms);
+        }
+        for (auto bandit: bandits) {
+            bandit->update(elapsed_ms);
+        }
+        return true;
 }
 
 // Render our game world
@@ -428,8 +428,8 @@ bool World::spawn_bandit()
     return false;
 }
 
-// On key callback
-void World::on_key(GLFWwindow *, int key, int, int action, int mod) {
+void World::on_key(GLFWwindow*, int key, int, int action, int mod)
+{
     // TODO: HANDLE KEY INPUTS
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // HANDLE SALMON MOVEMENT HERE

@@ -271,7 +271,7 @@ const Team Player::get_team() {
 }
 
 vec2 Player::get_bounding_box() {
-    return {fabs(physics.scale.x) * player_texture.width, fabs(physics.scale.y) * player_texture.height};
+    return {fabs(physics.scale.x) * player_texture.width * 0.9f, fabs(physics.scale.y) * player_texture.height*0.9f};
 }
 
 bool Player::collides_with_tile(const Tile &tile) {
@@ -292,20 +292,18 @@ bool Player::collides_with_tile(const Tile &tile) {
 }
 
 void Player::handle_wall_collision() {
-    // Move player away from the wall by 10.f;
+    // Move player away from the wall by 5.f;
     if (is_left()) {
-        position.pos_x += 10.f;
+        position.pos_x += 5.f;
     } else if (is_right()) {
-        position.pos_x -= 10.f;
+        position.pos_x -= 5.f;
     }
 
     if (is_up()) {
-        position.pos_y += 10.f;
+        position.pos_y += 5.f;
     } else if (is_down()) {
-        position.pos_y -= 10.f;
+        position.pos_y -= 5.f;
     }
-
-    // Passing a key that's not defined in set_direction, so will return default.
     currDir = {0, 0, 0, 0, currDir.flip};;
 }
 

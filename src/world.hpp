@@ -48,7 +48,7 @@ private:
 	// Generates a new tile
 	bool spawn_tile(int sprite_id, int num_horizontal, int num_vertical, int width, int gap_width, int gridX, int gridY);
 
-	//// Generates a new turtle
+	// Generates a new bandit
 	bool spawn_bandit();
 
 	// !!! INPUT CALLBACK FUNCTIONS

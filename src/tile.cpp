@@ -34,11 +34,11 @@ bool Tile::init(int sprite_id, int num_horizontal, int num_vertical, int width, 
 	float tile_act_width = (float)width / (float)((num_horizontal * width) + ((num_horizontal - 1) * gap_width));
 	float tile_act_height = (float)width / (float)((num_vertical * width) + ((num_vertical - 1) * gap_width));
 
-	if (sprite_id == 9){
-	    set_wall(true);
-	} else if (sprite_id == 19){
-	    set_wall(false);
-	}
+    set_wall(false);
+    if (sprite_id != 19){
+        set_wall(true);
+    }
+
 	// Calculate the texture coordinate based on the id, width, and height of the sprite
 
 	// Texture mapping start from the top left (0,0) to bottom right (1,1)
@@ -151,8 +151,8 @@ void Tile::draw(const mat3& projection)
 
 	// Setting uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform.out);
-	float color[] = { 1.f, 1.f, 1.f };
-//    float color[] = { tile_color.x, tile_color.y, tile_color.z}; For collision debugging purposes
+//	float color[] = { 1.f, 1.f, 1.f };
+    float color[] = { tile_color.x, tile_color.y, tile_color.z}; //For collision debugging purposes
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 
@@ -175,7 +175,7 @@ vec2 Tile::get_bounding_box() const
 {
 	// Returns the local bounding coordinates scaled by the current size of the tile 
 	// fabs is to avoid negative scale due to the facing direction.
-	return { std::fabs(physics.scale.x) * tile_texture.width, std::fabs(physics.scale.y) * tile_texture.height };
+	return { std::fabs(physics.scale.x) * tile_texture.width * 0.8f, std::fabs(physics.scale.y) * tile_texture.height * 0.8f};
 }
 
 bool Tile::is_wall() const {
@@ -186,10 +186,10 @@ void Tile::set_wall(bool wall) {
     this->wall = wall;
 }
 
-//void Tile::change_color(bool colliding) {
-//    if (!colliding) {
-//        tile_color = {1.f, 1.f, 1.f};
-//    } else {
-//        tile_color = {1.f, 0.f, 0.f};
-//    }
-//}
+void Tile::change_color(bool colliding) {
+    if (!colliding) {
+        tile_color = {1.f, 1.f, 1.f};
+    } else {
+        tile_color = {1.f, 0.f, 0.f};
+    }
+}
