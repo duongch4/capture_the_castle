@@ -7,6 +7,8 @@ class Castle : public Entity
 {
 
 public:
+
+    bool init();
 	// Creates all the associated render resources and default transform
 	bool init(Team team, float x, float y);
 

@@ -9,6 +9,7 @@
 #include "castle.hpp"
 
 #include "background.hpp"
+#include "bandit.hpp"
 
 
 // stlib
@@ -48,7 +49,7 @@ private:
 	bool spawn_tile(int sprite_id, int num_horizontal, int num_vertical, int width, int gap_width, int gridX, int gridY);
 
 	//// Generates a new turtle
-	//bool spawn_turtle();
+	bool spawn_bandit();
 
 	//// Generates a new fish
 	//bool spawn_fish();
@@ -80,10 +81,12 @@ private:
 	std::vector<std::vector<Tile> > m_tiles;
 
 	std::vector<Player*> players;
+    std::vector<Bandit*> bandits;
 	Castle p1_castle;
 	Castle p2_castle;
 
 	float m_current_speed;
+    float m_next_bandit_spawn;
 
 
 //	Mix_Music* m_background_music;
@@ -92,5 +95,7 @@ private:
 
 	// C++ rng
 	std::default_random_engine m_rng;
-	std::uniform_real_distribution<float> m_dist; // default 0..1
+	std::uniform_real_distribution<float> m_real_dist; // default 0..1
+
+    vec2 get_random_direction();
 };

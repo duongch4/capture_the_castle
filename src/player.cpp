@@ -8,8 +8,6 @@
 #include <iostream>
 #include <cmath>
 
-//Texture Player::player_texture;
-
 Player::Player(Team team, vec2 position) {
     this->team.assigned = team;
     this->position.pos_x = position.x;
@@ -85,7 +83,6 @@ bool Player::init() {
     physics.scale = {0.4f, 0.4f};
     currDir = {0, 0, 0, 0, 0};
     m_is_alive = true;
-    m_light_up_countdown_ms = -1.f;
 
     return true;
 }
@@ -105,10 +102,6 @@ void Player::destroy() {
 void Player::update(float ms) {
     float step = motion.speed * (ms / 1000);
     if (m_is_alive) {
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // UPDATE player POSITION HERE BASED ON KEY PRESSED (World::on_key())
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
         if (currDir.down) {
             move({0.f, step});
         }
@@ -121,15 +114,7 @@ void Player::update(float ms) {
         if (currDir.right) {
             move({step, 0.f});
         }
-
-    } else {
-// If dead we make it face upwards and sink deep down
-        move({0.f, step});
     }
-
-    if (m_light_up_countdown_ms > 0.f)
-        m_light_up_countdown_ms -=
-                ms;
 }
 
 void Player::draw(const mat3 &projection) {
@@ -251,11 +236,6 @@ void Player::kill() {
     m_is_alive = false;
 }
 
-// Called when the player collides with a fish
-void Player::light_up() {
-    m_light_up_countdown_ms = 1500.f;
-}
-
 // Set direction
 void Player::set_direction(int key) {
     switch (key) {
@@ -308,7 +288,24 @@ bool Player::collides_with_tile(const Tile &tile) {
     bool y_overlap = (pt >= tt && pt <= tb) || (pb <= tb && pb >= tt) || (pb >= tb && pt <= tt);
 
     return x_overlap && y_overlap;
+}
 
+void Player::handle_wall_collision() {
+    // Move player away from the wall by 10.f;
+    if (is_left()) {
+        position.pos_x += 10.f;
+    } else if (is_right()) {
+        position.pos_x -= 10.f;
+    }
+
+    if (is_up()) {
+        position.pos_y += 10.f;
+    } else if (is_down()) {
+        position.pos_y -= 10.f;
+    }
+
+    // Passing a key that's not defined in set_direction, so will return default.
+    currDir = {0, 0, 0, 0, currDir.flip};;
 }
 
 // For debugging purposes

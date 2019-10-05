@@ -6,7 +6,6 @@
 
 class Player : public Entity
 {
-//	static Texture player_texture;
 
 public:
 	Player(Team team, vec2 position);
@@ -44,9 +43,6 @@ public:
 	// Kills the player, changing its alive state and triggering on death events
 	void kill();
 
-	// Called when the player collides with a fish, starts lighting up the player
-	void light_up();
-
 	// Sets direction
 	void set_direction(int key);
 
@@ -56,6 +52,8 @@ public:
 	const Team get_team();
 
 	bool collides_with_tile(const Tile& tile);
+
+	void handle_wall_collision();
 
 	vec2 get_bounding_box();
 	
@@ -71,7 +69,6 @@ public:
 
 
 private:
-	float m_light_up_countdown_ms; // Used to keep track for how long the player should be lit up
 	bool m_is_alive; // True if the player is alive
 
 	//Team m_team;

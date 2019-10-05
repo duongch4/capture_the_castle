@@ -4,6 +4,7 @@
 #include <cmath>
 #include <string>
 
+bool Castle::init() {}
 
 bool Castle::init(Team team, float x, float y)
 {

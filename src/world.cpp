@@ -8,6 +8,8 @@
 
 // Same as static in c, local to compilation unit
 namespace {
+    const size_t MAX_BANDITS = 3;
+    const size_t BANDIT_DELAY_MS = 20000;
     namespace {
         void glfw_err_cb(int error, const char *desc) {
             fprintf(stderr, "%d: %s", error, desc);
@@ -15,9 +17,11 @@ namespace {
     }
 }
 
-World::World() {
-    // Seeding rng with random device
-    m_rng = std::default_random_engine(std::random_device()());
+World::World() :
+m_next_bandit_spawn(0.f)
+{
+	// Seeding rng with random device
+	m_rng = std::default_random_engine(std::random_device()());
 }
 
 World::~World() {
@@ -119,7 +123,9 @@ bool World::init(vec2 screen) {
 //
 //	fprintf(stderr, "Loaded music\n");
 
-	// Hardcoded maze data, created using Tiled 
+    m_current_speed = 1.f;
+
+	// Hardcoded maze data, created using Tiled
 	// Each number represent the id of a tile 
 	// Id is the position of a sprite in a sprite sheet starting from left to right, top to bottom 
 	int data[] = {
@@ -143,7 +149,6 @@ bool World::init(vec2 screen) {
 		19, 19, 19, 19, 9, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 9, 19, 19, 19, 19,
 		19, 19, 19, 19, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 19, 19, 19, 19
 	};
-
 
 	// TODO: Refactor this later to move it into a TileMap class
 	// Create all the tiles based on the maze data we defined above
@@ -185,6 +190,10 @@ void World::destroy() {
     Mix_CloseAudio();
 
     // TODO: DESTROY ALL GAME ENTITIES
+    for (auto bandit: bandits) {
+        bandit->destroy();
+    }
+
     // If we move to the next level, destroy all the tiles
     for (auto &vector : m_tiles) {
         for (auto &tile : vector) {
@@ -219,9 +228,27 @@ bool World::update(float elapsed_ms) {
         }
     }
 
+    // Spawning new bandits
+    m_next_bandit_spawn -= elapsed_ms * m_current_speed;
+    if (bandits.size() < MAX_BANDITS && m_next_bandit_spawn < 0.f)
+    {
+        if (!spawn_bandit())
+            return false;
+
+        Bandit* new_bandit = bandits.back();
+
+        // Setting random initial position
+        new_bandit->set_position({ screen.x / 2 + 100.f, screen.y / 2 });
+
+        // Setting random initial direction
+        new_bandit->set_direction(get_random_direction());
+
+        // Next spawn
+        m_next_bandit_spawn = (BANDIT_DELAY_MS / 2) + m_real_dist(m_rng) * (BANDIT_DELAY_MS / 2);
+    }
+
     // Player update
     for (auto player : players) {
-        if (player->is_alive()) {
             const float offset_x = 100.f;
             const float offset_y = 80.f;
 
@@ -237,42 +264,35 @@ bool World::update(float elapsed_ms) {
             if (player->get_position().y < (0 + offset_y)) {
                 player->set_position({player->get_position().x, 0 + offset_y});
             }
-            for (auto &&tile_list : m_tiles) {
-                for (auto &tile : tile_list) {
-                    bool colliding = tile.is_wall() && player->collides_with_tile(tile);
-                    if (colliding) {
-                        vec2 pos = player->get_position();
-                        if (player->is_left()) {
-                            pos.x = pos.x + 5.f;
-                        } else if (player->is_right()) {
-                            pos.x = pos.x - 5.f;
-                        }
+    }
 
-                        if (player->is_up()) {
-                            pos.y = pos.y + 5.f;
-                        } else if (player->is_down()) {
-                            pos.y = pos.y - 5.f;
-                        }
-
-                        // Move player away from the wall by 5.f;
-                        player->set_position(pos);
-                        // Passing a key that's not defined in set_direction, so will return default.
-                        player->set_direction(GLFW_KEY_T);
+    for (auto &&tile_list : m_tiles) {
+        for (auto &tile : tile_list) {
+            if (tile.is_wall()) {
+                for (auto player : players) {
+                    if (player->collides_with_tile(tile)) {
+                        player->handle_wall_collision();
                     }
-//                    tile.change_color(colliding);
-//                    player->change_color(colliding);
+                }
+                for (auto bandit: bandits) {
+                    if (bandit->collides_with_tile(tile)) {
+                        bandit->handle_wall_collision();
+                    }
                 }
             }
         }
+    }
+    for (auto player : players) {
         player->update(elapsed_ms);
     }
-
-    return true;
+    for (auto bandit: bandits) {
+        bandit->update(elapsed_ms);
+    }
+	return true;
 }
 
 // Render our game world
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-14-render-to-texture/
-
 void World::draw()
 {
 	// Clearing error buffer
@@ -348,6 +368,10 @@ void World::draw()
         player->draw(projection_2D);
     }
 
+	for (auto bandit: bandits) {
+	    bandit->draw(projection_2D);
+	}
+
     //////////////////
     // Presenting
     glfwSwapBuffers(m_window);
@@ -358,7 +382,6 @@ void World::draw()
 bool World::is_over() const {
     return glfwWindowShouldClose(m_window);
 }
-
 
 // Creates a new tile and if successfull adds it to the list of tile
 bool World::spawn_tile(int sprite_id, int num_horizontal, int num_vertical, int width, int gap_width, int gridX, int gridY)
@@ -371,6 +394,18 @@ bool World::spawn_tile(int sprite_id, int num_horizontal, int num_vertical, int 
 	}
 	fprintf(stderr, "Failed to spawn tile");
 	return false;
+}
+
+bool World::spawn_bandit()
+{
+    Bandit* bandit = new Bandit();
+    if (bandit->init())
+    {
+        bandits.emplace_back(bandit);
+        return true;
+    }
+    fprintf(stderr, "Failed to spawn bandit");
+    return false;
 }
 
 // On key callback
@@ -425,4 +460,16 @@ void World::reset() {
     }
     m_background.reset_player_dead_time();
     m_current_speed = 1.f;
+}
+
+vec2 World::get_random_direction() {
+    std::uniform_int_distribution<int> int_dist(-1, 1);
+    int dir_x, dir_y;
+    dir_x = int_dist(m_rng);
+    dir_y = int_dist(m_rng);
+    if(abs(dir_x) == abs(dir_y)) {
+        return get_random_direction();
+    } else {
+        return {static_cast<float>(dir_x), static_cast<float>(dir_y)};
+    }
 }
