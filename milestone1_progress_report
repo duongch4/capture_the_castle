@@ -1,0 +1,15 @@
+In this milestone, our goals and completed goals were:
+- Set up one hard-coded maze (no good visuals needed yet)
+  - we have provided a hard-coded maze and also added in sprites for the tiles
+- Prepare basic sprites (player-1, player-2, castle, soldiers)
+  - player-1, player-2, castle, soldier sprites are completed for both teams (red and blue), plus bandits and some menu ui sprites as well.
+- Add Player-1, Player-2, Player movement (on-key)
+  - Both Player-1 and Player-2's movement has been implemented and bound to the correct key events
+- Research random maze generation
+  - Research for random maze generation is ongoing, we have a few possible options we started looking into.
+- Wall/Character collision (can use hard-coded maze)
+  - The bandits and both the players are able to detect collision with maze tiles and respond appropriately.
+  - But since we currently use simple bounding box collision, we are looking into possible enhancement by switching the player to use circle collision.
+- Define maze regions: No Man's land, Player-1 zone, Player-2 zone.
+  - This has not been implemented as we prioritized getting the maze textures. We will instead move this task to Week
+- Add Soldiers and their movement (with hard-coded initial position)
