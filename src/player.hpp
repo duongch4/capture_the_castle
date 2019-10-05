@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.hpp"
+#include "tile.hpp"
 #include <vector>
 
 class Player : public Entity
@@ -31,7 +32,7 @@ public:
 
 	// Returns the current player position
 	vec2 get_position() const;
-
+	
 	// Moves the player's position by the specified offset
 	void move(vec2 off);
 
@@ -42,9 +43,6 @@ public:
 	// Kills the player, changing its alive state and triggering on death events
 	void kill();
 
-	// Called when the player collides with a fish, starts lighting up the player
-	void light_up();
-
 	// Sets direction
 	void set_direction(int key);
 
@@ -53,16 +51,43 @@ public:
 
 	const Team get_team();
 
+	bool collides_with_tile(const Tile& tile);
+
+	void handle_wall_collision(const Tile& tile);
+
+	vec2 get_bounding_box();
+	
+//	void change_color(bool colliding);
+
+    bool is_left();
+
+    bool is_right();
+
+    bool is_up();
+
+    bool is_down();
+
+    bool is_stuck();
+
+    void set_stuck(bool stuck);
+
+
 private:
-	float m_light_up_countdown_ms; // Used to keep track for how long the player should be lit up
 	bool m_is_alive; // True if the player is alive
 
 	//Team m_team;
 
+	bool stuck;
+
 	Texture player_texture;
 
+//	vec3 player_color;
+//
 	struct direction { int up, down, left, right, flip; };
+	struct collision_response {bool up, down, left, right;};
+    collision_response col_res;
 	direction currDir;
+
 
 	std::vector<Vertex> m_vertices;
 	std::vector<uint16_t> m_indices;

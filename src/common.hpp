@@ -88,7 +88,7 @@ struct Texture
 struct Entity {
 	// projection contains the orthographic projection matrix. As every Entity::draw()
 	// renders itself it needs it to correctly bind it to its shader.
-	// virtual bool init() = 0;
+	virtual bool init() = 0;
 	virtual void draw(const mat3& projection) = 0;
 	virtual void update(float ms) = 0;
 	virtual void destroy() = 0;
@@ -151,8 +151,7 @@ protected:
 
 	// Collision component of an entity handles collision testing and collision handling
 	struct CollisionComponent {
-	    bool collides_with(Entity &e);
-	    void on_collide();
+        vec2 bounding_box;
 	} collision;
 
 	// Team component to specify an entity belongs to a team

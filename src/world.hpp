@@ -1,4 +1,4 @@
-#pragma once
+#pragma once=
 
 // internal
 #include "common.hpp"
@@ -9,6 +9,7 @@
 #include "castle.hpp"
 #include "itemBoard.hpp"
 #include "background.hpp"
+#include "bandit.hpp"
 
 
 // stlib
@@ -47,6 +48,9 @@ private:
 	// Generates a new tile
 	bool spawn_tile(int sprite_id, int num_horizontal, int num_vertical, int width, int gap_width, int gridX, int gridY);
 
+	// Generates a new bandit
+	bool spawn_bandit();
+
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
@@ -62,7 +66,6 @@ private:
 	std::vector<vec2> m_start_position;
 
 	// Screen texture
-	// The draw loop first renders to this texture, then it is used for the water shader
 	GLuint m_frame_buffer;
 	Texture m_screen_tex;
 
@@ -70,15 +73,15 @@ private:
 	Background m_background;
 
 	// Game entities
-
 	std::vector<std::vector<Tile> > m_tiles;
-
 	std::vector<Player*> players;
+    std::vector<Bandit*> bandits;
 	std::vector<Castle*> castles;
     ItemBoard* p1_board;
     ItemBoard* p2_board;
 
 	float m_current_speed;
+    float m_next_bandit_spawn;
 
 
 //	Mix_Music* m_background_music;
@@ -87,5 +90,7 @@ private:
 
 	// C++ rng
 	std::default_random_engine m_rng;
-	std::uniform_real_distribution<float> m_dist; // default 0..1
+	std::uniform_real_distribution<float> m_real_dist; // default 0..1
+
+    vec2 get_random_direction();
 };

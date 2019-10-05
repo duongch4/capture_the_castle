@@ -38,7 +38,9 @@ set(SOURCE_FILES
         src/world.cpp
         src/background.cpp
         src/tile.cpp
-		src/itemBoard.cpp
+        src/bandit.cpp
+        src/soldier.cpp
+        src/itemBoard.cpp
         src/project_path.hpp
         src/common.hpp
         src/castle.hpp
@@ -46,7 +48,9 @@ set(SOURCE_FILES
         src/world.hpp
         src/background.hpp
         src/tile.hpp
-		src/itemBoard.hpp
+        src/bandit.hpp
+        src/soldier.hpp
+        src/itemBoard.hpp
         )
 
 if (IS_OS_MAC)

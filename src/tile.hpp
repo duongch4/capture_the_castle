@@ -33,4 +33,13 @@ public:
 
 	// Returns the tile's bounding box for collision detection, called by collides_with()
 	vec2 get_bounding_box() const;
+
+	bool is_wall() const;
+
+    void change_color(bool colliding);
+
+private:
+    vec3 tile_color;
+    bool wall;
+    void set_wall(bool wall);
 };
