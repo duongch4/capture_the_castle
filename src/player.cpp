@@ -314,6 +314,13 @@ void Player::handle_wall_collision(const Tile &tile) {
             } else if (is_down()) {
                 position.pos_y += 10.f;
             }
+            if (collides_with_tile(tile)) {
+                if (is_left()) {
+                    position.pos_x -= 10.f;
+                } else if (is_right()) {
+                    position.pos_x += 10.f;
+                }
+            }
         }
         currDir = {0, 0, 0, 0, currDir.flip};
         set_stuck(true);
