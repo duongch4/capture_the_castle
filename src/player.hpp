@@ -78,7 +78,10 @@ private:
 //	vec3 player_color;
 //
 	struct direction { int up, down, left, right, flip; };
+	struct collision_response {bool up, down, left, right;};
+    collision_response col_res;
 	direction currDir;
+
 
 	std::vector<Vertex> m_vertices;
 	std::vector<uint16_t> m_indices;

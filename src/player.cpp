@@ -285,8 +285,16 @@ bool Player::collides_with_tile(const Tile &tile) {
     float tl = tile.get_position().x;
     float tr = tl + tile.get_bounding_box().x;
 
-    bool x_overlap = (pr >= tl && pr <= tr) || (pl <= tr && pl >= tl) || (pr >= tl && pl <= tl);
-    bool y_overlap = (pt >= tt && pt <= tb) || (pb <= tb && pb >= tt) || (pb >= tb && pt <= tt);
+    col_res.left = (pr >= tl && pr <= tr); //approach from left
+    col_res.right = (pl <= tr && pl >= tl); //approach from right
+    bool x_over = (pr >= tl && pl <= tl); //overlap
+
+    col_res.down = (pt >= tt && pt <= tb); // approach from bottom
+    col_res.up = (pb <= tb && pb >= tt); //approach from top
+    bool y_over =  (pb >= tb && pt <= tt); //overlap
+
+    bool x_overlap = col_res.left || col_res.right || x_over;
+    bool y_overlap = col_res.down || col_res.up || y_over;
 
     return x_overlap && y_overlap;
 }
@@ -294,15 +302,15 @@ bool Player::collides_with_tile(const Tile &tile) {
 void Player::handle_wall_collision() {
     // Move player away from the wall by 5.f;
     if (is_left()) {
-        position.pos_x += 5.f;
-    } else if (is_right()) {
         position.pos_x -= 5.f;
+    } else if (is_right()) {
+        position.pos_x += 5.f;
     }
 
     if (is_up()) {
-        position.pos_y += 5.f;
-    } else if (is_down()) {
         position.pos_y -= 5.f;
+    } else if (is_down()) {
+        position.pos_y += 5.f;
     }
     currDir = {0, 0, 0, 0, currDir.flip};;
 }
@@ -317,25 +325,17 @@ void Player::handle_wall_collision() {
 //}
 
 bool Player::is_left(){
-    if (currDir.left == 1 && currDir.right == 0)
-        return true;
-    return false;
+    return col_res.left;
 }
 
 bool Player::is_right(){
-    if (currDir.left == 0 && currDir.right == 1)
-        return true;
-    return false;
+    return col_res.right;
 }
 
 bool Player::is_up(){
-    if (currDir.up == 1 && currDir.down == 0)
-        return true;
-    return false;
+    return col_res.up;
 }
 
 bool Player::is_down(){
-    if (currDir.up == 0 && currDir.down == 1)
-        return true;
-    return false;
+    return col_res.down;
 }

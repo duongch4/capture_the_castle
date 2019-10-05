@@ -178,6 +178,11 @@ bool Bandit:: collides_with_tile(const Tile& tile){
 }
 
 void Bandit::handle_wall_collision() {
+    if (motion.direction.x > 0){
+        position.pos_x -= 3.f;
+    } else{
+        position.pos_x += 3.f;
+    }
    motion.direction = {-motion.direction.x, motion.direction.y};
 }
 
