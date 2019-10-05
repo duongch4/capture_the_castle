@@ -36,7 +36,7 @@ public:
 
 	bool is_wall() const;
 
-//    void change_color(bool colliding);
+    void change_color(bool colliding);
 
 private:
     vec3 tile_color;

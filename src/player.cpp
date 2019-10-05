@@ -291,7 +291,7 @@ const Team Player::get_team() {
 }
 
 vec2 Player::get_bounding_box() {
-    return {fabs(physics.scale.x) * player_texture.width, fabs(physics.scale.y) * player_texture.height};
+    return {fabs(physics.scale.x) * player_texture.width * 0.9f, fabs(physics.scale.y) * player_texture.height*0.9f};
 }
 
 bool Player::collides_with_tile(const Tile &tile) {

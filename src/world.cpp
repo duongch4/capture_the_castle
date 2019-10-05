@@ -274,7 +274,7 @@ bool World::update(float elapsed_ms) {
                         // Passing a key that's not defined in set_direction, so will return default.
                         player->set_direction(GLFW_KEY_T);
                     }
-//                    tile.change_color(colliding);
+                    tile.change_color(colliding);
 //                    player->change_color(colliding);
                 }
             }
@@ -385,7 +385,19 @@ bool World::spawn_tile(int sprite_id, int num_horizontal, int num_vertical, int 
 	fprintf(stderr, "Failed to spawn tile");
 	return false;
 }
+void World::on_key(GLFWwindow*, int key, int, int action, int mod)
+{
+    // TODO: HANDLE KEY INPUTS
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // HANDLE SALMON MOVEMENT HERE
+    // key is of 'type' GLFW_KEY_
+    // action can be GLFW_PRESS GLFW_RELEASE GLFW_REPEAT
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+    if (action == GLFW_RELEASE) {
+        players[0]->set_direction(GLFW_KEY_S);
+        players[1]->set_direction(GLFW_KEY_S);
+    }
 
 	if (
 		action == GLFW_PRESS &&
