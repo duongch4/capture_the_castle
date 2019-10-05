@@ -12,6 +12,7 @@ Player::Player(Team team, vec2 position) {
     this->team.assigned = team;
     this->position.pos_x = position.x;
     this->position.pos_y = position.y;
+    this->stuck = false;
 //    this->player_color = {1.f, 1.f, 1.f};
 }
 
@@ -40,8 +41,8 @@ bool Player::init()
 	}
 
 	// The position corresponds to the center of the texture.
-	float wr = player_texture.width * 0.5f;
-	float hr = player_texture.height * 0.5f;
+	float wr = player_texture.width * 0.4f;
+	float hr = player_texture.height * 0.4f;
 
 	TexturedVertex vertices[4];
 	vertices[0].position = { -wr, +hr, -0.01f };
@@ -299,20 +300,24 @@ bool Player::collides_with_tile(const Tile &tile) {
     return x_overlap && y_overlap;
 }
 
-void Player::handle_wall_collision() {
+void Player::handle_wall_collision(const Tile &tile) {
     // Move player away from the wall by 5.f;
-    if (is_left()) {
-        position.pos_x -= 5.f;
-    } else if (is_right()) {
-        position.pos_x += 5.f;
-    }
+        if (is_left()) {
+            position.pos_x -= 10.f;
+        } else if (is_right()) {
+            position.pos_x += 10.f;
+        }
 
-    if (is_up()) {
-        position.pos_y -= 5.f;
-    } else if (is_down()) {
-        position.pos_y += 5.f;
-    }
-    currDir = {0, 0, 0, 0, currDir.flip};;
+        if (collides_with_tile(tile)) {
+            if (is_up()) {
+                position.pos_y -= 10.f;
+            } else if (is_down()) {
+                position.pos_y += 10.f;
+            }
+        }
+        currDir = {0, 0, 0, 0, currDir.flip};
+        set_stuck(true);
+
 }
 
 // For debugging purposes
@@ -338,4 +343,12 @@ bool Player::is_up(){
 
 bool Player::is_down(){
     return col_res.down;
+}
+
+bool Player::is_stuck() {
+    return stuck;
+}
+
+void Player::set_stuck(bool stuck) {
+    this->stuck = stuck;
 }
