@@ -92,5 +92,8 @@ private:
 	std::vector<Vertex> m_vertices;
 	std::vector<uint16_t> m_indices;
 
+	vec2 spriteNum;
+	vec2 spriteSize;
+
 	bool is_texture_loaded(const char* path);
 };

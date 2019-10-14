@@ -24,6 +24,8 @@ public:
 
 private:
     bool is_texture_loaded(const char* path);
+	vec2 spriteNum;
+	vec2 spriteSize;
 };
 
 

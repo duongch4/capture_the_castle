@@ -26,6 +26,7 @@ Soldier::Soldier(Team assigned_team) {
     position.pos_x = 0.f;
     position.pos_y = 50.f;
     physics.scale = {0.3f, 0.3f};
+	spriteNum = { 1, 4 };
     collision.bounding_box =
     {
             std::fabs(physics.scale.x) * soldier_texture.width,
@@ -45,9 +46,12 @@ bool Soldier::init() {
             break;
     }
 
+	spriteSize.x = soldier_texture.width / 7;
+	spriteSize.y = soldier_texture.height / 5;
+
     // The position corresponds to the center of the texture.
-    float wr = soldier_texture.width * 0.5f;
-    float hr = soldier_texture.height * 0.5f;
+    float wr = spriteSize.x * (spriteNum.x + 1) * 0.5f;
+    float hr = spriteSize.y * (spriteNum.y + 1)  * 0.5f;
 
     TexturedVertex vertices[4];
     vertices[0].position = {-wr, +hr, -0.01f};

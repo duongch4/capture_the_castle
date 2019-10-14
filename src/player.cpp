@@ -12,6 +12,7 @@ Player::Player(Team team, vec2 position) {
     this->team.assigned = team;
     this->position.pos_x = position.x;
     this->position.pos_y = position.y;
+	spriteNum = { 0, 0 };
     this->stuck = false;
 //    this->player_color = {1.f, 1.f, 1.f};
 }
@@ -33,26 +34,30 @@ bool Player::init()
 {
 	switch (this->team.assigned) {
 	case Team::PLAYER1:
-		is_texture_loaded(textures_path("red_player/CaptureTheCastle_red_player_right.png"));
+		is_texture_loaded(textures_path("red_king_sprite_sheet.png"));
 		break;
 	case Team::PLAYER2:
-		is_texture_loaded(textures_path("blue_player/CaptureTheCastle_blue_player_right.png"));
+		is_texture_loaded(textures_path("blue_king_sprite_sheet.png"));
 		break;
 	}
+	
+
+	spriteSize.x = player_texture.width / 7;
+	spriteSize.y = player_texture.height / 5;
 
 	// The position corresponds to the center of the texture.
-	float wr = player_texture.width * 0.4f;
-	float hr = player_texture.height * 0.4f;
+	float wr = spriteSize.x * (spriteNum.x + 1) * 0.8f;
+	float hr = spriteSize.y * (spriteNum.y + 1)  * 0.8f;
 
 	TexturedVertex vertices[4];
 	vertices[0].position = { -wr, +hr, -0.01f };
-	vertices[0].texcoord = { 0.f, 1.f };
+	vertices[0].texcoord = { spriteNum.x / 7, (spriteNum.y + 1) / 5 };
 	vertices[1].position = { +wr, +hr, -0.01f };
-	vertices[1].texcoord = { 1.f, 1.f, };
+	vertices[1].texcoord = { (spriteNum.x + 1) / 7, (spriteNum.y + 1) / 5, };
 	vertices[2].position = { +wr, -hr, -0.01f };
-	vertices[2].texcoord = { 1.f, 0.f };
+	vertices[2].texcoord = { (spriteNum.x + 1) / 7, spriteNum.y / 5 };
 	vertices[3].position = { -wr, -hr, -0.01f };
-	vertices[3].texcoord = { 0.f, 0.f };
+	vertices[3].texcoord = { spriteNum.x / 7, spriteNum.y / 5 };
 
 	// Counterclockwise as it's the default opengl front winding direction.
 	uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
@@ -272,7 +277,7 @@ const Team Player::get_team() {
 }
 
 vec2 Player::get_bounding_box() {
-    return {fabs(physics.scale.x) * player_texture.width * 0.9f, fabs(physics.scale.y) * player_texture.height*0.9f};
+    return {fabs(physics.scale.x) * spriteSize.x * 0.9f, fabs(physics.scale.y) * spriteSize.y*0.9f};
 }
 
 bool Player::collides_with_tile(const Tile &tile) {
