@@ -12,7 +12,7 @@ Player::Player(Team team, vec2 position) {
     this->team.assigned = team;
     this->position.pos_x = position.x;
     this->position.pos_y = position.y;
-	spriteNum = { 0, 0 };
+	spriteNum = {3, 4 };
     this->stuck = false;
 //    this->player_color = {1.f, 1.f, 1.f};
 }
@@ -42,21 +42,21 @@ bool Player::init()
 	}
 	
 
-	spriteSize.x = player_texture.width / 7;
-	spriteSize.y = player_texture.height / 5;
+	spriteSize.x = player_texture.width / 7.0f;
+	spriteSize.y = player_texture.height / 5.0f;
 
 	// The position corresponds to the center of the texture.
-	float wr = spriteSize.x * (spriteNum.x + 1) * 0.8f;
-	float hr = spriteSize.y * (spriteNum.y + 1)  * 0.8f;
+	float wr = spriteSize.x * spriteNum.x + 0.5f * spriteSize.x;
+	float hr = spriteSize.y * spriteNum.y + 0.5f * spriteSize.y;
 
 	TexturedVertex vertices[4];
-	vertices[0].position = { -wr, +hr, -0.01f };
+	vertices[0].position = { wr - spriteSize.x , hr + spriteSize.y , -0.01f };
 	vertices[0].texcoord = { spriteNum.x / 7, (spriteNum.y + 1) / 5 };
-	vertices[1].position = { +wr, +hr, -0.01f };
+	vertices[1].position = { wr + spriteSize.x , hr + spriteSize.y, -0.01f };
 	vertices[1].texcoord = { (spriteNum.x + 1) / 7, (spriteNum.y + 1) / 5, };
-	vertices[2].position = { +wr, -hr, -0.01f };
+	vertices[2].position = { wr + spriteSize.x , hr - spriteSize.y , -0.01f };
 	vertices[2].texcoord = { (spriteNum.x + 1) / 7, spriteNum.y / 5 };
-	vertices[3].position = { -wr, -hr, -0.01f };
+	vertices[3].position = { wr - spriteSize.x , hr - spriteSize.y , -0.01f };
 	vertices[3].texcoord = { spriteNum.x / 7, spriteNum.y / 5 };
 
 	// Counterclockwise as it's the default opengl front winding direction.
@@ -87,10 +87,13 @@ bool Player::init()
 	// Setting initial values
 	motion.speed = 200.f;
 
+	this->position.pos_x -= spriteSize.x * (spriteNum.x + 0.5) * 0.3 ;
+	this->position.pos_y -= spriteSize.y * (spriteNum.y + 0.5) * 0.3 ;
+
 	physics.scale = { 0.3f, 0.3f };
 	currDir = { 0, 0, 0, 0, 0 };
 	m_is_alive = true;
-
+	std::cout << this->position.pos_x << "  " << this->position.pos_y << std::endl;
 	return true;
 }
 
@@ -140,11 +143,13 @@ void Player::draw(const mat3 &projection) {
     // REMOVE THE FOLLOWING LINES BEFORE ADDING ANY TRANSFORMATION CODE
     transform.translate({position.pos_x, position.pos_y});
 
-    if (currDir.flip) {
-        transform.scale({-physics.scale.x, physics.scale.y});
-    } else {
-        transform.scale(physics.scale);
-    }
+    //if (currDir.flip) {
+    //    transform.scale({-physics.scale.x, physics.scale.y});
+    //} else {
+    //   
+    //}
+
+	transform.scale(physics.scale);
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     transform.end();
