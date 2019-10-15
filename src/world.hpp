@@ -4,12 +4,7 @@
 #include "common.hpp"
 
 #include "tile.hpp"
-
-#include "player.hpp"
-#include "castle.hpp"
-#include "itemBoard.hpp"
-#include "background.hpp"
-#include "bandit.hpp"
+//#include "background.hpp"
 
 
 // stlib
@@ -19,8 +14,13 @@
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
 #include <SDL_mixer.h>
+#include <ecs/common_ecs.hpp>
+#include <systems/movement_system.hpp>
+#include <memory>
+#include <systems/player_input_system.hpp>
+#include <systems/render_system.hpp>
 
-// Container for all our entities and game logic. Individual rendering / update is 
+// Container for all our entities and game logic. Individual rendering / update is
 // deferred to the relative update() methods
 class World
 {
@@ -63,34 +63,26 @@ private:
 	GLFWwindow* m_window;
 	float m_screen_scale; // Screen to pixel coordinates scale factor
 	vec2 m_screen_size;
-	std::vector<vec2> m_start_position;
 
 	// Screen texture
 	GLuint m_frame_buffer;
 	Texture m_screen_tex;
 
 	// Background
-	Background m_background;
+	//Background m_background;
 
 	// Game entities
-	std::vector<std::vector<Tile> > m_tiles;
-	std::vector<Player*> players;
-    std::vector<Bandit*> bandits;
-	std::vector<Castle*> castles;
-    ItemBoard* p1_board;
-    ItemBoard* p2_board;
+    std::vector<Entity> entities;
+    std::vector<std::vector<Tile>> m_tiles;
+
+    std::shared_ptr<MovementSystem> movementSystem;
+    std::shared_ptr<PlayerInputSystem> playerInputSystem;
+    std::shared_ptr<SpriteRenderSystem> spriteRenderSystem;
 
 	float m_current_speed;
     float m_next_bandit_spawn;
 
-
-//	Mix_Music* m_background_music;
-//	Mix_Chunk* m_player_dead_sound;
-//	Mix_Chunk* m_player_eat_sound;
-
 	// C++ rng
 	std::default_random_engine m_rng;
 	std::uniform_real_distribution<float> m_real_dist; // default 0..1
-
-    vec2 get_random_direction();
 };

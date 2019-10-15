@@ -153,7 +153,7 @@
 #endif
 
 /*
- * End system-specific stuff.
+ * End systems-specific stuff.
  **********************************************************************/
 
 
@@ -2166,7 +2166,7 @@ typedef void (APIENTRYP PFNGLEGLIMAGETARGETRENDERBUFFERSTORAGEOESPROC) (GLenum t
 #endif
 
 /*
- * End system-specific stuff
+ * End systems-specific stuff
  **********************************************************************/
 
 

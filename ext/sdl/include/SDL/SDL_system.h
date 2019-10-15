@@ -170,7 +170,7 @@ typedef enum
 
 
 /**
- *  \brief Retrieves a WinRT defined path on the local file system
+ *  \brief Retrieves a WinRT defined path on the local file systems
  *
  *  \note Documentation on most app-specific path types on WinRT
  *      can be found on MSDN, at the URL:
@@ -187,7 +187,7 @@ typedef enum
 extern DECLSPEC const wchar_t * SDLCALL SDL_WinRTGetFSPathUNICODE(SDL_WinRT_Path pathType);
 
 /**
- *  \brief Retrieves a WinRT defined path on the local file system
+ *  \brief Retrieves a WinRT defined path on the local file systems
  *
  *  \note Documentation on most app-specific path types on WinRT
  *      can be found on MSDN, at the URL:

@@ -354,7 +354,7 @@
 /* Enable Vulkan support */
 #undef SDL_VIDEO_VULKAN
 
-/* Enable system power support */
+/* Enable systems power support */
 #undef SDL_POWER_LINUX
 #undef SDL_POWER_WINDOWS
 #undef SDL_POWER_MACOSX
@@ -363,7 +363,7 @@
 #undef SDL_POWER_EMSCRIPTEN
 #undef SDL_POWER_HARDWIRED
 
-/* Enable system filesystem support */
+/* Enable systems filesystem support */
 #undef SDL_FILESYSTEM_HAIKU
 #undef SDL_FILESYSTEM_COCOA
 #undef SDL_FILESYSTEM_DUMMY

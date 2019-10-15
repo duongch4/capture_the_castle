@@ -146,7 +146,7 @@
 #define SDL_VIDEO_VULKAN 0
 #endif
 
-/* Enable system power support */
+/* Enable systems power support */
 #define SDL_POWER_UIKIT 1
 
 /* enable iPhone keyboard support */

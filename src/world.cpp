@@ -1,10 +1,16 @@
 // Header
 #include "world.hpp"
+#include "components.hpp"
+#include "texture_manager.hpp"
 
 // stlib
 #include <string.h>
 #include <cassert>
 #include <sstream>
+#include <ecs/ecs_manager.hpp>
+#include <systems/movement_system.hpp>
+#include <systems/player_input_system.hpp>
+#include <systems/render_system.hpp>
 
 // Same as static in c, local to compilation unit
 namespace {
@@ -16,6 +22,8 @@ namespace {
         }
     }
 }
+
+extern ECSManager ecsManager;
 
 World::World() :
 m_next_bandit_spawn(0.f)
@@ -33,30 +41,22 @@ World::~World() {
 bool World::init(vec2 screen)
 {
 	m_screen_size = screen;
+    m_current_speed = 1.f;
 
-	m_start_position.push_back({ 120.f, m_screen_size.y / 2 + 130.f });
-	m_start_position.push_back({ m_screen_size.x - 120.f, m_screen_size.y / 2 + 130.f });
+    //-------------------------------------------------------------------------
+    // GLFW / OGL Initialization
+    // Core Opengl 3.
+    glfwSetErrorCallback(glfw_err_cb);
+    if (!glfwInit())
+    {
+        fprintf(stderr, "Failed to initialize GLFW");
+        return false;
+    }
 
-	players.push_back(new Player(Team::PLAYER1, m_start_position[0]));
-	players.push_back(new Player(Team::PLAYER2, m_start_position[1]));
-
-	castles.push_back(new Castle(Team::PLAYER1, { 120.f, m_screen_size.y / 2 }));
-	castles.push_back(new Castle(Team::PLAYER2, {m_screen_size.x - 120.f, m_screen_size.y / 2}));
-
-	//-------------------------------------------------------------------------
-	// GLFW / OGL Initialization
-	// Core Opengl 3.
-	glfwSetErrorCallback(glfw_err_cb);
-	if (!glfwInit())
-	{
-		fprintf(stderr, "Failed to initialize GLFW");
-		return false;
-	}
-
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
 #if __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
@@ -110,28 +110,154 @@ bool World::init(vec2 screen)
         return false;
     }
 
-    // TODO: Uncomment and modify to add background music
-//	m_background_music = Mix_LoadMUS(audio_path("music.wav"));
-//	m_player_dead_sound = Mix_LoadWAV(audio_path("player_dead.wav"));
-//	m_player_eat_sound = Mix_LoadWAV(audio_path("player_eat.wav"));
-//
-//	if (m_background_music == nullptr || m_player_dead_sound == nullptr || m_player_eat_sound == nullptr)
-//	{
-//		fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n make sure the data directory is present",
-//			audio_path("music.wav"),
-//			audio_path("player_dead.wav"),
-//			audio_path("player_eat.wav"));
-//		return false;
-//	}
-//
-//	// Playing background music indefinitely
-//	Mix_PlayMusic(m_background_music, -1);
-//
-//	fprintf(stderr, "Loaded music\n");
+	ecsManager.registerComponent<Motion>();
+	ecsManager.registerComponent<Transform>();
+	ecsManager.registerComponent<Team>();
+	ecsManager.registerComponent<Effect>();
+	ecsManager.registerComponent<Sprite>();
+	ecsManager.registerComponent<Mesh>();
 
-    m_current_speed = 1.f;
+	movementSystem = ecsManager.registerSystem<MovementSystem>();
+    {
+        Signature signature;
+        signature.set(ecsManager.getComponentType<Motion>());
+        signature.set(ecsManager.getComponentType<Transform>());
+        ecsManager.setSystemSignature<MovementSystem>(signature);
+    }
+    movementSystem->init();
 
-	// Hardcoded maze data, created using Tiled
+    playerInputSystem = ecsManager.registerSystem<PlayerInputSystem>();
+    {
+        Signature signature;
+        signature.set(ecsManager.getComponentType<Motion>());
+        signature.set(ecsManager.getComponentType<Transform>());
+        signature.set(ecsManager.getComponentType<Team>());
+        ecsManager.setSystemSignature<PlayerInputSystem>(signature);
+    }
+    playerInputSystem->init();
+
+    spriteRenderSystem = ecsManager.registerSystem<SpriteRenderSystem>();
+    {
+        Signature signature;
+        signature.set(ecsManager.getComponentType<Effect>());
+        signature.set(ecsManager.getComponentType<Sprite>());
+        signature.set(ecsManager.getComponentType<Mesh>());
+        signature.set(ecsManager.getComponentType<Transform>());
+        ecsManager.setSystemSignature<SpriteRenderSystem>(signature);
+    }
+    spriteRenderSystem->init();
+
+    // PLAYER 1
+    Entity player1 = ecsManager.createEntity();
+    ecsManager.addComponent<Transform>(player1, Transform{
+        { 120.f, m_screen_size.y / 2 + 130.f },
+        {0.4f, 0.4f}
+    });
+    ecsManager.addComponent<Motion>(player1, Motion{
+            {0, 0},
+            100.f
+    });
+    ecsManager.addComponent<Team>(player1, Team{TeamType::PLAYER1});
+    Effect player1Effect{};
+    player1Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+    ecsManager.addComponent<Effect>(player1, player1Effect);
+    Sprite player1Sprite = {textures_path("red_player/CaptureTheCastle_red_player_right.png")};
+    TextureManager::instance()->load_from_file(player1Sprite);
+    ecsManager.addComponent<Sprite>(player1, player1Sprite);
+    Mesh player1Mesh{};
+    player1Mesh.init(player1Sprite.width, player1Sprite.height);
+    ecsManager.addComponent<Mesh>(player1, player1Mesh);
+
+    // PLAYER 2
+    Entity player2 = ecsManager.createEntity();
+    ecsManager.addComponent<Transform>(player2, Transform{
+        { m_screen_size.x - 120.f, m_screen_size.y / 2 + 130.f },
+        {0.4f, 0.4f}
+    });
+    ecsManager.addComponent<Motion>(player2, Motion{
+            {0, 0},
+            100.f
+    });
+    ecsManager.addComponent<Team>(player2, Team{TeamType::PLAYER2});
+    Effect player2Effect{};
+    player2Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+    ecsManager.addComponent<Effect>(player2, player2Effect);
+    Sprite player2Sprite = {textures_path("blue_player/CaptureTheCastle_blue_player_right.png")};
+    TextureManager::instance()->load_from_file(player2Sprite);
+    ecsManager.addComponent<Sprite>(player2, player2Sprite);
+    Mesh player2Mesh{};
+    player2Mesh.init(player2Sprite.width, player2Sprite.height);
+    ecsManager.addComponent<Mesh>(player2, player2Mesh);
+
+    // CASTLE 1
+    Entity castle1 = ecsManager.createEntity();
+    ecsManager.addComponent<Transform>(castle1, Transform{
+            { 120.f, m_screen_size.y / 2 },
+            {0.5f, 0.5f}
+    });
+    ecsManager.addComponent<Team>(castle1, Team{TeamType::PLAYER1});
+    Effect castle1Effect{};
+    castle1Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+    ecsManager.addComponent<Effect>(castle1, castle1Effect);
+    Sprite castle1Sprite = {textures_path("castle/CaptureTheCastle_castle_red.png")};
+    TextureManager::instance()->load_from_file(castle1Sprite);
+    ecsManager.addComponent<Sprite>(castle1, castle1Sprite);
+    Mesh castle1Mesh{};
+    castle1Mesh.init(castle1Sprite.width, castle1Sprite.height);
+    ecsManager.addComponent<Mesh>(castle1, castle1Mesh);
+
+    // CASTLE 2
+    Entity castle2 = ecsManager.createEntity();
+    ecsManager.addComponent<Transform>(castle2, Transform{
+            {m_screen_size.x - 120.f, m_screen_size.y / 2},
+            {0.5f, 0.5f}
+    });
+    ecsManager.addComponent<Team>(castle2, Team{TeamType::PLAYER2});
+    Effect castle2Effect{};
+    castle2Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+    ecsManager.addComponent<Effect>(castle2, castle2Effect);
+    Sprite castle2Sprite = {textures_path("castle/CaptureTheCastle_castle_blue.png")};
+    TextureManager::instance()->load_from_file(castle2Sprite);
+    ecsManager.addComponent<Sprite>(castle2, castle2Sprite);
+    Mesh castle2Mesh{};
+    castle2Mesh.init(castle2Sprite.width, castle2Sprite.height);
+    ecsManager.addComponent<Mesh>(castle2, castle2Mesh);
+
+    // ITEM BOARD (PLAYER 1)
+    Entity player1_board = ecsManager.createEntity();
+    ecsManager.addComponent<Transform>(player1_board, Transform{
+            { 180.f, 65 },
+            {0.4f, 0.4f}
+    });
+    ecsManager.addComponent<Team>(player1_board, Team{TeamType::PLAYER1});
+    Effect player1BoardEffect{};
+    player1BoardEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+    ecsManager.addComponent<Effect>(player1_board, player1BoardEffect);
+    Sprite player1BoardSprite = {textures_path("ui/CaptureTheCastle_player_tile_red.png")};
+    TextureManager::instance()->load_from_file(player1BoardSprite);
+    ecsManager.addComponent<Sprite>(player1_board, player1BoardSprite);
+    Mesh player1BoardMesh{};
+    player1BoardMesh.init(player1BoardSprite.width, player1BoardSprite.height);
+    ecsManager.addComponent<Mesh>(player1_board, player1BoardMesh);
+
+    // ITEM BOARD (PLAYER 2)
+    Entity player2_board = ecsManager.createEntity();
+    ecsManager.addComponent<Transform>(player2_board, Transform{
+            { screen.x - 180.f, 65.f },
+            {0.4f, 0.4f}
+    });
+    ecsManager.addComponent<Team>(player2_board, Team{TeamType::PLAYER2});
+    Effect player2BoardEffect{};
+    player2BoardEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+    ecsManager.addComponent<Effect>(player2_board, player2BoardEffect);
+    Sprite player2BoardSprite = {textures_path("ui/CaptureTheCastle_player_tile_blue.png")};
+    TextureManager::instance()->load_from_file(player2BoardSprite);
+    ecsManager.addComponent<Sprite>(player2_board, player2BoardSprite);
+    Mesh player2BoardMesh{};
+    player2BoardMesh.init(player2BoardSprite.width, player2BoardSprite.height);
+    ecsManager.addComponent<Mesh>(player2_board, player2BoardMesh);
+
+    // Hardcoded maze data, created using Tiled
 	// Each number represent the id of a tile 
 	// Id is the position of a sprite in a sprite sheet starting from left to right, top to bottom 
 	int data[] = {
@@ -175,24 +301,7 @@ bool World::init(vec2 screen)
         }
     }
 
-    // TODO: CALL INIT ON ALL GAME ENTITIES
-
-    for (auto player : players) {
-        player->init();
-    }
-
-
-	for (auto castle : castles) {
-	    castle->init();
-	}
-
-	m_background.init();
-
-	p1_board = new ItemBoard(Team::PLAYER1, { 180.f, 65 });
-	p2_board = new ItemBoard(Team::PLAYER2, { screen.x - 180.f, 65.f });
-
-	p1_board->init();
-	p2_board->init();
+	//m_background.init();
 
     return true;
 }
@@ -205,30 +314,19 @@ void World::destroy() {
     Mix_CloseAudio();
 
     // TODO: DESTROY ALL GAME ENTITIES
-    for (auto bandit: bandits) {
-        bandit->destroy();
-    }
 
     // If we move to the next level, destroy all the tiles
-    for (auto &vector : m_tiles) {
-        for (auto &tile : vector) {
-            tile.destroy();
-        }
-    }
-
-    for (auto &vector : m_tiles) {
-        vector.clear();
-    }
-
-    m_tiles.clear();
-
-    for (auto player: players) {
-        player->destroy();
-    }
-
-    for (auto castle: castles) {
-        castle->destroy();
-    }
+//    for (auto &vector : m_tiles) {
+//        for (auto &tile : vector) {
+//            tile.destroy();
+//        }
+//    }
+//
+//    for (auto &vector : m_tiles) {s
+//        vector.clear();
+//    }
+//
+//    m_tiles.clear();
     glfwDestroyWindow(m_window);
 }
 
@@ -238,81 +336,72 @@ bool World::update(float elapsed_ms) {
     glfwGetFramebufferSize(m_window, &w, &h);
     vec2 screen = {(float) w / m_screen_scale, (float) h / m_screen_scale};
 
-    // TODO: COLLISION DETECTIONS
-
-    // TODO: SPAWN GAME ENTITIES
-
-    // Update each of tiles, the update function is empty for now
-    // Can be used in the future to animate the tile
-    for (auto &vector : m_tiles) {
-        for (auto &tile : vector) {
-            tile.update(elapsed_ms);
-        }
-    }
-
     // Spawning new bandits
-    m_next_bandit_spawn -= elapsed_ms * m_current_speed;
-    if (bandits.size() < MAX_BANDITS && m_next_bandit_spawn < 0.f)
-    {
-        if (!spawn_bandit())
-            return false;
-
-        Bandit* new_bandit = bandits.back();
-
-        // Setting random initial position
-        new_bandit->set_position({ 299, 191});
-
-        // Setting random initial direction to right
-        new_bandit->set_direction({1, 0});
-
-        // Next spawn
-        m_next_bandit_spawn = (BANDIT_DELAY_MS / 2) + m_real_dist(m_rng) * (BANDIT_DELAY_MS / 2);
-    }
+//    m_next_bandit_spawn -= elapsed_ms * m_current_speed;
+//    if (bandits.size() < MAX_BANDITS && m_next_bandit_spawn < 0.f)
+//    {
+//        if (!spawn_bandit())
+//            return false;
+//
+//        Bandit* new_bandit = bandits.back();
+//
+//        // Setting random initial position
+//        new_bandit->set_position({ 299, 191});
+//
+//        // Setting random initial direction to right
+//        new_bandit->set_direction({1, 0});
+//
+//        // Next spawn
+//        m_next_bandit_spawn = (BANDIT_DELAY_MS / 2) + m_real_dist(m_rng) * (BANDIT_DELAY_MS / 2);
+//    }
 
     // Player update
-    for (auto player : players) {
-            const float offset_x = 100.f;
-            const float bottom_offset_y = 80.f;
-            const float top_offset_y = 150.f;
-
-            if (player->get_position().x > (screen.x - offset_x)) {
-                player->set_position({screen.x - offset_x, player->get_position().y});
-            }
-            if (player->get_position().x < (0 + offset_x)) {
-                player->set_position({0 + offset_x, player->get_position().y});
-            }
-            if (player->get_position().y > (screen.y - bottom_offset_y)) {
-                player->set_position({player->get_position().x, screen.y - bottom_offset_y});
-            }
-            if (player->get_position().y < (0 + top_offset_y)) {
-                player->set_position({player->get_position().x, 0 + top_offset_y});
-            }
-        }
-
-        for (auto &&tile_list : m_tiles) {
-            for (auto &tile : tile_list) {
-                if (tile.is_wall()) {
-                    for (auto player : players) {
-                        if (player->collides_with_tile(tile) && !player->is_stuck()) {
-                            player->handle_wall_collision(tile);
-                        } else {
-                            player->set_stuck(false);
-                        }
-                    }
-                    for (auto bandit: bandits) {
-                        if (bandit->collides_with_tile(tile)) {
-                            bandit->handle_wall_collision();
-                        }
-                    }
-                }
-            }
-        }
-        for (auto player : players) {
-            player->update(elapsed_ms);
-        }
-        for (auto bandit: bandits) {
-            bandit->update(elapsed_ms);
-        }
+//    for (auto player : players) {
+//            const float offset_x = 100.f;
+//            const float bottom_offset_y = 80.f;
+//            const float top_offset_y = 150.f;
+//
+//            if (player->get_position().x > (screen.x - offset_x)) {
+//                player->set_position({screen.x - offset_x, player->get_position().y});
+//            }
+//            if (player->get_position().x < (0 + offset_x)) {
+//                player->set_position({0 + offset_x, player->get_position().y});
+//            }
+//            if (player->get_position().y > (screen.y - bottom_offset_y)) {
+//                player->set_position({player->get_position().x, screen.y - bottom_offset_y});
+//            }
+//            if (player->get_position().y < (0 + top_offset_y)) {
+//                player->set_position({player->get_position().x, 0 + top_offset_y});
+//            }
+//        }
+//
+//        for (auto &&tile_list : m_tiles) {
+//            for (auto &tile : tile_list) {
+//                if (tile.is_wall()) {
+//                    for (auto player : players) {
+//                        if (player->collides_with_tile(tile) && !player->is_stuck()) {
+//                            player->handle_wall_collision(tile);
+//                        } else {
+//                            player->set_stuck(false);
+//                        }
+//                    }
+//                    for (auto bandit: bandits) {
+//                        if (bandit->collides_with_tile(tile)) {
+//                            bandit->handle_wall_collision();
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        for (auto player : players) {
+//            player->update(elapsed_ms);
+//        }
+//        for (auto bandit: bandits) {
+//            bandit->update(elapsed_ms);
+//        }
+//
+        playerInputSystem->update();
+        movementSystem->update(elapsed_ms);
         return true;
 }
 
@@ -378,24 +467,12 @@ void World::draw()
 		}
 	}
 
-	for (auto castle : castles) {
-	    castle->draw(projection_2D);
-	}
+//	for (auto bandit: bandits) {
+//	    bandit->draw(projection_2D);
+//	}
 
+    spriteRenderSystem->draw(projection_2D);
 
-	for (auto player : players) {
-		player->draw(projection_2D);
-	}
-
-	for (auto bandit: bandits) {
-	    bandit->draw(projection_2D);
-	}
-
-	p1_board->draw(projection_2D);
-	p2_board->draw(projection_2D);
-
-
-    //////////////////
     // Presenting
     glfwSwapBuffers(m_window);
 
@@ -406,7 +483,7 @@ bool World::is_over() const {
     return glfwWindowShouldClose(m_window);
 }
 
-// Creates a new tile and if successfull adds it to the list of tile
+// Creates a new tile and if successful adds it to the list of tile
 bool World::spawn_tile(int sprite_id, int num_horizontal, int num_vertical, int width, int gap_width, int gridX, int gridY)
 {
 	Tile tile;
@@ -419,17 +496,17 @@ bool World::spawn_tile(int sprite_id, int num_horizontal, int num_vertical, int 
 	return false;
 }
 
-bool World::spawn_bandit()
-{
-    Bandit* bandit = new Bandit();
-    if (bandit->init())
-    {
-        bandits.emplace_back(bandit);
-        return true;
-    }
-    fprintf(stderr, "Failed to spawn bandit");
-    return false;
-}
+//bool World::spawn_bandit()
+//{
+//    Bandit* bandit = new Bandit();
+//    if (bandit->init())
+//    {
+//        bandits.emplace_back(bandit);
+//        return true;
+//    }
+//    fprintf(stderr, "Failed to spawn bandit");
+//    return false;
+//}
 
 void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 {
@@ -441,40 +518,43 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     if (action == GLFW_RELEASE) {
-        players[0]->set_direction(GLFW_KEY_S);
-        players[1]->set_direction(GLFW_KEY_S);
+        ecsManager.publish(new InputKeyEvent(InputKeys::DEFAULT));
     }
-
-	if (
-		action == GLFW_PRESS &&
-		(
-			key == GLFW_KEY_DOWN || key == GLFW_KEY_UP ||
-			key == GLFW_KEY_LEFT || key == GLFW_KEY_RIGHT
-			)
-		)
-	{
-		players[1]->set_direction(key);
-	}
 
 	if (action == GLFW_PRESS)
 	{
+	    InputKeys k;
 		switch (key)
 		{
-		case GLFW_KEY_S:
-			players[0]->set_direction(GLFW_KEY_DOWN);
-			break;
-		case GLFW_KEY_W:
-			players[0]->set_direction(GLFW_KEY_UP);
-			break;
-		case GLFW_KEY_D:
-			players[0]->set_direction(GLFW_KEY_RIGHT);
-			break;
-		case GLFW_KEY_A:
-			players[0]->set_direction(GLFW_KEY_LEFT);
-			break;
-		default:
-			break;
+		    case GLFW_KEY_DOWN:
+		        k = InputKeys::DOWN;
+		        break;
+            case GLFW_KEY_UP:
+                k = InputKeys::UP;
+                break;
+            case GLFW_KEY_LEFT:
+                k = InputKeys::LEFT;
+                break;
+            case GLFW_KEY_RIGHT:
+                k = InputKeys::RIGHT;
+                break;
+            case GLFW_KEY_S:
+		        k =InputKeys::S;
+			    break;
+            case GLFW_KEY_W:
+                k = InputKeys::W;
+                break;
+            case GLFW_KEY_D:
+                k =InputKeys::D;
+                break;
+            case GLFW_KEY_A:
+                k = InputKeys::A;
+                break;
+            default:
+                k = InputKeys::DEFAULT;
+                break;
 		}
+		ecsManager.publish(new InputKeyEvent(k));
 	}
 
 	// Resetting game
@@ -497,24 +577,12 @@ void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
 }
 
 void World::reset() {
-    int w, h;
-    glfwGetWindowSize(m_window, &w, &h);
-    for (auto player : players) {
-        player->destroy();
-        player->init();
-    }
-    m_background.reset_player_dead_time();
-    m_current_speed = 1.f;
-}
-
-vec2 World::get_random_direction() {
-    std::uniform_int_distribution<int> int_dist(-1, 1);
-    int dir_x, dir_y;
-    dir_x = int_dist(m_rng);
-    dir_y = int_dist(m_rng);
-    if(abs(dir_x) == abs(dir_y)) {
-        return get_random_direction();
-    } else {
-        return {static_cast<float>(dir_x), static_cast<float>(dir_y)};
-    }
+//    int w, h;
+//    glfwGetWindowSize(m_window, &w, &h);
+//    for (auto player : players) {
+//        player->destroy();
+//        player->init();
+//    }
+//    m_background.reset_player_dead_time();
+//    m_current_speed = 1.f;
 }

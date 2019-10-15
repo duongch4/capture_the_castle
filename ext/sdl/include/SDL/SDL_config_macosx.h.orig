@@ -182,7 +182,7 @@
 #define  SDL_VIDEO_VULKAN 0
 #endif
 
-/* Enable system power support */
+/* Enable systems power support */
 #define SDL_POWER_MACOSX 1
 
 /* enable filesystem support */

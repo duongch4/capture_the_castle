@@ -5,8 +5,6 @@
 
 Texture Tile::tile_texture;
 
-bool Tile::init() { return false; }
-
 // This function take in an sprite_id (position of the sprite in a sprite sheet), number of horizontal tile, 
 // number of vertical tiles, width and height of a single tile. Create a tile with the correct sprite (texture coordinate)
 bool Tile::init(int sprite_id, int num_horizontal, int num_vertical, int width, int gap_width)
@@ -44,8 +42,8 @@ bool Tile::init(int sprite_id, int num_horizontal, int num_vertical, int width, 
 	// Texture mapping start from the top left (0,0) to bottom right (1,1)
 	TexturedVertex vertices[4];
 	vertices[0].position = { -wr, +hr, -0.02f };
-	// TODO: +0.01f to prevent texture bleeding for now, fix this later 
-	vertices[0].texcoord = { ((sprite_id - 1) % num_horizontal) * tile_width, int((sprite_id - 1) / num_horizontal) * tile_height + tile_act_height }; // Bottom left 
+	// TODO: +0.01f to prevent texture bleeding for now, fix this later
+	vertices[0].texcoord = { ((sprite_id - 1) % num_horizontal) * tile_width, int((sprite_id - 1) / num_horizontal) * tile_height + tile_act_height }; // Bottom left
 	vertices[1].position = { +wr, +hr, -0.02f };
 	vertices[1].texcoord = { (((sprite_id - 1) % num_horizontal) * tile_width) + tile_act_width, int((sprite_id - 1) / num_horizontal) * tile_height + tile_act_height }; // Bottom right
 	vertices[2].position = { +wr, -hr, -0.02f };
@@ -78,17 +76,10 @@ bool Tile::init(int sprite_id, int num_horizontal, int num_vertical, int width, 
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
-	// Setting initial values
-	// To set a default position, rotation and speed, uncomment the section below
-	//position.pos_x = 100.f;
-	//position.pos_y = 100.f;					  
-	//motion.radians = 0.f;
-	//motion.speed = 0.f;
-
 	// Setting initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
-	// To make a square, scale the x and y based on the width:height ratio of the sprite sheet 
-	physics.scale = { 0.048f, 0.072f };
+	// To make a square, scale the x and y based on the width:height ratio of the sprite sheet
+	transform.scale = { 0.048f, 0.072f };
 
 	return true;
 }
@@ -105,20 +96,21 @@ void Tile::destroy()
 	glDeleteShader(effect.program);
 }
 
-void Tile::update(float ms)
-{
-	// Do nothing for now, but if we ever wanted to animate the tile, this can be used.
-}
-
 void Tile::draw(const mat3& projection)
 {
-	// Transformation code, see Rendering and Transformation in the template specification for more info
 	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
-	transform.begin();
-	transform.translate(vec2{position.pos_x, position.pos_y});
-	//transform.rotate(motion.radians);
-	transform.scale(physics.scale);
-	transform.end();
+	// begin transform
+    out = { { 1.f, 0.f, 0.f }, { 0.f, 1.f, 0.f}, { 0.f, 0.f, 1.f} };
+
+    // apply translation
+    float offset_x = transform.position.x;
+    float offset_y = transform.position.y;
+    mat3 T = { { 1.f, 0.f, 0.f },{ 0.f, 1.f, 0.f },{ offset_x, offset_y, 1.f } };
+    out = mul(out, T);
+
+    // apply scale
+    mat3 S = { { transform.scale.x, 0.f, 0.f },{ 0.f, transform.scale.y, 0.f },{ 0.f, 0.f, 1.f } };
+    out = mul(out, S);
 
 	// Setting shaders
 	glUseProgram(effect.program);
@@ -150,7 +142,7 @@ void Tile::draw(const mat3& projection)
 	glBindTexture(GL_TEXTURE_2D, tile_texture.id);
 
 	// Setting uniform values to the currently bound program
-	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform.out);
+	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&out);
 //	float color[] = { 1.f, 1.f, 1.f };
     float color[] = { tile_color.x, tile_color.y, tile_color.z}; //For collision debugging purposes
 	glUniform3fv(color_uloc, 1, color);
@@ -162,20 +154,20 @@ void Tile::draw(const mat3& projection)
 
 vec2 Tile::get_position()const
 {
-	return vec2{ position.pos_x, position.pos_y };
+	return vec2{transform.position.x, transform.position.y};
 }
 
 void Tile::set_position(vec2 position1)
 {
-	position.pos_x = position1.x;
-	position.pos_y = position1.y;
+    transform.position.x = position1.x;
+    transform.position.y = position1.y;
 }
 
 vec2 Tile::get_bounding_box() const
 {
-	// Returns the local bounding coordinates scaled by the current size of the tile 
+	// Returns the local bounding coordinates scaled by the current size of the tile
 	// fabs is to avoid negative scale due to the facing direction.
-	return { std::fabs(physics.scale.x) * tile_texture.width * 0.75f, std::fabs(physics.scale.y) * tile_texture.height * 0.75f};
+	return { std::fabs(transform.scale.x) * tile_texture.width * 0.75f, std::fabs(transform.scale.y) * tile_texture.height * 0.75f};
 }
 
 bool Tile::is_wall() const {
