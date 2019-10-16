@@ -14,7 +14,8 @@ extern ECSManager ecsManager;
 class PlayerInputSystem : public System {
 public:
     void init() {
-        ecsManager.subscribe(this, &PlayerInputSystem::inputListener);
+        ecsManager.subscribe(this, &PlayerInputSystem::onKeyListener);
+        ecsManager.subscribe(this, &PlayerInputSystem::onReleaseListener);
     }
     void update() {
         for (auto& e: entities) {
@@ -22,54 +23,63 @@ public:
             auto& transform = ecsManager.getComponent<Transform>(e);
             auto& team = ecsManager.getComponent<Team>(e);
 
-            if(team.assigned == TeamType::PLAYER2) {
-                switch(key) {
-                    case InputKeys::UP :
-                        motion.direction = {0, -1};
-                        break;
-                    case InputKeys::DOWN :
-                        motion.direction = {0, 1};
-                        break;
-                    case InputKeys::RIGHT :
-                        motion.direction = {1, 0};
-                        transform.scale = {-transform.scale.x, transform.scale.y};
-                        break;
-                    case InputKeys::LEFT :
-                        transform.scale = {-transform.scale.x, transform.scale.y};
-                        motion.direction = {-1, 0};
-                        break;
-                    default:
-                        motion.direction = {0, 0};
-                        break;
+            vec2 next_dir = {0, 0};
+            if (team.assigned == TeamType::PLAYER1) {
+                for(auto key: PLAYER1KEYS) {
+                    if (keysPressed[key]) {
+                        switch(key) {
+                            case InputKeys::W :
+                                next_dir = {0, -1};
+                                break;
+                            case InputKeys::S :
+                                next_dir = {0, 1};
+                                break;
+                            case InputKeys::D :
+                                next_dir = {1, 0};
+                                break;
+                            case InputKeys::A :
+                                next_dir = {-1, 0};
+                                break;
+                            default:
+                                break;
+                        }
+                    }
                 }
-            } else if (team.assigned == TeamType::PLAYER1) {
-                switch(key) {
-                    case InputKeys::W :
-                        motion.direction = {0, -1};
-                        break;
-                    case InputKeys::S :
-                        motion.direction = {0, 1};
-                        break;
-                    case InputKeys::D :
-                        transform.scale = {-transform.scale.x, transform.scale.y};
-                        motion.direction = {1, 0};
-                        break;
-                    case InputKeys::A :
-                        transform.scale = {-transform.scale.x, transform.scale.y};
-                        motion.direction = {-1, 0};
-                        break;
-                    default:
-                        motion.direction = {0, 0};
-                        break;
+            } else if (team.assigned == TeamType::PLAYER2) {
+                for (auto key: PLAYER2KEYS) {
+                    if (keysPressed[key]) {
+                        switch(key) {
+                            case InputKeys::UP :
+                                next_dir = {0, -1};
+                                break;
+                            case InputKeys::DOWN :
+                                next_dir = {0, 1};
+                                break;
+                            case InputKeys::RIGHT :
+                                next_dir = {1, 0};
+                                break;
+                            case InputKeys::LEFT :
+                                next_dir = {-1, 0};
+                                break;
+                            default:
+                                break;
+                        }
+                    }
                 }
             }
+            motion.direction = next_dir;
         }
     }
 
 private:
-    InputKeys key = InputKeys::DEFAULT;
-    void inputListener(InputKeyEvent* input) {
-        key = input->key;
+    const std::vector<InputKeys> PLAYER1KEYS = {InputKeys::W, InputKeys::A, InputKeys::S, InputKeys::D};
+    const std::vector<InputKeys> PLAYER2KEYS = {InputKeys::UP, InputKeys::DOWN, InputKeys::RIGHT, InputKeys::LEFT};
+    std::map<InputKeys, bool> keysPressed;
+    void onKeyListener(InputKeyEvent* input) {
+        keysPressed[input->key] = true;
+    };
+    void onReleaseListener(KeyReleaseEvent* input) {
+        keysPressed[input->keyReleased] = false;
     };
 };
 

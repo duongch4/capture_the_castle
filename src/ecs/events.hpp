@@ -13,4 +13,11 @@ struct InputKeyEvent: public Event {
     }
     InputKeys key;
 };
+
+struct KeyReleaseEvent: public Event {
+    KeyReleaseEvent(InputKeys key) {
+        this->keyReleased = key;
+    }
+    InputKeys keyReleased;
+};
 #endif //CAPTURE_THE_CASTLE_EVENTS_HPP

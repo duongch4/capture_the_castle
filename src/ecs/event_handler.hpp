@@ -34,6 +34,7 @@ public:
         // Cast event to the correct type and call member function
         (instance->*memberFunction)(static_cast<EventType*>(e));
     }
+
 private:
     // Pointer to class instance
     T * instance;
