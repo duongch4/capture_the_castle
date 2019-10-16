@@ -4,7 +4,7 @@
 #include "texture_manager.hpp"
 
 // stlib
-#include <string.h>
+#include <cstring>
 #include <cassert>
 #include <sstream>
 #include <ecs/ecs_manager.hpp>
@@ -510,52 +510,41 @@ bool World::spawn_tile(int sprite_id, int num_horizontal, int num_vertical, int 
 
 void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 {
-    // TODO: HANDLE KEY INPUTS
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // HANDLE SALMON MOVEMENT HERE
-    // key is of 'type' GLFW_KEY_
-    // action can be GLFW_PRESS GLFW_RELEASE GLFW_REPEAT
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-    if (action == GLFW_RELEASE) {
-        ecsManager.publish(new InputKeyEvent(InputKeys::DEFAULT));
+    InputKeys k = InputKeys :: DEFAULT;
+    switch (key)
+    {
+        case GLFW_KEY_DOWN:
+            k = InputKeys::DOWN;
+            break;
+        case GLFW_KEY_UP:
+            k = InputKeys::UP;
+            break;
+        case GLFW_KEY_LEFT:
+            k = InputKeys::LEFT;
+            break;
+        case GLFW_KEY_RIGHT:
+            k = InputKeys::RIGHT;
+            break;
+        case GLFW_KEY_S:
+            k =InputKeys::S;
+            break;
+        case GLFW_KEY_W:
+            k = InputKeys::W;
+            break;
+        case GLFW_KEY_D:
+            k =InputKeys::D;
+            break;
+        case GLFW_KEY_A:
+            k = InputKeys::A;
+            break;
+        default:
+            break;
     }
-
-	if (action == GLFW_PRESS)
-	{
-	    InputKeys k;
-		switch (key)
-		{
-		    case GLFW_KEY_DOWN:
-		        k = InputKeys::DOWN;
-		        break;
-            case GLFW_KEY_UP:
-                k = InputKeys::UP;
-                break;
-            case GLFW_KEY_LEFT:
-                k = InputKeys::LEFT;
-                break;
-            case GLFW_KEY_RIGHT:
-                k = InputKeys::RIGHT;
-                break;
-            case GLFW_KEY_S:
-		        k =InputKeys::S;
-			    break;
-            case GLFW_KEY_W:
-                k = InputKeys::W;
-                break;
-            case GLFW_KEY_D:
-                k =InputKeys::D;
-                break;
-            case GLFW_KEY_A:
-                k = InputKeys::A;
-                break;
-            default:
-                k = InputKeys::DEFAULT;
-                break;
-		}
-		ecsManager.publish(new InputKeyEvent(k));
-	}
+    if (action == GLFW_PRESS && k != InputKeys::DEFAULT) {
+        ecsManager.publish(new InputKeyEvent(k));
+    } else if (action == GLFW_RELEASE && k != InputKeys::DEFAULT) {
+        ecsManager.publish(new KeyReleaseEvent(k));
+    }
 
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
