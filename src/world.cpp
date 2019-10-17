@@ -269,46 +269,48 @@ bool World::init(vec2 screen)
     // Hardcoded maze data, created using Tiled
 	// Each number represent the id of a tile 
 	// Id is the position of a sprite in a sprite sheet starting from left to right, top to bottom 
-	int data[] = {
-            19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19,  1,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  3, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19,  6, 19,  5, 19,  5, 19, 19, 19,  5, 19,  1, 11,  3, 19, 19, 19,  1, 12, 19,  6, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19,  7, 11, 15, 19, 13, 11, 11, 11, 15, 19,  6, 19,  6, 19, 10, 11,  9, 19, 19,  6, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19, 19, 19, 19, 19,  6, 19, 17, 19, 19, 19,  6, 19, 19,  6, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19,  7, 11, 11, 12, 19, 19, 10, 11,  3, 19,  6, 19, 19, 19,  5, 19,  6, 19, 19,  6, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19, 19, 19,  6, 19, 13, 11, 11, 11,  9, 19, 17, 19, 19,  6, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19,  6, 19,  1, 12, 19, 10, 11, 11,  9, 19, 19, 19, 19, 19,  6, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19, 17, 19,  6, 19, 19, 19, 19, 19,  6, 19, 19, 19,  5, 19,  6, 19, 10, 12, 19, 17, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19, 19, 19,  6, 19, 19, 19,  5, 19, 17, 19, 10, 11,  9, 19,  6, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19,  5, 19,  6, 19, 10, 11,  9, 19, 19, 19, 19, 19,  6, 19,  7, 11, 11, 12, 19,  5, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19,  6, 19,  6, 19, 19, 19,  6, 19, 19, 19,  5, 19,  6, 19,  6, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19,  6, 19, 13, 11, 11, 11, 14, 11, 11, 11, 15, 19,  6, 19, 17, 19,  5, 19, 19,  6, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,  6, 19, 19, 19,  6, 19, 19,  6, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19, 13, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 14, 11, 11, 11, 11, 11, 11, 15, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
-	};
+	//int data[] = {
+ //           19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
+ //           19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
+ //           19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
+ //           19, 19, 19, 19, 19,  1,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  3, 19, 19, 19, 19, 19,
+ //           19, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19,
+ //           19, 19, 19, 19, 19,  6, 19,  5, 19,  5, 19, 19, 19,  5, 19,  1, 11,  3, 19, 19, 19,  1, 12, 19,  6, 19, 19, 19, 19, 19,
+ //           19, 19, 19, 19, 19,  7, 11, 15, 19, 13, 11, 11, 11, 15, 19,  6, 19,  6, 19, 10, 11,  9, 19, 19,  6, 19, 19, 19, 19, 19,
+ //           19, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19, 19, 19, 19, 19,  6, 19, 17, 19, 19, 19,  6, 19, 19,  6, 19, 19, 19, 19, 19,
+ //           19, 19, 19, 19, 19,  7, 11, 11, 12, 19, 19, 10, 11,  3, 19,  6, 19, 19, 19,  5, 19,  6, 19, 19,  6, 19, 19, 19, 19, 19,
+ //           19, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19, 19, 19,  6, 19, 13, 11, 11, 11,  9, 19, 17, 19, 19,  6, 19, 19, 19, 19, 19,
+ //           19, 19, 19, 19, 19,  6, 19,  1, 12, 19, 10, 11, 11,  9, 19, 19, 19, 19, 19,  6, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19,
+ //           19, 19, 19, 19, 19, 17, 19,  6, 19, 19, 19, 19, 19,  6, 19, 19, 19,  5, 19,  6, 19, 10, 12, 19, 17, 19, 19, 19, 19, 19,
+ //           19, 19, 19, 19, 19, 19, 19,  6, 19, 19, 19,  5, 19, 17, 19, 10, 11,  9, 19,  6, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
+ //           19, 19, 19, 19, 19,  5, 19,  6, 19, 10, 11,  9, 19, 19, 19, 19, 19,  6, 19,  7, 11, 11, 12, 19,  5, 19, 19, 19, 19, 19,
+ //           19, 19, 19, 19, 19,  6, 19,  6, 19, 19, 19,  6, 19, 19, 19,  5, 19,  6, 19,  6, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19,
+ //           19, 19, 19, 19, 19,  6, 19, 13, 11, 11, 11, 14, 11, 11, 11, 15, 19,  6, 19, 17, 19,  5, 19, 19,  6, 19, 19, 19, 19, 19,
+ //           19, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,  6, 19, 19, 19,  6, 19, 19,  6, 19, 19, 19, 19, 19,
+ //           19, 19, 19, 19, 19, 13, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 14, 11, 11, 11, 11, 11, 11, 15, 19, 19, 19, 19, 19,
+ //           19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
+	//};
 
 	// TODO: Refactor this later to move it into a TileMap class
 	// Create all the tiles based on the maze data we defined above
-	for (int j = 0; j < 19; j++) {
-		m_tiles.emplace_back(std::vector<Tile>(30));
-		for (int i = 0; i < 30; i++) {
-			int iter = j * 30 + i;
-			// First parameter is the id of the tile, second parameter is the number of tile horizontally in the sprite sheet
-			// Third parameter is the number of tile vertically in the sprite sheet.
-			if (!spawn_tile(data[iter], 6, 4, 68, 20, i, j)) {
-				return false;
-			}
+	//for (int j = 0; j < 19; j++) {
+	//	m_tiles.emplace_back(std::vector<Tile>(30));
+	//	for (int i = 0; i < 30; i++) {
+	//		int iter = j * 30 + i;
+	//		// First parameter is the id of the tile, second parameter is the number of tile horizontally in the sprite sheet
+	//		// Third parameter is the number of tile vertically in the sprite sheet.
+	//		if (!spawn_tile(data[iter], 6, 4, 68, 20, i, j)) {
+	//			return false;
+	//		}
 
-            Tile &new_tile = m_tiles[j][i];
+ //           Tile &new_tile = m_tiles[j][i];
 
-            // Setting the tile initial position
-            new_tile.set_position({i * 46.f + 23.f, j * 43.f + 19.f});
-        }
-    }
+ //           // Setting the tile initial position
+ //           new_tile.set_position({i * 46.f + 23.f, j * 43.f + 19.f});
+ //       }
+ //   }
+	
+	tilemap.init();
 
 	//m_background.init();
 
@@ -452,11 +454,12 @@ void World::draw()
 	//m_background.draw(projection_2D);
 
 	// Render all the tiles we have 
-	for (auto& vector : m_tiles) {
-		for (auto& tile : vector) {
-			tile.draw(projection_2D);
-		}
-	}
+	//for (auto& vector : m_tiles) {
+	//	for (auto& tile : vector) {
+	//		tile.draw(projection_2D);
+	//	}
+	//}
+	tilemap.draw(projection_2D);
 
     spriteRenderSystem->draw(projection_2D);
 
@@ -471,17 +474,17 @@ bool World::is_over() const {
 }
 
 // Creates a new tile and if successful adds it to the list of tile
-bool World::spawn_tile(int sprite_id, int num_horizontal, int num_vertical, int width, int gap_width, int gridX, int gridY)
-{
-	Tile tile;
-	if (tile.init(sprite_id, num_horizontal, num_vertical, width, gap_width))
-	{
-		m_tiles[gridY].emplace(m_tiles[gridY].begin() + gridX, tile);
-		return true;
-	}
-	fprintf(stderr, "Failed to spawn tile");
-	return false;
-}
+//bool World::spawn_tile(int sprite_id, int num_horizontal, int num_vertical, int width, int gap_width, int gridX, int gridY)
+//{
+//	Tile tile;
+//	if (tile.init(sprite_id, num_horizontal, num_vertical, width, gap_width))
+//	{
+//		m_tiles[gridY].emplace(m_tiles[gridY].begin() + gridX, tile);
+//		return true;
+//	}
+//	fprintf(stderr, "Failed to spawn tile");
+//	return false;
+//}
 
 void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 {

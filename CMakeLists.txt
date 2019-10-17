@@ -45,6 +45,7 @@ set(SOURCE_FILES
         src/world.cpp
         src/background.cpp
         src/tile.cpp
+		src/tilemap.cpp
         src/bandit.cpp
         src/soldier.cpp
         src/itemBoard.cpp
@@ -70,6 +71,7 @@ set(SOURCE_FILES
         src/world.hpp
         src/background.hpp
         src/tile.hpp
+		src/tilemap.hpp
         src/bandit.hpp
         src/soldier.hpp
         src/itemBoard.hpp

@@ -9,10 +9,12 @@ Texture Tile::tile_texture;
 // number of vertical tiles, width and height of a single tile. Create a tile with the correct sprite (texture coordinate)
 bool Tile::init(int sprite_id, int num_horizontal, int num_vertical, int width, int gap_width)
 {
+	tile_id = sprite_id;
+
 	// Load shared texture
 	if (!tile_texture.is_valid())
 	{
-		if (!tile_texture.load_from_file(textures_path("maze_sheet.png")))
+		if (!tile_texture.load_from_file(textures_path("maze_sprite_sheet.png")))
 		{
 			fprintf(stderr, "Failed to load tile texture!");
 			return false;
@@ -33,7 +35,8 @@ bool Tile::init(int sprite_id, int num_horizontal, int num_vertical, int width, 
 	float tile_act_height = (float)width / (float)((num_vertical * width) + ((num_vertical - 1) * gap_width));
 
     set_wall(false);
-    if (sprite_id != 19){
+	const int floor[3] = { 19, 23, 24 };
+    if (sprite_id != 19 && sprite_id != 23 && sprite_id != 24){
         set_wall(true);
     }
 
@@ -79,7 +82,7 @@ bool Tile::init(int sprite_id, int num_horizontal, int num_vertical, int width, 
 	// Setting initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
 	// To make a square, scale the x and y based on the width:height ratio of the sprite sheet
-	transform.scale = { 0.048f, 0.072f };
+	transform.scale = { 0.096f, 0.144f };
 
 	return true;
 }
@@ -167,7 +170,9 @@ vec2 Tile::get_bounding_box() const
 {
 	// Returns the local bounding coordinates scaled by the current size of the tile
 	// fabs is to avoid negative scale due to the facing direction.
-	return { std::fabs(transform.scale.x) * tile_texture.width * 0.75f, std::fabs(transform.scale.y) * tile_texture.height * 0.75f};
+	//return { std::fabs(transform.scale.x) * tile_texture.width * 0.75f, std::fabs(transform.scale.y) * tile_texture.height * 0.75f};
+	// Each tile is 48x48 pixel
+	return { 48, 48 };
 }
 
 bool Tile::is_wall() const {

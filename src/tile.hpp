@@ -34,6 +34,7 @@ public:
     void change_color(bool colliding);
 
 private:
+	int tile_id;
     vec3 tile_color;
     bool wall;
 
