@@ -17,7 +17,7 @@ public:
     static TextureManager* instance();
     virtual ~TextureManager();
 
-    bool load_from_file(Sprite& sprite);
+    bool load_from_file(Sprite& sprite, bool overwrite = false);
     bool unload_texture(const std::string tex_name);
     bool bind_texture(const std::string tex_name);
     void unload_all_textures();

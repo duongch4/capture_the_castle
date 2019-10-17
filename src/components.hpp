@@ -55,5 +55,8 @@ struct Team {
     TeamType assigned;
 };
 
+struct BanditSpawnComponent {};
+
+struct PlayerInputControlComponent {};
 
 #endif //CAPTURE_THE_CASTLE_COMPONENTS_HPP

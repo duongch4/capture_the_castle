@@ -11,11 +11,10 @@
 #include <systems/movement_system.hpp>
 #include <systems/player_input_system.hpp>
 #include <systems/render_system.hpp>
+#include <systems/bandit_spawn_system.hpp>
 
 // Same as static in c, local to compilation unit
 namespace {
-    const size_t MAX_BANDITS = 3;
-    const size_t BANDIT_DELAY_MS = 20000;
     namespace {
         void glfw_err_cb(int error, const char *desc) {
             fprintf(stderr, "%d: %s", error, desc);
@@ -25,11 +24,8 @@ namespace {
 
 extern ECSManager ecsManager;
 
-World::World() :
-m_next_bandit_spawn(0.f)
-{
-	// Seeding rng with random device
-	m_rng = std::default_random_engine(std::random_device()());
+World::World(){
+
 }
 
 World::~World() {
@@ -116,6 +112,8 @@ bool World::init(vec2 screen)
 	ecsManager.registerComponent<Effect>();
 	ecsManager.registerComponent<Sprite>();
 	ecsManager.registerComponent<Mesh>();
+	ecsManager.registerComponent<BanditSpawnComponent>();
+	ecsManager.registerComponent<PlayerInputControlComponent>();
 
 	movementSystem = ecsManager.registerSystem<MovementSystem>();
     {
@@ -132,6 +130,7 @@ bool World::init(vec2 screen)
         signature.set(ecsManager.getComponentType<Motion>());
         signature.set(ecsManager.getComponentType<Transform>());
         signature.set(ecsManager.getComponentType<Team>());
+        signature.set(ecsManager.getComponentType<PlayerInputControlComponent>());
         ecsManager.setSystemSignature<PlayerInputSystem>(signature);
     }
     playerInputSystem->init();
@@ -147,6 +146,14 @@ bool World::init(vec2 screen)
     }
     spriteRenderSystem->init();
 
+    banditSpawnSystem = ecsManager.registerSystem<BanditSpawnSystem>();
+    {
+        Signature signature;
+        signature.set(ecsManager.getComponentType<BanditSpawnComponent>());
+        ecsManager.setSystemSignature<BanditSpawnSystem>(signature);
+    }
+    banditSpawnSystem->init();
+
     // PLAYER 1
     Entity player1 = ecsManager.createEntity();
     ecsManager.addComponent<Transform>(player1, Transform{
@@ -158,6 +165,7 @@ bool World::init(vec2 screen)
             100.f
     });
     ecsManager.addComponent<Team>(player1, Team{TeamType::PLAYER1});
+    ecsManager.addComponent<PlayerInputControlComponent>(player1, PlayerInputControlComponent{});
     Effect player1Effect{};
     player1Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(player1, player1Effect);
@@ -179,6 +187,7 @@ bool World::init(vec2 screen)
             100.f
     });
     ecsManager.addComponent<Team>(player2, Team{TeamType::PLAYER2});
+    ecsManager.addComponent<PlayerInputControlComponent>(player2, PlayerInputControlComponent{});
     Effect player2Effect{};
     player2Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(player2, player2Effect);
@@ -336,25 +345,6 @@ bool World::update(float elapsed_ms) {
     glfwGetFramebufferSize(m_window, &w, &h);
     vec2 screen = {(float) w / m_screen_scale, (float) h / m_screen_scale};
 
-    // Spawning new bandits
-//    m_next_bandit_spawn -= elapsed_ms * m_current_speed;
-//    if (bandits.size() < MAX_BANDITS && m_next_bandit_spawn < 0.f)
-//    {
-//        if (!spawn_bandit())
-//            return false;
-//
-//        Bandit* new_bandit = bandits.back();
-//
-//        // Setting random initial position
-//        new_bandit->set_position({ 299, 191});
-//
-//        // Setting random initial direction to right
-//        new_bandit->set_direction({1, 0});
-//
-//        // Next spawn
-//        m_next_bandit_spawn = (BANDIT_DELAY_MS / 2) + m_real_dist(m_rng) * (BANDIT_DELAY_MS / 2);
-//    }
-
     // Player update
 //    for (auto player : players) {
 //            const float offset_x = 100.f;
@@ -400,6 +390,7 @@ bool World::update(float elapsed_ms) {
 //            bandit->update(elapsed_ms);
 //        }
 //
+        banditSpawnSystem->update(elapsed_ms);
         playerInputSystem->update();
         movementSystem->update(elapsed_ms);
         return true;
@@ -467,10 +458,6 @@ void World::draw()
 		}
 	}
 
-//	for (auto bandit: bandits) {
-//	    bandit->draw(projection_2D);
-//	}
-
     spriteRenderSystem->draw(projection_2D);
 
     // Presenting
@@ -495,18 +482,6 @@ bool World::spawn_tile(int sprite_id, int num_horizontal, int num_vertical, int 
 	fprintf(stderr, "Failed to spawn tile");
 	return false;
 }
-
-//bool World::spawn_bandit()
-//{
-//    Bandit* bandit = new Bandit();
-//    if (bandit->init())
-//    {
-//        bandits.emplace_back(bandit);
-//        return true;
-//    }
-//    fprintf(stderr, "Failed to spawn bandit");
-//    return false;
-//}
 
 void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 {

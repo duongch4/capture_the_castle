@@ -27,37 +27,38 @@ TextureManager::~TextureManager()
     inst = 0;
 }
 
-bool TextureManager::load_from_file(Sprite& sprite)
+bool TextureManager::load_from_file(Sprite& sprite, bool overwrite)
 {
     if (sprite.texture_name == nullptr)
         return false;
 
-    stbi_uc* data = stbi_load(sprite.texture_name, &sprite.width, &sprite.height, NULL, 4);
-    if (data == NULL)
-        return false;
-
-
-    gl_flush_errors();
-
-    GLuint gl_tex_name;
     // unload the current texture if id already in use
-    if(nameToId.find(sprite.texture_name) != nameToId.end()) {
+    if(nameToId.find(sprite.texture_name) != nameToId.end() && overwrite) {
         glDeleteTextures(1, &(nameToId[sprite.texture_name]));
     }
 
-    //generate an OpenGL texture ID for this texture
-    glGenTextures(1, &gl_tex_name);
-    //store the texture ID mapping
-    nameToId[sprite.texture_name] = gl_tex_name;
-    //bind to the new texture ID
-    glBindTexture(GL_TEXTURE_2D, gl_tex_name);
-    //store the texture data for OpenGL use
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, sprite.width, sprite.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    
-    // free image data
-    stbi_image_free(data);
+    if (nameToId.find(sprite.texture_name) == nameToId.end() || overwrite) {
+        GLuint gl_tex_name;
+        stbi_uc* data = stbi_load(sprite.texture_name, &sprite.width, &sprite.height, NULL, 4);
+        if (data == nullptr)
+            return false;
+
+        gl_flush_errors();
+
+        //generate an OpenGL texture ID for this texture
+        glGenTextures(1, &gl_tex_name);
+        //store the texture ID mapping
+        nameToId[sprite.texture_name] = gl_tex_name;
+        //bind to the new texture ID
+        glBindTexture(GL_TEXTURE_2D, gl_tex_name);
+        //store the texture data for OpenGL use
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, sprite.width, sprite.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+        // free image data
+        stbi_image_free(data);
+    }
     
     return !gl_has_errors();
 }
@@ -94,12 +95,8 @@ bool TextureManager::bind_texture(const std::string tex_name)
 
 void TextureManager::unload_all_textures()
 {
-    std::map<std::string, GLuint>::iterator i = nameToId.begin();
+    auto i = nameToId.begin();
     while(i != nameToId.end())
         unload_texture(i->first);
     nameToId.clear();
-}
-
-std::string TextureManager::generate_path(std::string text_name) {
-    return textures_path.append(text_name);
 }

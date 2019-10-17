@@ -37,6 +37,7 @@ set(SOURCE_FILES
         src/systems/movement_system.cpp
         src/systems/player_input_system.cpp
         src/systems/render_system.cpp
+        src/systems/bandit_spawn_system.cpp
         src/texture_manager.cpp
         src/components.cpp
         src/castle.cpp
@@ -62,6 +63,7 @@ set(SOURCE_FILES
         src/systems/movement_system.hpp
         src/systems/player_input_system.hpp
         src/systems/render_system.hpp
+        src/systems/bandit_spawn_system.hpp
         src/texture_manager.hpp
         src/castle.hpp
         src/player.hpp
