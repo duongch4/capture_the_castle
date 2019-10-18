@@ -37,7 +37,7 @@ bool TextureManager::load_from_file(Sprite& sprite, bool overwrite)
         glDeleteTextures(1, &(nameToId[sprite.texture_name]));
     }
 
-    if (nameToId.find(sprite.texture_name) == nameToId.end() || overwrite) {
+    if (!overwrite) {
         GLuint gl_tex_name;
         stbi_uc* data = stbi_load(sprite.texture_name, &sprite.width, &sprite.height, NULL, 4);
         if (data == nullptr)

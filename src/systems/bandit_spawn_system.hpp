@@ -16,7 +16,7 @@ public:
 
 private:
     const size_t MAX_BANDITS = 5;
-    const size_t BANDIT_DELAY_MS = 200;
+    const size_t BANDIT_DELAY_MS = 20000;
     float next_bandit_spawn;
 
     // C++ rng
