@@ -12,7 +12,7 @@ Player::Player(Team team, vec2 position) {
     this->team.assigned = team;
     this->position.pos_x = position.x;
     this->position.pos_y = position.y;
-	spriteNum = {3, 4 };
+	spriteNum = {5, 4 };
     this->stuck = false;
 //    this->player_color = {1.f, 1.f, 1.f};
 }
@@ -50,13 +50,13 @@ bool Player::init()
 	float hr = spriteSize.y * spriteNum.y + 0.5f * spriteSize.y;
 
 	TexturedVertex vertices[4];
-	vertices[0].position = { wr - spriteSize.x , hr + spriteSize.y , -0.01f };
+	vertices[0].position = { wr - spriteSize.x, hr + spriteSize.y, -0.01f };
 	vertices[0].texcoord = { spriteNum.x / 7, (spriteNum.y + 1) / 5 };
-	vertices[1].position = { wr + spriteSize.x , hr + spriteSize.y, -0.01f };
+	vertices[1].position = { wr + spriteSize.x, hr + spriteSize.y, -0.01f };
 	vertices[1].texcoord = { (spriteNum.x + 1) / 7, (spriteNum.y + 1) / 5, };
-	vertices[2].position = { wr + spriteSize.x , hr - spriteSize.y , -0.01f };
+	vertices[2].position = { wr + spriteSize.x, hr - spriteSize.y , -0.01f };
 	vertices[2].texcoord = { (spriteNum.x + 1) / 7, spriteNum.y / 5 };
-	vertices[3].position = { wr - spriteSize.x , hr - spriteSize.y , -0.01f };
+	vertices[3].position = { wr - spriteSize.x , hr - spriteSize.y, -0.01f };
 	vertices[3].texcoord = { spriteNum.x / 7, spriteNum.y / 5 };
 
 	// Counterclockwise as it's the default opengl front winding direction.
@@ -86,14 +86,11 @@ bool Player::init()
 
 	// Setting initial values
 	motion.speed = 200.f;
-
-	this->position.pos_x -= spriteSize.x * (spriteNum.x + 0.5) * 0.3 ;
-	this->position.pos_y -= spriteSize.y * (spriteNum.y + 0.5) * 0.3 ;
+	std::cout << "size x: " << spriteSize.x << "   size y: " << spriteSize.y << std::endl;
 
 	physics.scale = { 0.3f, 0.3f };
 	currDir = { 0, 0, 0, 0, 0 };
 	m_is_alive = true;
-	std::cout << this->position.pos_x << "  " << this->position.pos_y << std::endl;
 	return true;
 }
 
@@ -128,6 +125,7 @@ void Player::update(float ms) {
 }
 
 void Player::draw(const mat3 &projection) {
+	std::cout << position.pos_x << "  " << position.pos_y << std::endl;
     transform.begin();
 
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -141,6 +139,7 @@ void Player::draw(const mat3 &projection) {
 
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // REMOVE THE FOLLOWING LINES BEFORE ADDING ANY TRANSFORMATION CODE
+	transform.translate({ -spriteSize.x * (spriteNum.x)*0.3f - 17, -spriteSize.y * (spriteNum.y)*0.3f - 18 + (spriteNum.y*0.4f)});
     transform.translate({position.pos_x, position.pos_y});
 
     //if (currDir.flip) {
@@ -151,7 +150,6 @@ void Player::draw(const mat3 &projection) {
 
 	transform.scale(physics.scale);
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
     transform.end();
 
     // Setting shaders
@@ -282,7 +280,7 @@ const Team Player::get_team() {
 }
 
 vec2 Player::get_bounding_box() {
-    return {fabs(physics.scale.x) * spriteSize.x * 0.9f, fabs(physics.scale.y) * spriteSize.y*0.9f};
+    return {fabs(physics.scale.x) * spriteSize.x * 1.15f, fabs(physics.scale.y) * spriteSize.y * 1.15f};
 }
 
 bool Player::collides_with_tile(const Tile &tile) {
