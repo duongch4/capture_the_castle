@@ -12,7 +12,7 @@ Player::Player(Team team, vec2 position) {
     this->team.assigned = team;
     this->position.pos_x = position.x;
     this->position.pos_y = position.y;
-	spriteNum = {5, 4 };
+	spriteNum = {0, 0 };
     this->stuck = false;
 //    this->player_color = {1.f, 1.f, 1.f};
 }
@@ -30,22 +30,10 @@ bool Player::is_texture_loaded(const char *path) {
     return true;
 }
 
-bool Player::init()
-{
-	switch (this->team.assigned) {
-	case Team::PLAYER1:
-		is_texture_loaded(textures_path("red_king_sprite_sheet.png"));
-		break;
-	case Team::PLAYER2:
-		is_texture_loaded(textures_path("blue_king_sprite_sheet.png"));
-		break;
-	}
-	
-
-	spriteSize.x = player_texture.width / 7.0f;
-	spriteSize.y = player_texture.height / 5.0f;
-
+bool Player::set_sprite() {
 	// The position corresponds to the center of the texture.
+	//std::cout << spriteNum.x << std::endl;
+
 	float wr = spriteSize.x * spriteNum.x + 0.5f * spriteSize.x;
 	float hr = spriteSize.y * spriteNum.y + 0.5f * spriteSize.y;
 
@@ -84,14 +72,33 @@ bool Player::init()
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
+	
+	return true;
+}
+
+bool Player::init()
+{
+	switch (this->team.assigned) {
+	case Team::PLAYER1:
+		is_texture_loaded(textures_path("red_king_sprite_sheet.png"));
+		break;
+	case Team::PLAYER2:
+		is_texture_loaded(textures_path("blue_king_sprite_sheet.png"));
+		break;
+	}
+	
+
+	spriteSize.x = player_texture.width / 7.0f;
+	spriteSize.y = player_texture.height / 5.0f;
+
 	// Setting initial values
 	motion.speed = 200.f;
-	std::cout << "size x: " << spriteSize.x << "   size y: " << spriteSize.y << std::endl;
-
+	//std::cout << "size x: " << spriteSize.x << "   size y: " << spriteSize.y << std::endl;
+	moving = false;
 	physics.scale = { 0.3f, 0.3f };
-	currDir = { 0, 0, 0, 0, 0 };
 	m_is_alive = true;
-	return true;
+	currDir = { 0, 0, 0, 0};
+	return set_sprite();
 }
 
 // Releases all graphics resources
@@ -109,23 +116,39 @@ void Player::destroy() {
 void Player::update(float ms) {
     float step = motion.speed * (ms / 1000);
     if (m_is_alive) {
+		
         if (currDir.down) {
-            move({0.f, step});
+				spriteNum.y = 4;
+			move({ 0.f, step });
         }
         if (currDir.up) {
-            move({0.f, -step});
+				spriteNum.y = 1;
+			move({ 0.f, -step });
+
         }
         if (currDir.left) {
             move({-step, 0.f});
+				spriteNum.y = 2;
         }
         if (currDir.right) {
             move({step, 0.f});
+				spriteNum.y = 3;
         }
+		if (moving && !stuck)
+		{
+			if (spriteNum.x < 6)
+				spriteNum.x++;
+			else
+			{
+				spriteNum.x = 0;
+			}
+			set_sprite();
+		}
     }
 }
 
 void Player::draw(const mat3 &projection) {
-	std::cout << position.pos_x << "  " << position.pos_y << std::endl;
+	//std::cout << position.pos_x << "  " << position.pos_y << std::endl;
     transform.begin();
 
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -251,20 +274,24 @@ void Player::set_direction(int key) {
     switch (key) {
         case GLFW_KEY_DOWN:
             currDir.down = 1;
+			moving = true;
             break;
         case GLFW_KEY_UP:
             currDir.up = 1;
+			moving = true;
             break;
         case GLFW_KEY_LEFT:
             currDir.left = 1;
-            currDir.flip = 1;
+			moving = true;
             break;
         case GLFW_KEY_RIGHT:
             currDir.right = 1;
-            currDir.flip = 0;
+			moving = true;
             break;
         default:
-            currDir = {0, 0, 0, 0, currDir.flip};
+            currDir = {0, 0, 0, 0};
+			moving = false;
+			//std::cout << "default" << std::endl;
             break;
     }
 }
@@ -317,6 +344,7 @@ void Player::handle_wall_collision(const Tile &tile) {
         }
 
         if (collides_with_tile(tile)) {
+			moving = false;
             if (is_up()) {
                 position.pos_y -= 10.f;
             } else if (is_down()) {
@@ -330,7 +358,7 @@ void Player::handle_wall_collision(const Tile &tile) {
                 }
             }
         }
-        currDir = {0, 0, 0, 0, currDir.flip};
+        currDir = {0, 0, 0, 0};
         set_stuck(true);
 
 }

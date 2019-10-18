@@ -79,11 +79,13 @@ private:
 
 	bool stuck;
 
+	bool moving;
+
 	Texture player_texture;
 
 //	vec3 player_color;
 //
-	struct direction { int up, down, left, right, flip; };
+	struct direction { int up, down, left, right; };
 	struct collision_response {bool up, down, left, right;};
     collision_response col_res;
 	direction currDir;
@@ -96,4 +98,5 @@ private:
 	vec2 spriteSize;
 
 	bool is_texture_loaded(const char* path);
+	bool set_sprite();
 };
