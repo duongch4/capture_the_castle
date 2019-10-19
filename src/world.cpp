@@ -276,6 +276,42 @@ bool World::init(vec2 screen)
 
 	//m_background.init();
 
+	//--------------------------------------------------------------------------
+	// Render all the tiles once to the screen texture
+
+	// Clearing error buffer
+	gl_flush_errors();
+
+	// Getting size of window
+	int w, h;
+	glfwGetFramebufferSize(m_window, &w, &h);
+
+	// Bind the custom framebuffer with our screen texture
+	glBindFramebuffer(GL_FRAMEBUFFER, m_frame_buffer);
+
+	// Clearing backbuffer
+	glViewport(0, 0, w, h);
+	glDepthRange(0.00001, 10);
+	const float clear_color[3] = { 0.43f, 0.92f, 0.51f };
+	glClearColor(clear_color[0], clear_color[1], clear_color[2], 1.0);
+	glClearDepth(1.f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// Fake projection matrix, scales with respect to window coordinates
+	// PS: 1.f / w in [1][1] is correct.. do you know why ? (:
+	float left = 0.f;// *-0.5;
+	float top = 0.f;// (float)h * -0.5;
+	float right = (float)w / m_screen_scale;// *0.5;
+	float bottom = (float)h / m_screen_scale;// *0.5;
+
+	float sx = 2.f / (right - left);
+	float sy = 2.f / (top - bottom);
+	float tx = -(right + left) / (right - left);
+	float ty = -(top + bottom) / (top - bottom);
+	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
+
+	tilemap->draw_all_tiles(projection_2D);
+
     return true;
 }
 
@@ -357,18 +393,6 @@ void World::draw()
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
 
-	/////////////////////////////////////
-	// First render to the custom framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, m_frame_buffer);
-
-	// Clearing backbuffer
-	glViewport(0, 0, w, h);
-	glDepthRange(0.00001, 10);
-	const float clear_color[3] = { 0.3f, 0.3f, 0.8f };
-	glClearColor(clear_color[0], clear_color[1], clear_color[2], 1.0);
-	glClearDepth(1.f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	// Fake projection matrix, scales with respect to window coordinates
 	// PS: 1.f / w in [1][1] is correct.. do you know why ? (:
 	float left = 0.f;// *-0.5;
@@ -381,8 +405,6 @@ void World::draw()
 	float tx = -(right + left) / (right - left);
 	float ty = -(top + bottom) / (top - bottom);
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
-
-	tilemap->drawAllTiles(projection_2D);
 
 	/////////////////////
 	// Truely render to the screen
@@ -399,10 +421,12 @@ void World::draw()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
 
-
 	// Background
 	//m_background.draw(projection_2D);
+
+	// Render the screen texture with all our tiles on it
 	tilemap->draw(projection_2D);
+
     spriteRenderSystem->draw(projection_2D);
 
     // Presenting

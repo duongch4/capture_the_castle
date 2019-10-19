@@ -59,16 +59,22 @@ bool Tilemap::init()
 	// Clearing errors
 	gl_flush_errors();
 
-	// Vertex Buffer creation
+	// Vertex Buffer & Vertex Array creation
 	glGenVertexArrays(1, &mesh.vao);
 	glGenBuffers(1, &mesh.vbo);
 	glBindVertexArray(mesh.vao);
+	// Copy the vertex data into the vertex buffer 
 	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(screen_vertex_buffer_data), screen_vertex_buffer_data, GL_STATIC_DRAW);
 	// Bind to attribute 0 (in_position) as in the vertex shader
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	// Unbind the vertex array to prevent accidental change 
 	glBindVertexArray(0);
+
+	// Enabling alpha channel for textures
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	if (gl_has_errors())
 		return false;
@@ -105,25 +111,21 @@ void Tilemap::destroy()
 
 void Tilemap::draw(const mat3& projection)
 {
-	// Enabling alpha channel for textures
-	glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
 
 	// Setting shaders
 	glUseProgram(effect.program);
 
 	// Set screen_texture sampling to texture unit 0
-	// Set clock
 	GLuint screen_text_uloc = glGetUniformLocation(effect.program, "screen_texture");
 	glUniform1i(screen_text_uloc, 0);
 
-	glBindVertexArray(mesh.vao);
 	// Draw
-	glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting at 0 -> 2 triangles
-	glDisableVertexAttribArray(0);
+	glBindVertexArray(mesh.vao);
+	glDrawArrays(GL_TRIANGLES, 0, 6); // two triangle covering the whole screen
 }
 
-void Tilemap::drawAllTiles(const mat3& projection)
+void Tilemap::draw_all_tiles(const mat3& projection)
 {
 	for (auto& vector : m_tiles) {
 		for (auto& tile : vector) {
