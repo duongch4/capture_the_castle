@@ -122,6 +122,7 @@ bool World::init(vec2 screen)
 	ecsManager.registerComponent<Mesh>();
 	ecsManager.registerComponent<BanditSpawnComponent>();
 	ecsManager.registerComponent<PlayerInputControlComponent>();
+	ecsManager.registerComponent<PlaceableComponent>();
 
 	movementSystem = ecsManager.registerSystem<MovementSystem>();
     {
@@ -162,52 +163,41 @@ bool World::init(vec2 screen)
     }
     banditSpawnSystem->init(tilemap);
 
-    // PLAYER 1
-    Entity player1 = ecsManager.createEntity();
-    ecsManager.addComponent<Transform>(player1, Transform{
-        { 120.f, m_screen_size.y / 2 + 130.f },
-        {0.11f, 0.11f}
+    // Team 1 Soldiers
+    Entity soldier1Team1 = ecsManager.createEntity();
+    ecsManager.addComponent<Team>(soldier1Team1, Team{TeamType::PLAYER1});
+    ecsManager.addComponent<PlaceableComponent>(soldier1Team1, PlaceableComponent{});
+    ecsManager.addComponent<Transform>(soldier1Team1, Transform{
+        tilemap->get_random_free_tile_position(MazeRegion::PLAYER1),
+        {0.3, 0.3}
     });
-    ecsManager.addComponent<Motion>(player1, Motion{
-            {0, 0},
-            100.f
-    });
-    ecsManager.addComponent<Team>(player1, Team{TeamType::PLAYER1});
-    ecsManager.addComponent<PlayerInputControlComponent>(player1, PlayerInputControlComponent{});
-    Effect player1Effect{};
-    player1Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
-    ecsManager.addComponent<Effect>(player1, player1Effect);
-    Sprite player1Sprite = {textures_path("red_king_sprite_sheet.png")};
-    TextureManager::instance()->load_from_file(player1Sprite);
-    ecsManager.addComponent<Sprite>(player1, player1Sprite);
-    Mesh player1Mesh{};
-	player1Sprite.sprite_size = { player1Sprite.width  / 7.0f , player1Sprite.height / 5.0f};
-    player1Mesh.init(player1Sprite.width, player1Sprite.height, player1Sprite.sprite_size.x, player1Sprite.sprite_size.y, player1Sprite.sprite_index.x, player1Sprite.sprite_index.y, 0);
-    ecsManager.addComponent<Mesh>(player1, player1Mesh);
+    Effect soldier1Team1Effect{};
+    soldier1Team1Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+    ecsManager.addComponent<Effect>(soldier1Team1, soldier1Team1Effect);
+    Sprite soldier1Team1Sprite = {textures_path("red_soldier/CaptureTheCastle_red_soldier_right.png")};
+    TextureManager::instance()->load_from_file(soldier1Team1Sprite);
+    ecsManager.addComponent<Sprite>(soldier1Team1, soldier1Team1Sprite);
+    Mesh soldier1Team1Mesh{};
+    soldier1Team1Mesh.init(soldier1Team1Sprite.width, soldier1Team1Sprite.height);
+    ecsManager.addComponent<Mesh>(soldier1Team1, soldier1Team1Mesh);
 
-    // PLAYER 2
-    Entity player2 = ecsManager.createEntity();
-    ecsManager.addComponent<Transform>(player2, Transform{
-        { m_screen_size.x - 120.f, m_screen_size.y / 2 + 130.f },
-        {0.11f, 0.11f}
+    // Team 2 Soldiers
+    Entity soldier1Team2 = ecsManager.createEntity();
+    ecsManager.addComponent<Team>(soldier1Team2, Team{TeamType::PLAYER2});
+    ecsManager.addComponent<PlaceableComponent>(soldier1Team2, PlaceableComponent{});
+    ecsManager.addComponent<Transform>(soldier1Team2, Transform{
+            tilemap->get_random_free_tile_position(MazeRegion::PLAYER2),
+            {0.3, 0.3}
     });
-    ecsManager.addComponent<Motion>(player2, Motion{
-            {0, 0},
-            100.f
-    });
-    ecsManager.addComponent<Team>(player2, Team{TeamType::PLAYER2});
-    ecsManager.addComponent<PlayerInputControlComponent>(player2, PlayerInputControlComponent{});
-    Effect player2Effect{};
-    player2Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
-    ecsManager.addComponent<Effect>(player2, player2Effect);
-    Sprite player2Sprite = {textures_path("blue_king_sprite_sheet.png")};
-    TextureManager::instance()->load_from_file(player2Sprite);
-    ecsManager.addComponent<Sprite>(player2, player2Sprite);
-    Mesh player2Mesh{};
-	player2Sprite.sprite_size = { player2Sprite.width / 7.0f , player2Sprite.height / 5.0f };
-	player2Sprite.sprite_index = { 4 , 4 };
-    player2Mesh.init(player2Sprite.width, player2Sprite.height, player2Sprite.sprite_size.x, player2Sprite.sprite_size.y, player2Sprite.sprite_index.x, player2Sprite.sprite_index.y, 0);
-    ecsManager.addComponent<Mesh>(player2, player2Mesh);
+    Effect soldier1Team2Effect{};
+    soldier1Team2Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+    ecsManager.addComponent<Effect>(soldier1Team2, soldier1Team2Effect);
+    Sprite soldier1Team2Sprite = {textures_path("blue_soldier/CaptureTheCastle_blue_soldier_left.png")};
+    TextureManager::instance()->load_from_file(soldier1Team2Sprite);
+    ecsManager.addComponent<Sprite>(soldier1Team2, soldier1Team2Sprite);
+    Mesh soldier1Team2Mesh{};
+    soldier1Team2Mesh.init(soldier1Team2Sprite.width, soldier1Team2Sprite.height);
+    ecsManager.addComponent<Mesh>(soldier1Team2, soldier1Team2Mesh);
 
     // CASTLE 1
     Entity castle1 = ecsManager.createEntity();
@@ -242,6 +232,50 @@ bool World::init(vec2 screen)
     Mesh castle2Mesh{};
     castle2Mesh.init(castle2Sprite.width, castle2Sprite.height);
     ecsManager.addComponent<Mesh>(castle2, castle2Mesh);
+
+    // PLAYER 1
+    Entity player1 = ecsManager.createEntity();
+    ecsManager.addComponent<Transform>(player1, Transform{
+            { 120.f, m_screen_size.y / 2 + 130.f },
+            {0.4f, 0.4f}
+    });
+    ecsManager.addComponent<Motion>(player1, Motion{
+            {0, 0},
+            100.f
+    });
+    ecsManager.addComponent<Team>(player1, Team{TeamType::PLAYER1});
+    ecsManager.addComponent<PlayerInputControlComponent>(player1, PlayerInputControlComponent{});
+    Effect player1Effect{};
+    player1Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+    ecsManager.addComponent<Effect>(player1, player1Effect);
+    Sprite player1Sprite = {textures_path("red_player/CaptureTheCastle_red_player_right.png")};
+    TextureManager::instance()->load_from_file(player1Sprite);
+    ecsManager.addComponent<Sprite>(player1, player1Sprite);
+    Mesh player1Mesh{};
+    player1Mesh.init(player1Sprite.width, player1Sprite.height);
+    ecsManager.addComponent<Mesh>(player1, player1Mesh);
+
+    // PLAYER 2
+    Entity player2 = ecsManager.createEntity();
+    ecsManager.addComponent<Transform>(player2, Transform{
+            { m_screen_size.x - 120.f, m_screen_size.y / 2 + 130.f },
+            {0.4f, 0.4f}
+    });
+    ecsManager.addComponent<Motion>(player2, Motion{
+            {0, 0},
+            100.f
+    });
+    ecsManager.addComponent<Team>(player2, Team{TeamType::PLAYER2});
+    ecsManager.addComponent<PlayerInputControlComponent>(player2, PlayerInputControlComponent{});
+    Effect player2Effect{};
+    player2Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+    ecsManager.addComponent<Effect>(player2, player2Effect);
+    Sprite player2Sprite = {textures_path("blue_player/CaptureTheCastle_blue_player_right.png")};
+    TextureManager::instance()->load_from_file(player2Sprite);
+    ecsManager.addComponent<Sprite>(player2, player2Sprite);
+    Mesh player2Mesh{};
+    player2Mesh.init(player2Sprite.width, player2Sprite.height);
+    ecsManager.addComponent<Mesh>(player2, player2Mesh);
 
     // ITEM BOARD (PLAYER 1)
     Entity player1_board = ecsManager.createEntity();

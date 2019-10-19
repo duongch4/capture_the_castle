@@ -1,6 +1,7 @@
 //
 // Created by Owner on 2019-10-12.
 //
+#pragma once
 
 #ifndef CAPTURE_THE_CASTLE_COMPONENTS_HPP
 #define CAPTURE_THE_CASTLE_COMPONENTS_HPP
@@ -8,7 +9,7 @@
 #include "common.hpp"
 
 struct Sprite {
-    char* texture_name;
+    const char* texture_name;
     int width, height = 0;
 	// sotring index and size of this sprite in sprite sheet
 	vec2 sprite_index = {0, 0};
@@ -83,5 +84,7 @@ struct Team {
 struct BanditSpawnComponent {};
 
 struct PlayerInputControlComponent {};
+
+struct PlaceableComponent{};
 
 #endif //CAPTURE_THE_CASTLE_COMPONENTS_HPP

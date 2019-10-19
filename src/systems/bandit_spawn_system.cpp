@@ -32,7 +32,7 @@ void BanditSpawnSystem::spawn_bandit() {
     ecsManager.addComponent<BanditSpawnComponent>(bandit, BanditSpawnComponent{});
     ecsManager.addComponent<Transform>(bandit, Transform{
             nextPos,
-            {0.4, 0.4}
+            {0.3, 0.3}
     });
     ecsManager.addComponent<Motion>(bandit, Motion{
             {1, 0},
