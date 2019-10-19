@@ -29,28 +29,21 @@ void BanditAISystem::update(float elapsed_ms) {
 
 	switch (m_currentState) {
 	case IDLE:
-		if (next_bandit_spawn < 2.0f) {
-			m_currentState = CHASE;
-		}
+		//if (next_bandit_spawn < 2.0f) {
+		//	m_currentState = CHASE;
+		//}
+		ecsManager.getComponent<Motion>(m_bandit).direction = {0,0};
 		break;
 	case CHASE:
-		Transform& transform = ecsManager.getComponent<Transform>(m_target);
-		Transform& m_transform = ecsManager.getComponent<Transform>(m_bandit);
-		vec2 difference = vec2{ transform.position.x - m_transform.position.x, transform.position.y - m_transform.position.y };
-		float distance = (difference.x * difference.x) + (difference.y * difference.y);
-
-		std::cout << distance << std::endl;
-		//if (distance > CHASE_THRESHOLD) {
-		//	m_currentState = IDLE;
-		//	return;
-		//}
-		if (distance < CHASE_THRESHOLD) {
-			Motion& m_motion = ecsManager.getComponent<Motion>(m_bandit);
-			Motion& motion = ecsManager.getComponent<Motion>(m_target);
-			m_motion.direction = motion.direction;
+		std::cout << (getDistance(m_target, m_bandit) > CHASE_THRESHOLD) << std::endl;
+		if (getDistance(m_target, m_bandit) > CHASE_THRESHOLD) {
+			m_currentState = IDLE;
+			return;
 		}
+		followDirection(m_target, m_bandit);
+		break;
 	}
-	checkTarget(m_bandit);
+	checkTarget();
 }
 
 Entity BanditAISystem::spawn_bandit() {
@@ -60,11 +53,11 @@ Entity BanditAISystem::spawn_bandit() {
 	ecsManager.addComponent<BanditAIComponent>(bandit, BanditAIComponent{});
 	ecsManager.addComponent<Transform>(bandit, Transform{
 			nextPos,
-			{0.4, 0.4}
+			SCALE
 		});
 	ecsManager.addComponent<Motion>(bandit, Motion{
-			{0, 0},
-			150.f
+			INIT_DIRECTION,
+			SPEED
 		});
 	ecsManager.addComponent<Team>(bandit, Team{ TeamType::BANDIT });
 	Effect banditEffect{};
@@ -84,16 +77,23 @@ void BanditAISystem::setTarget(Entity target) {
 	m_target = target;
 }
 
-void BanditAISystem::checkTarget(Entity bandit) {
+void BanditAISystem::checkTarget() {
 	if (m_currentState == CHASE) {
 		return;
 	}
 
-	Transform transform = ecsManager.getComponent<Transform>(m_target);
-	Transform m_transform = ecsManager.getComponent<Transform>(bandit);
-	vec2 difference = vec2{ transform.position.x - m_transform.position.x, transform.position.y - m_transform.position.y };
-	float distance = (difference.x * difference.x) + (difference.y * difference.y);
-	if (distance < CHASE_THRESHOLD) {
+	if (getDistance(m_target, m_bandit) < CHASE_THRESHOLD) {
 		m_currentState = CHASE;
 	}
+}
+
+float BanditAISystem::getDistance(Entity target, Entity bandit) {
+	vec2 target_transform_pos = ecsManager.getComponent<Transform>(target).position;
+	vec2 bandit_transform_pos = ecsManager.getComponent<Transform>(bandit).position;
+	vec2 difference = { target_transform_pos.x - bandit_transform_pos.x, target_transform_pos.y - bandit_transform_pos.y };
+	return (difference.x * difference.x) + (difference.y * difference.y);
+}
+
+void BanditAISystem::followDirection(Entity target, Entity bandit) {
+	ecsManager.getComponent<Motion>(bandit).direction = ecsManager.getComponent<Motion>(target).direction;
 }
