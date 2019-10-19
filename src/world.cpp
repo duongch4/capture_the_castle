@@ -250,10 +250,10 @@ bool World::init(vec2 screen)
 	ecsManager.addComponent<Effect>(player1, player1Effect);
 	Sprite player1Sprite = { textures_path("red_king_sprite_sheet.png") };
 	TextureManager::instance()->load_from_file(player1Sprite);
+	player1Sprite.sprite_index = { 0 , 0 };
+	player1Sprite.sprite_size = { player1Sprite.width / 7.0f , player1Sprite.height / 5.0f };
 	ecsManager.addComponent<Sprite>(player1, player1Sprite);
 	Mesh player1Mesh{};
-	player1Sprite.sprite_size = { player1Sprite.width / 7.0f , player1Sprite.height / 5.0f };
-	player1Sprite.sprite_index = { 2 , 2 };
 	player1Mesh.init(player1Sprite.width, player1Sprite.height, player1Sprite.sprite_size.x, player1Sprite.sprite_size.y, player1Sprite.sprite_index.x, player1Sprite.sprite_index.y, 0);
 	ecsManager.addComponent<Mesh>(player1, player1Mesh);
 
@@ -274,10 +274,10 @@ bool World::init(vec2 screen)
 	ecsManager.addComponent<Effect>(player2, player2Effect);
 	Sprite player2Sprite = { textures_path("blue_king_sprite_sheet.png") };
 	TextureManager::instance()->load_from_file(player2Sprite);
+	player2Sprite.sprite_size = { player2Sprite.width / 7.0f , player2Sprite.height / 5.0f };
+	player2Sprite.sprite_index = { 0 , 0 };
 	ecsManager.addComponent<Sprite>(player2, player2Sprite);
 	Mesh player2Mesh{};
-	player2Sprite.sprite_size = { player2Sprite.width / 7.0f , player2Sprite.height / 5.0f };
-	player2Sprite.sprite_index = { 2 , 0 };
 	player2Mesh.init(player2Sprite.width, player2Sprite.height, player2Sprite.sprite_size.x, player2Sprite.sprite_size.y, player2Sprite.sprite_index.x, player2Sprite.sprite_index.y, 0);
 	ecsManager.addComponent<Mesh>(player2, player2Mesh);
 
