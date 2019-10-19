@@ -237,7 +237,7 @@ bool World::init(vec2 screen)
 	Entity player1 = ecsManager.createEntity();
 	ecsManager.addComponent<Transform>(player1, Transform{
 		{ 120.f, m_screen_size.y / 2 + 130.f },
-		{0.08f, 0.08f}
+		{0.09f, 0.09f}
 		});
 	ecsManager.addComponent<Motion>(player1, Motion{
 			{0, 0},
@@ -261,7 +261,7 @@ bool World::init(vec2 screen)
 	Entity player2 = ecsManager.createEntity();
 	ecsManager.addComponent<Transform>(player2, Transform{
 		{ m_screen_size.x - 120.f, m_screen_size.y / 2 + 130.f },
-		{0.08f, 0.08f}
+		{0.09f, 0.09f}
 		});
 	ecsManager.addComponent<Motion>(player2, Motion{
 			{0, 0},

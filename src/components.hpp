@@ -80,7 +80,6 @@ struct Team {
     TeamType assigned;
 };
 
-
 struct BanditSpawnComponent {};
 
 struct PlayerInputControlComponent {};
