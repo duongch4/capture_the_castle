@@ -1,3 +1,4 @@
 .vs/
 out/
 src/project_path.hpp
+*.json
