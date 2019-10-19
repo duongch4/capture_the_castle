@@ -1,3 +1,4 @@
+#include <time.h>
 #include "tilemap.hpp"
 
 bool Tilemap::init()
@@ -97,29 +98,31 @@ std::vector<Tile> Tilemap::get_adjacent_tiles(int positionX, int positionY)
 
 vec2 Tilemap::get_random_free_tile_position(MazeRegion mazeRegion) 
 {
+	// Intialize a random seed for rand() 
+	srand(time(NULL));
 	bool resultNotFound = true;
 
 	switch (mazeRegion) {
 	case MazeRegion::PLAYER1:
 		while (resultNotFound) {
-			int randomX = rand() % 11 + 6;
-			int randomY = rand() % 14 + 4;
+			int randomX = rand() % 5 + 6; // [6..11]
+			int randomY = rand() % 11 + 4; // [4..14]
 			if (!m_tiles[randomY][randomX].is_wall()) {
 				return m_tiles[randomY][randomX].get_position();
 			}
 		}
 	case MazeRegion::PLAYER2:
 		while (resultNotFound) {
-			int randomX = rand() % 22 + 17;
-			int randomY = rand() % 14 + 4;
+			int randomX = rand() % 6 + 17; // [17..22]
+			int randomY = rand() % 11 + 4; // [4..14]
 			if (!m_tiles[randomY][randomX].is_wall()) {
 				return m_tiles[randomY][randomX].get_position();
 			}
 		}
 	case MazeRegion::BANDIT:
 		while (resultNotFound) {
-			int randomX = rand() % 16 + 12;
-			int randomY = rand() % 14 + 4;
+			int randomX = rand() % 5 + 12; // [12..16]
+			int randomY = rand() % 11 + 4; // [4..14]
 			if (!m_tiles[randomY][randomX].is_wall()) {
 				return m_tiles[randomY][randomX].get_position();
 			}
