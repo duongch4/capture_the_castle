@@ -78,4 +78,8 @@ private:
     std::shared_ptr<BanditSpawnSystem> banditSpawnSystem;
 
 	float m_current_speed;
+
+	//World state
+	enum WorldState { HELP, WIN, NORMAL };
+	WorldState currState;
 };

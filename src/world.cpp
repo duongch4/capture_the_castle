@@ -38,6 +38,7 @@ bool World::init(vec2 screen)
 {
 	m_screen_size = screen;
     m_current_speed = 1.f;
+    currState = WorldState::NORMAL;
 
     //-------------------------------------------------------------------------
     // GLFW / OGL Initialization
@@ -287,7 +288,7 @@ bool World::init(vec2 screen)
     TextureManager::instance()->load_from_file(helpButtonSprite);
     ecsManager.addComponent<Sprite>(help_button, helpButtonSprite);
     Mesh helpButtonMesh{};
-    helpButtonMesh.init(helpButtonSprite.width, helpButtonSprite.height);
+    helpButtonMesh.init(helpButtonSprite.width, helpButtonSprite.height, helpButtonSprite.height, helpButtonSprite.height, 0, 0, 0);
     ecsManager.addComponent<Mesh>(help_button, helpButtonMesh);
 
 	//m_background.init();
@@ -356,10 +357,12 @@ bool World::update(float elapsed_ms) {
 //            bandit->update(elapsed_ms);
 //        }
 //
+    if (currState == WorldState::NORMAL) {
         banditSpawnSystem->update(elapsed_ms);
         playerInputSystem->update();
         movementSystem->update(elapsed_ms);
-        return true;
+    }
+    return true;
 }
 
 // Render our game world
