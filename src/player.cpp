@@ -116,23 +116,21 @@ void Player::destroy() {
 void Player::update(float ms) {
     float step = motion.speed * (ms / 1000);
     if (m_is_alive) {
-		
         if (currDir.down) {
-				spriteNum.y = 4;
+			spriteNum.y = 4;
 			move({ 0.f, step });
         }
         if (currDir.up) {
-				spriteNum.y = 1;
+			spriteNum.y = 1;
 			move({ 0.f, -step });
-
         }
         if (currDir.left) {
             move({-step, 0.f});
-				spriteNum.y = 2;
+			spriteNum.y = 2;
         }
         if (currDir.right) {
             move({step, 0.f});
-				spriteNum.y = 3;
+			spriteNum.y = 3;
         }
 		if (moving && !stuck)
 		{
