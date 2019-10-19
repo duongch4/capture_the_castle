@@ -382,6 +382,8 @@ void World::draw()
 	float ty = -(top + bottom) / (top - bottom);
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
+	tilemap->drawAllTiles(projection_2D);
+
 	/////////////////////
 	// Truely render to the screen
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);

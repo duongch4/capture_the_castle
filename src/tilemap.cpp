@@ -44,7 +44,40 @@ bool Tilemap::init()
 			new_tile.set_position({ i * 48.f + 23.f, j * 48.f + 23.f });
 		}
 	}
-	return false;
+	
+	//--------------------------------------------------------------------------
+	// Initialize the render 
+	static const GLfloat screen_vertex_buffer_data[] = {
+		-1.0f, -1.0f, 0.0f,
+		1.0f, -1.0f, 0.0f,
+		-1.0f,  1.0f, 0.0f,
+		-1.0f,  1.0f, 0.0f,
+		1.0f, -1.0f, 0.0f,
+		1.0f,  1.0f, 0.0f,
+	};
+
+	// Clearing errors
+	gl_flush_errors();
+
+	// Vertex Buffer creation
+	glGenVertexArrays(1, &mesh.vao);
+	glGenBuffers(1, &mesh.vbo);
+	glBindVertexArray(mesh.vao);
+	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(screen_vertex_buffer_data), screen_vertex_buffer_data, GL_STATIC_DRAW);
+	// Bind to attribute 0 (in_position) as in the vertex shader
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glBindVertexArray(0);
+
+	if (gl_has_errors())
+		return false;
+
+	// Loading shaders
+	if (!effect.load_from_file(shader_path("tilemap.vs.glsl"), shader_path("tilemap.fs.glsl")))
+		return false;
+
+	return true;
 }
 
 
@@ -61,9 +94,36 @@ void Tilemap::destroy()
     }
 
     m_tiles.clear();
+
+	glDeleteVertexArrays(1, &mesh.vao);
+	glDeleteBuffers(1, &mesh.vbo);
+
+	glDeleteShader(effect.vertex);
+	glDeleteShader(effect.fragment);
+	glDeleteShader(effect.program);
 }
 
 void Tilemap::draw(const mat3& projection)
+{
+	// Enabling alpha channel for textures
+	glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_DEPTH_TEST);
+
+	// Setting shaders
+	glUseProgram(effect.program);
+
+	// Set screen_texture sampling to texture unit 0
+	// Set clock
+	GLuint screen_text_uloc = glGetUniformLocation(effect.program, "screen_texture");
+	glUniform1i(screen_text_uloc, 0);
+
+	glBindVertexArray(mesh.vao);
+	// Draw
+	glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting at 0 -> 2 triangles
+	glDisableVertexAttribArray(0);
+}
+
+void Tilemap::drawAllTiles(const mat3& projection)
 {
 	for (auto& vector : m_tiles) {
 		for (auto& tile : vector) {

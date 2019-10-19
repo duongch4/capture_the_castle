@@ -12,6 +12,7 @@ public:
 	void destroy();
 
 	void draw(const mat3& projection);
+	void drawAllTiles(const mat3& projection);
 
 	// Return the tile located at postionX, positionY
 	Tile get_tile(int positionX, int positionY);
@@ -28,6 +29,8 @@ public:
 	bool spawn_tile(int sprite_id, int num_horizontal, int num_vertical, int width, int gap_width, int gridX, int gridY);
 
 private:
+	Mesh mesh{};
+	Effect effect{};
 	// Amount of tile in the tile map horizontally 
 	int tilemap_width;
 	// Amount of tile in the tile map vertically 
