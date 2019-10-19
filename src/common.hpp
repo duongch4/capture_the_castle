@@ -50,6 +50,12 @@ enum class TeamType{
     BANDIT
 };
 
+enum class MazeRegion {
+	PLAYER1,
+	PLAYER2,
+	BANDIT
+};
+
 // Single Vertex Buffer element for non-textured meshes (coloured.vs.glsl & player.vs.glsl)
 struct Vertex
 {

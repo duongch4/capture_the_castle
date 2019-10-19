@@ -3,7 +3,7 @@
 // internal
 #include "common.hpp"
 
-#include "tile.hpp"
+#include "tilemap.hpp"
 //#include "background.hpp"
 
 
@@ -47,7 +47,7 @@ public:
 private:
 
 	// Generates a new tile
-	bool spawn_tile(int sprite_id, int num_horizontal, int num_vertical, int width, int gap_width, int gridX, int gridY);
+	//bool spawn_tile(int sprite_id, int num_horizontal, int num_vertical, int width, int gap_width, int gridX, int gridY);
 
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
@@ -70,8 +70,7 @@ private:
 	//Background m_background;
 
 	// Game entities
-    std::vector<Entity> entities;
-    std::vector<std::vector<Tile>> m_tiles;
+	std::shared_ptr<Tilemap> tilemap;
 
     std::shared_ptr<MovementSystem> movementSystem;
     std::shared_ptr<PlayerInputSystem> playerInputSystem;

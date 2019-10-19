@@ -6,10 +6,11 @@
 #include "bandit_spawn_system.hpp"
 #include "player_input_system.hpp"
 
-bool BanditSpawnSystem::init() {
+bool BanditSpawnSystem::init(std::shared_ptr<Tilemap> tm) {
     // Seeding rng with random device
     next_bandit_spawn = .0f;
     rng = std::default_random_engine(std::random_device()());
+    tilemap = tm;
     return true;
 }
 
@@ -25,10 +26,12 @@ void BanditSpawnSystem::update(float elapsed_ms) {
 }
 
 void BanditSpawnSystem::spawn_bandit() {
+    vec2 nextPos = tilemap->get_random_free_tile_position(MazeRegion::BANDIT);
+
     Entity bandit = ecsManager.createEntity();
     ecsManager.addComponent<BanditSpawnComponent>(bandit, BanditSpawnComponent{});
     ecsManager.addComponent<Transform>(bandit, Transform{
-            { 299, 191},
+            nextPos,
             {0.4, 0.4}
     });
     ecsManager.addComponent<Motion>(bandit, Motion{

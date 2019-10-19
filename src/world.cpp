@@ -106,6 +106,14 @@ bool World::init(vec2 screen)
         return false;
     }
 
+    //--------------------------------------------------------------------------
+    // Initializing game
+
+    // Tilemap initialization
+    tilemap = std::make_shared<Tilemap>();
+    tilemap->init();
+
+    // ECS initialization
 	ecsManager.registerComponent<Motion>();
 	ecsManager.registerComponent<Transform>();
 	ecsManager.registerComponent<Team>();
@@ -152,7 +160,7 @@ bool World::init(vec2 screen)
         signature.set(ecsManager.getComponentType<BanditSpawnComponent>());
         ecsManager.setSystemSignature<BanditSpawnSystem>(signature);
     }
-    banditSpawnSystem->init();
+    banditSpawnSystem->init(tilemap);
 
     // CASTLE 1
     Entity castle1 = ecsManager.createEntity();
@@ -236,7 +244,7 @@ bool World::init(vec2 screen)
     Entity player1_board = ecsManager.createEntity();
     ecsManager.addComponent<Transform>(player1_board, Transform{
             { 180.f, 65 },
-            {0.4f, 0.4f}
+            {0.5f, 0.5f}
     });
     ecsManager.addComponent<Team>(player1_board, Team{TeamType::PLAYER1});
     Effect player1BoardEffect{};
@@ -253,7 +261,7 @@ bool World::init(vec2 screen)
     Entity player2_board = ecsManager.createEntity();
     ecsManager.addComponent<Transform>(player2_board, Transform{
             { screen.x - 180.f, 65.f },
-            {0.4f, 0.4f}
+            {0.5f, 0.5f}
     });
     ecsManager.addComponent<Team>(player2_board, Team{TeamType::PLAYER2});
     Effect player2BoardEffect{};
@@ -282,51 +290,6 @@ bool World::init(vec2 screen)
     helpButtonMesh.init(helpButtonSprite.width, helpButtonSprite.height);
     ecsManager.addComponent<Mesh>(help_button, helpButtonMesh);
 
-
-    // Hardcoded maze data, created using Tiled
-	// Each number represent the id of a tile 
-	// Id is the position of a sprite in a sprite sheet starting from left to right, top to bottom 
-	int data[] = {
-            19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19,  1,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  3, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19,  6, 19,  5, 19,  5, 19, 19, 19,  5, 19,  1, 11,  3, 19, 19, 19,  1, 12, 19,  6, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19,  7, 11, 15, 19, 13, 11, 11, 11, 15, 19,  6, 19,  6, 19, 10, 11,  9, 19, 19,  6, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19, 19, 19, 19, 19,  6, 19, 17, 19, 19, 19,  6, 19, 19,  6, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19,  7, 11, 11, 12, 19, 19, 10, 11,  3, 19,  6, 19, 19, 19,  5, 19,  6, 19, 19,  6, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19, 19, 19,  6, 19, 13, 11, 11, 11,  9, 19, 17, 19, 19,  6, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19,  6, 19,  1, 12, 19, 10, 11, 11,  9, 19, 19, 19, 19, 19,  6, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19, 17, 19,  6, 19, 19, 19, 19, 19,  6, 19, 19, 19,  5, 19,  6, 19, 10, 12, 19, 17, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19, 19, 19,  6, 19, 19, 19,  5, 19, 17, 19, 10, 11,  9, 19,  6, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19,  5, 19,  6, 19, 10, 11,  9, 19, 19, 19, 19, 19,  6, 19,  7, 11, 11, 12, 19,  5, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19,  6, 19,  6, 19, 19, 19,  6, 19, 19, 19,  5, 19,  6, 19,  6, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19,  6, 19, 13, 11, 11, 11, 14, 11, 11, 11, 15, 19,  6, 19, 17, 19,  5, 19, 19,  6, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19,  6, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,  6, 19, 19, 19,  6, 19, 19,  6, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19, 13, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 14, 11, 11, 11, 11, 11, 11, 15, 19, 19, 19, 19, 19,
-            19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
-	};
-
-	// TODO: Refactor this later to move it into a TileMap class
-	// Create all the tiles based on the maze data we defined above
-	for (int j = 0; j < 19; j++) {
-		m_tiles.emplace_back(std::vector<Tile>(30));
-		for (int i = 0; i < 30; i++) {
-			int iter = j * 30 + i;
-			// First parameter is the id of the tile, second parameter is the number of tile horizontally in the sprite sheet
-			// Third parameter is the number of tile vertically in the sprite sheet.
-			if (!spawn_tile(data[iter], 6, 4, 68, 20, i, j)) {
-				return false;
-			}
-
-            Tile &new_tile = m_tiles[j][i];
-
-            // Setting the tile initial position
-            new_tile.set_position({i * 46.f + 23.f, j * 43.f + 19.f});
-        }
-    }
-
 	//m_background.init();
 
     return true;
@@ -338,21 +301,7 @@ void World::destroy() {
 
     // TODO: MIX_FREEAUDIO AND MIX_FREECHUNK ON ALL AUDIOS
     Mix_CloseAudio();
-
-    // TODO: DESTROY ALL GAME ENTITIES
-
-    // If we move to the next level, destroy all the tiles
-//    for (auto &vector : m_tiles) {
-//        for (auto &tile : vector) {
-//            tile.destroy();
-//        }
-//    }
-//
-//    for (auto &vector : m_tiles) {s
-//        vector.clear();
-//    }
-//
-//    m_tiles.clear();
+    tilemap->destroy();
     glfwDestroyWindow(m_window);
 }
 
@@ -467,14 +416,7 @@ void World::draw()
 
 	// Background
 	//m_background.draw(projection_2D);
-
-	// Render all the tiles we have 
-	for (auto& vector : m_tiles) {
-		for (auto& tile : vector) {
-			tile.draw(projection_2D);
-		}
-	}
-
+	tilemap->draw(projection_2D);
     spriteRenderSystem->draw(projection_2D);
 
     // Presenting
@@ -485,19 +427,6 @@ void World::draw()
 // Should the game be over ?
 bool World::is_over() const {
     return glfwWindowShouldClose(m_window);
-}
-
-// Creates a new tile and if successful adds it to the list of tile
-bool World::spawn_tile(int sprite_id, int num_horizontal, int num_vertical, int width, int gap_width, int gridX, int gridY)
-{
-	Tile tile;
-	if (tile.init(sprite_id, num_horizontal, num_vertical, width, gap_width))
-	{
-		m_tiles[gridY].emplace(m_tiles[gridY].begin() + gridX, tile);
-		return true;
-	}
-	fprintf(stderr, "Failed to spawn tile");
-	return false;
 }
 
 void World::on_key(GLFWwindow*, int key, int, int action, int mod)
