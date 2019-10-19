@@ -154,6 +154,40 @@ bool World::init(vec2 screen)
     }
     banditSpawnSystem->init();
 
+    // CASTLE 1
+    Entity castle1 = ecsManager.createEntity();
+    ecsManager.addComponent<Transform>(castle1, Transform{
+            { 120.f, m_screen_size.y / 2 },
+            {0.5f, 0.5f}
+    });
+    ecsManager.addComponent<Team>(castle1, Team{TeamType::PLAYER1});
+    Effect castle1Effect{};
+    castle1Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+    ecsManager.addComponent<Effect>(castle1, castle1Effect);
+    Sprite castle1Sprite = {textures_path("castle/CaptureTheCastle_castle_red.png")};
+    TextureManager::instance()->load_from_file(castle1Sprite);
+    ecsManager.addComponent<Sprite>(castle1, castle1Sprite);
+    Mesh castle1Mesh{};
+    castle1Mesh.init(castle1Sprite.width, castle1Sprite.height);
+    ecsManager.addComponent<Mesh>(castle1, castle1Mesh);
+
+    // CASTLE 2
+    Entity castle2 = ecsManager.createEntity();
+    ecsManager.addComponent<Transform>(castle2, Transform{
+            {m_screen_size.x - 120.f, m_screen_size.y / 2},
+            {0.5f, 0.5f}
+    });
+    ecsManager.addComponent<Team>(castle2, Team{TeamType::PLAYER2});
+    Effect castle2Effect{};
+    castle2Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+    ecsManager.addComponent<Effect>(castle2, castle2Effect);
+    Sprite castle2Sprite = {textures_path("castle/CaptureTheCastle_castle_blue.png")};
+    TextureManager::instance()->load_from_file(castle2Sprite);
+    ecsManager.addComponent<Sprite>(castle2, castle2Sprite);
+    Mesh castle2Mesh{};
+    castle2Mesh.init(castle2Sprite.width, castle2Sprite.height);
+    ecsManager.addComponent<Mesh>(castle2, castle2Mesh);
+
     // PLAYER 1
     Entity player1 = ecsManager.createEntity();
     ecsManager.addComponent<Transform>(player1, Transform{
@@ -198,40 +232,6 @@ bool World::init(vec2 screen)
     player2Mesh.init(player2Sprite.width, player2Sprite.height);
     ecsManager.addComponent<Mesh>(player2, player2Mesh);
 
-    // CASTLE 1
-    Entity castle1 = ecsManager.createEntity();
-    ecsManager.addComponent<Transform>(castle1, Transform{
-            { 120.f, m_screen_size.y / 2 },
-            {0.5f, 0.5f}
-    });
-    ecsManager.addComponent<Team>(castle1, Team{TeamType::PLAYER1});
-    Effect castle1Effect{};
-    castle1Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
-    ecsManager.addComponent<Effect>(castle1, castle1Effect);
-    Sprite castle1Sprite = {textures_path("castle/CaptureTheCastle_castle_red.png")};
-    TextureManager::instance()->load_from_file(castle1Sprite);
-    ecsManager.addComponent<Sprite>(castle1, castle1Sprite);
-    Mesh castle1Mesh{};
-    castle1Mesh.init(castle1Sprite.width, castle1Sprite.height);
-    ecsManager.addComponent<Mesh>(castle1, castle1Mesh);
-
-    // CASTLE 2
-    Entity castle2 = ecsManager.createEntity();
-    ecsManager.addComponent<Transform>(castle2, Transform{
-            {m_screen_size.x - 120.f, m_screen_size.y / 2},
-            {0.5f, 0.5f}
-    });
-    ecsManager.addComponent<Team>(castle2, Team{TeamType::PLAYER2});
-    Effect castle2Effect{};
-    castle2Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
-    ecsManager.addComponent<Effect>(castle2, castle2Effect);
-    Sprite castle2Sprite = {textures_path("castle/CaptureTheCastle_castle_blue.png")};
-    TextureManager::instance()->load_from_file(castle2Sprite);
-    ecsManager.addComponent<Sprite>(castle2, castle2Sprite);
-    Mesh castle2Mesh{};
-    castle2Mesh.init(castle2Sprite.width, castle2Sprite.height);
-    ecsManager.addComponent<Mesh>(castle2, castle2Mesh);
-
     // ITEM BOARD (PLAYER 1)
     Entity player1_board = ecsManager.createEntity();
     ecsManager.addComponent<Transform>(player1_board, Transform{
@@ -265,6 +265,23 @@ bool World::init(vec2 screen)
     Mesh player2BoardMesh{};
     player2BoardMesh.init(player2BoardSprite.width, player2BoardSprite.height);
     ecsManager.addComponent<Mesh>(player2_board, player2BoardMesh);
+
+    // HELP BUTTON
+    Entity help_button = ecsManager.createEntity();
+    ecsManager.addComponent<Transform>(help_button, Transform{
+            { screen.x - 50.f, screen.y - 50.f },
+            {0.3f, 0.3f}
+    });
+    Effect helpButtonEffect{};
+    helpButtonEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+    ecsManager.addComponent<Effect>(help_button, helpButtonEffect);
+    Sprite helpButtonSprite = {textures_path("ui/CaptureTheCastle_help_btn_spriteSheet.png")};
+    TextureManager::instance()->load_from_file(helpButtonSprite);
+    ecsManager.addComponent<Sprite>(help_button, helpButtonSprite);
+    Mesh helpButtonMesh{};
+    helpButtonMesh.init(helpButtonSprite.width, helpButtonSprite.height);
+    ecsManager.addComponent<Mesh>(help_button, helpButtonMesh);
+
 
     // Hardcoded maze data, created using Tiled
 	// Each number represent the id of a tile 
