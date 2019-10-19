@@ -1,17 +1,12 @@
 // Header
 #include "world.hpp"
-#include "components.hpp"
-#include "texture_manager.hpp"
 
 // stlib
 #include <cstring>
 #include <cassert>
 #include <sstream>
-#include <ecs/ecs_manager.hpp>
-#include <systems/movement_system.hpp>
-#include <systems/player_input_system.hpp>
-#include <systems/render_system.hpp>
-#include <systems/bandit_spawn_system.hpp>
+
+
 
 // Same as static in c, local to compilation unit
 namespace {
@@ -114,6 +109,8 @@ bool World::init(vec2 screen)
     tilemap->init();
 
     // ECS initialization
+
+	// Register ALL Components
 	ecsManager.registerComponent<Motion>();
 	ecsManager.registerComponent<Transform>();
 	ecsManager.registerComponent<Team>();
@@ -123,6 +120,9 @@ bool World::init(vec2 screen)
 	ecsManager.registerComponent<BanditSpawnComponent>();
 	ecsManager.registerComponent<PlayerInputControlComponent>();
 
+	ecsManager.registerComponent<BanditAIComponent>();
+
+	// Register Systems and Entities
 	movementSystem = ecsManager.registerSystem<MovementSystem>();
     {
         Signature signature;
@@ -170,7 +170,7 @@ bool World::init(vec2 screen)
     });
     ecsManager.addComponent<Motion>(player1, Motion{
             {0, 0},
-            100.f
+            500.f
     });
     ecsManager.addComponent<Team>(player1, Team{TeamType::PLAYER1});
     ecsManager.addComponent<PlayerInputControlComponent>(player1, PlayerInputControlComponent{});
@@ -192,7 +192,7 @@ bool World::init(vec2 screen)
     });
     ecsManager.addComponent<Motion>(player2, Motion{
             {0, 0},
-            100.f
+            500.f
     });
     ecsManager.addComponent<Team>(player2, Team{TeamType::PLAYER2});
     ecsManager.addComponent<PlayerInputControlComponent>(player2, PlayerInputControlComponent{});
@@ -205,6 +205,15 @@ bool World::init(vec2 screen)
     Mesh player2Mesh{};
     player2Mesh.init(player2Sprite.width, player2Sprite.height);
     ecsManager.addComponent<Mesh>(player2, player2Mesh);
+
+	// AI
+	banditAISystem = ecsManager.registerSystem<BanditAISystem>();
+	{
+		Signature signature;
+		signature.set(ecsManager.getComponentType<BanditAIComponent>());
+		ecsManager.setSystemSignature<BanditAISystem>(signature);
+	}
+	banditAISystem->init(tilemap, player1, player2);
 
     // CASTLE 1
     Entity castle1 = ecsManager.createEntity();
@@ -295,55 +304,11 @@ bool World::update(float elapsed_ms) {
     glfwGetFramebufferSize(m_window, &w, &h);
     vec2 screen = {(float) w / m_screen_scale, (float) h / m_screen_scale};
 
-    // Player update
-//    for (auto player : players) {
-//            const float offset_x = 100.f;
-//            const float bottom_offset_y = 80.f;
-//            const float top_offset_y = 150.f;
-//
-//            if (player->get_position().x > (screen.x - offset_x)) {
-//                player->set_position({screen.x - offset_x, player->get_position().y});
-//            }
-//            if (player->get_position().x < (0 + offset_x)) {
-//                player->set_position({0 + offset_x, player->get_position().y});
-//            }
-//            if (player->get_position().y > (screen.y - bottom_offset_y)) {
-//                player->set_position({player->get_position().x, screen.y - bottom_offset_y});
-//            }
-//            if (player->get_position().y < (0 + top_offset_y)) {
-//                player->set_position({player->get_position().x, 0 + top_offset_y});
-//            }
-//        }
-//
-//        for (auto &&tile_list : m_tiles) {
-//            for (auto &tile : tile_list) {
-//                if (tile.is_wall()) {
-//                    for (auto player : players) {
-//                        if (player->collides_with_tile(tile) && !player->is_stuck()) {
-//                            player->handle_wall_collision(tile);
-//                        } else {
-//                            player->set_stuck(false);
-//                        }
-//                    }
-//                    for (auto bandit: bandits) {
-//                        if (bandit->collides_with_tile(tile)) {
-//                            bandit->handle_wall_collision();
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        for (auto player : players) {
-//            player->update(elapsed_ms);
-//        }
-//        for (auto bandit: bandits) {
-//            bandit->update(elapsed_ms);
-//        }
-//
-        banditSpawnSystem->update(elapsed_ms);
-        playerInputSystem->update();
-        movementSystem->update(elapsed_ms);
-        return true;
+    banditSpawnSystem->update(elapsed_ms);
+	banditAISystem->update(elapsed_ms);
+    playerInputSystem->update();
+    movementSystem->update(elapsed_ms);
+    return true;
 }
 
 // Render our game world

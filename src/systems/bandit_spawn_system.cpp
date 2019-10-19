@@ -2,9 +2,8 @@
 // Created by Owner on 2019-10-16.
 //
 
-#include <texture_manager.hpp>
 #include "bandit_spawn_system.hpp"
-#include "player_input_system.hpp"
+
 
 bool BanditSpawnSystem::init(std::shared_ptr<Tilemap> tm) {
     // Seeding rng with random device

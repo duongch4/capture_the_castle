@@ -77,6 +77,7 @@ struct Team {
 };
 
 struct BanditSpawnComponent {};
+struct BanditAIComponent {};
 
 struct PlayerInputControlComponent {};
 

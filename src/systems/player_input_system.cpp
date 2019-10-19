@@ -2,8 +2,7 @@
 // Created by Owner on 2019-10-12.
 //
 
-#include <ecs/ecs_manager.hpp>
-#include <components.hpp>
+
 #include "player_input_system.hpp"
 
 extern ECSManager ecsManager;
@@ -56,7 +55,7 @@ void PlayerInputSystem::update() {
                             break;
                         case InputKeys::LEFT :
 							next_dir.x -= 1;
-                            break;
+							break;
                         default:
                             break;
                     }
