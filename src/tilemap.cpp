@@ -49,17 +49,17 @@ bool Tilemap::init()
 
 void Tilemap::destroy()
 {
-//    for (auto &vector : m_tiles) {
-//        for (auto &tile : vector) {
-//            tile.destroy();
-//        }
-//    }
-//
-//    for (auto &vector : m_tiles) {s
-//        vector.clear();
-//    }
-//
-//    m_tiles.clear();
+    for (auto &vector : m_tiles) {
+        for (auto &tile : vector) {
+            tile.destroy();
+        }
+    }
+
+    for (auto &vector : m_tiles) {
+        vector.clear();
+    }
+
+    m_tiles.clear();
 }
 
 void Tilemap::draw(const mat3& projection)
@@ -104,7 +104,7 @@ vec2 Tilemap::get_random_free_tile_position(MazeRegion mazeRegion)
 		while (resultNotFound) {
 			int randomX = rand() % 11 + 6;
 			int randomY = rand() % 14 + 4;
-			if (m_tiles[randomY][randomX].is_wall() == false) {
+			if (!m_tiles[randomY][randomX].is_wall()) {
 				return m_tiles[randomY][randomX].get_position();
 			}
 		}
@@ -112,7 +112,7 @@ vec2 Tilemap::get_random_free_tile_position(MazeRegion mazeRegion)
 		while (resultNotFound) {
 			int randomX = rand() % 22 + 17;
 			int randomY = rand() % 14 + 4;
-			if (m_tiles[randomY][randomX].is_wall() == false) {
+			if (!m_tiles[randomY][randomX].is_wall()) {
 				return m_tiles[randomY][randomX].get_position();
 			}
 		}
@@ -120,7 +120,7 @@ vec2 Tilemap::get_random_free_tile_position(MazeRegion mazeRegion)
 		while (resultNotFound) {
 			int randomX = rand() % 16 + 12;
 			int randomY = rand() % 14 + 4;
-			if (m_tiles[randomY][randomX].is_wall() == false) {
+			if (!m_tiles[randomY][randomX].is_wall()) {
 				return m_tiles[randomY][randomX].get_position();
 			}
 		}

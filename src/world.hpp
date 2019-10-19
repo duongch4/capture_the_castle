@@ -70,9 +70,7 @@ private:
 	//Background m_background;
 
 	// Game entities
-    std::vector<Entity> entities;
-    //std::vector<std::vector<Tile>> m_tiles;
-	Tilemap tilemap;
+	std::shared_ptr<Tilemap> tilemap;
 
     std::shared_ptr<MovementSystem> movementSystem;
     std::shared_ptr<PlayerInputSystem> playerInputSystem;
