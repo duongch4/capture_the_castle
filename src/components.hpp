@@ -10,6 +10,9 @@
 struct Sprite {
     char* texture_name;
     int width, height = 0;
+	// sotring index and size of this sprite in sprite sheet
+	vec2 sprite_index = {0, 0};
+	vec2 sprite_size = {0, 0};
 };
 
 // A Mesh is a collection of a VertexBuffer and an IndexBuffer. A VAO
@@ -75,6 +78,7 @@ struct Collision {
 struct Team {
     TeamType assigned;
 };
+
 
 struct BanditSpawnComponent {};
 

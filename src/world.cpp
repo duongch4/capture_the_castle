@@ -166,7 +166,7 @@ bool World::init(vec2 screen)
     Entity player1 = ecsManager.createEntity();
     ecsManager.addComponent<Transform>(player1, Transform{
         { 120.f, m_screen_size.y / 2 + 130.f },
-        {0.4f, 0.4f}
+        {0.11f, 0.11f}
     });
     ecsManager.addComponent<Motion>(player1, Motion{
             {0, 0},
@@ -177,18 +177,19 @@ bool World::init(vec2 screen)
     Effect player1Effect{};
     player1Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(player1, player1Effect);
-    Sprite player1Sprite = {textures_path("red_player/CaptureTheCastle_red_player_right.png")};
+    Sprite player1Sprite = {textures_path("red_king_sprite_sheet.png")};
     TextureManager::instance()->load_from_file(player1Sprite);
     ecsManager.addComponent<Sprite>(player1, player1Sprite);
     Mesh player1Mesh{};
-    player1Mesh.init(player1Sprite.width, player1Sprite.height);
+	player1Sprite.sprite_size = { player1Sprite.width  / 7.0f , player1Sprite.height / 5.0f};
+    player1Mesh.init(player1Sprite.width, player1Sprite.height, player1Sprite.sprite_size.x, player1Sprite.sprite_size.y, player1Sprite.sprite_index.x, player1Sprite.sprite_index.y, 0);
     ecsManager.addComponent<Mesh>(player1, player1Mesh);
 
     // PLAYER 2
     Entity player2 = ecsManager.createEntity();
     ecsManager.addComponent<Transform>(player2, Transform{
         { m_screen_size.x - 120.f, m_screen_size.y / 2 + 130.f },
-        {0.4f, 0.4f}
+        {0.11f, 0.11f}
     });
     ecsManager.addComponent<Motion>(player2, Motion{
             {0, 0},
@@ -199,11 +200,13 @@ bool World::init(vec2 screen)
     Effect player2Effect{};
     player2Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(player2, player2Effect);
-    Sprite player2Sprite = {textures_path("blue_player/CaptureTheCastle_blue_player_right.png")};
+    Sprite player2Sprite = {textures_path("blue_king_sprite_sheet.png")};
     TextureManager::instance()->load_from_file(player2Sprite);
     ecsManager.addComponent<Sprite>(player2, player2Sprite);
     Mesh player2Mesh{};
-    player2Mesh.init(player2Sprite.width, player2Sprite.height);
+	player2Sprite.sprite_size = { player2Sprite.width / 7.0f , player2Sprite.height / 5.0f };
+	player2Sprite.sprite_index = { 4 , 4 };
+    player2Mesh.init(player2Sprite.width, player2Sprite.height, player2Sprite.sprite_size.x, player2Sprite.sprite_size.y, player2Sprite.sprite_index.x, player2Sprite.sprite_index.y, 0);
     ecsManager.addComponent<Mesh>(player2, player2Mesh);
 
     // CASTLE 1
