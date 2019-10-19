@@ -148,7 +148,7 @@
 #define SDL_VIDEO_VULKAN 1
 #endif
 
-/* Enable system power support */
+/* Enable systems power support */
 #define SDL_POWER_ANDROID 1
 
 /* Enable the filesystem driver */

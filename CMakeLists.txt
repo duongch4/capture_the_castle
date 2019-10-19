@@ -6,7 +6,7 @@ project(capture_the_castle)
 if (POLICY CMP0025)
     cmake_policy(SET CMP0025 NEW)
 endif ()
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 # nice hierarchichal structure in MSVC
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -33,24 +33,42 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/project_path.hpp.in" "${CMAKE_CU
 set(SOURCE_FILES
         src/main.cpp
         src/common.cpp
-        src/castle.cpp
+        src/ecs/entity_manager.cpp
+        src/systems/movement_system.cpp
+        src/systems/player_input_system.cpp
+        src/systems/render_system.cpp
+        src/systems/bandit_spawn_system.cpp
+        src/texture_manager.cpp
+        src/components.cpp
         src/player.cpp
         src/world.cpp
         src/background.cpp
         src/tile.cpp
-        src/bandit.cpp
+		src/tilemap.cpp
         src/soldier.cpp
-        src/itemBoard.cpp
         src/project_path.hpp
         src/common.hpp
-        src/castle.hpp
+        src/ecs/common_ecs.hpp
+        src/ecs/ecs_manager.hpp
+        src/ecs/component_array.hpp
+        src/ecs/component_manager.hpp
+        src/ecs/entity_manager.hpp
+        src/ecs/system_manager.hpp
+        src/ecs/events.hpp
+        src/ecs/event_manager.hpp
+        src/ecs/event_handler.hpp
+        src/components.hpp
+        src/systems/movement_system.hpp
+        src/systems/player_input_system.hpp
+        src/systems/render_system.hpp
+        src/systems/bandit_spawn_system.hpp
+        src/texture_manager.hpp
         src/player.hpp
         src/world.hpp
         src/background.hpp
         src/tile.hpp
-        src/bandit.hpp
+		src/tilemap.hpp
         src/soldier.hpp
-        src/itemBoard.hpp
         )
 
 if (IS_OS_MAC)

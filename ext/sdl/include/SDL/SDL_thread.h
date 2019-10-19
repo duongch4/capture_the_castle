@@ -147,7 +147,7 @@ SDL_CreateThread(SDL_ThreadFunction fn, const char *name, void *data,
  *   Thread naming is a little complicated: Most systems have very small
  *    limits for the string length (Haiku has 32 bytes, Linux currently has 16,
  *    Visual C++ 6.0 has nine!), and possibly other arbitrary rules. You'll
- *    have to see what happens with your system's debugger. The name should be
+ *    have to see what happens with your systems's debugger. The name should be
  *    UTF-8 (but using the naming limits of C identifiers is a better bet).
  *   There are no requirements for thread naming conventions, so long as the
  *    string is null-terminated UTF-8, but these guidelines are helpful in
@@ -155,7 +155,7 @@ SDL_CreateThread(SDL_ThreadFunction fn, const char *name, void *data,
  *
  *    http://stackoverflow.com/questions/149932/naming-conventions-for-threads
  *
- *   If a system imposes requirements, SDL will try to munge the string for
+ *   If a systems imposes requirements, SDL will try to munge the string for
  *    it (truncate, etc), but the original string contents will be available
  *    from SDL_GetThreadName().
  */
