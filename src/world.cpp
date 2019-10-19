@@ -169,16 +169,19 @@ bool World::init(vec2 screen)
 	ecsManager.addComponent<PlaceableComponent>(soldier1Team1, PlaceableComponent{});
 	ecsManager.addComponent<Transform>(soldier1Team1, Transform{
 		tilemap->get_random_free_tile_position(MazeRegion::PLAYER1),
-		{0.3, 0.3}
+		{0.08, 0.08}
 		});
 	Effect soldier1Team1Effect{};
 	soldier1Team1Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
 	ecsManager.addComponent<Effect>(soldier1Team1, soldier1Team1Effect);
-	Sprite soldier1Team1Sprite = { textures_path("red_soldier/CaptureTheCastle_red_soldier_right.png") };
+	Sprite soldier1Team1Sprite = { textures_path("red_soldier_sprite_sheet-01.png") };
 	TextureManager::instance()->load_from_file(soldier1Team1Sprite);
+	soldier1Team1Sprite.sprite_index = { 0 , 0 };
+	soldier1Team1Sprite.sprite_size = { soldier1Team1Sprite.width / 7.0f , soldier1Team1Sprite.height / 5.0f };
 	ecsManager.addComponent<Sprite>(soldier1Team1, soldier1Team1Sprite);
 	Mesh soldier1Team1Mesh{};
-	soldier1Team1Mesh.init(soldier1Team1Sprite.width, soldier1Team1Sprite.height);
+	soldier1Team1Mesh.init(soldier1Team1Sprite.width, soldier1Team1Sprite.height, soldier1Team1Sprite.sprite_size.x, soldier1Team1Sprite.sprite_size.y,
+		soldier1Team1Sprite.sprite_index.x, soldier1Team1Sprite.sprite_index.y, 0);
 	ecsManager.addComponent<Mesh>(soldier1Team1, soldier1Team1Mesh);
 
 	// Team 2 Soldiers
@@ -187,16 +190,19 @@ bool World::init(vec2 screen)
 	ecsManager.addComponent<PlaceableComponent>(soldier1Team2, PlaceableComponent{});
 	ecsManager.addComponent<Transform>(soldier1Team2, Transform{
 			tilemap->get_random_free_tile_position(MazeRegion::PLAYER2),
-			{0.3, 0.3}
+			{0.08, 0.08}
 		});
 	Effect soldier1Team2Effect{};
 	soldier1Team2Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
 	ecsManager.addComponent<Effect>(soldier1Team2, soldier1Team2Effect);
-	Sprite soldier1Team2Sprite = { textures_path("blue_soldier/CaptureTheCastle_blue_soldier_left.png") };
+	Sprite soldier1Team2Sprite = { textures_path("blue_soldier_sprite_sheet-01.png") };
 	TextureManager::instance()->load_from_file(soldier1Team2Sprite);
+	soldier1Team2Sprite.sprite_index = { 0 , 0 };
+	soldier1Team2Sprite.sprite_size = { soldier1Team2Sprite.width / 7.0f , soldier1Team2Sprite.height / 5.0f };
 	ecsManager.addComponent<Sprite>(soldier1Team2, soldier1Team2Sprite);
 	Mesh soldier1Team2Mesh{};
-	soldier1Team2Mesh.init(soldier1Team2Sprite.width, soldier1Team2Sprite.height);
+	soldier1Team2Mesh.init(soldier1Team2Sprite.width, soldier1Team2Sprite.height, soldier1Team2Sprite.sprite_size.x, soldier1Team2Sprite.sprite_size.y, 
+		soldier1Team2Sprite.sprite_index.x, soldier1Team2Sprite.sprite_index.y, 0);
 	ecsManager.addComponent<Mesh>(soldier1Team2, soldier1Team2Mesh);
 
 	// CASTLE 1
