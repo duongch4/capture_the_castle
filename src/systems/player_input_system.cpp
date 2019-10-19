@@ -25,16 +25,16 @@ void PlayerInputSystem::update() {
                 if (keysPressed[key]) {
                     switch(key) {
                         case InputKeys::W :
-                            next_dir = {0, -1};
+                            next_dir.y -= 1;
                             break;
                         case InputKeys::S :
-                            next_dir = {0, 1};
+							next_dir.y += 1;
                             break;
                         case InputKeys::D :
-                            next_dir = {1, 0};
+							next_dir.x += 1;
                             break;
                         case InputKeys::A :
-                            next_dir = {-1, 0};
+							next_dir.x -= 1;
                             break;
                         default:
                             break;
@@ -46,16 +46,16 @@ void PlayerInputSystem::update() {
                 if (keysPressed[key]) {
                     switch(key) {
                         case InputKeys::UP :
-                            next_dir = {0, -1};
+							next_dir.y -= 1;
                             break;
                         case InputKeys::DOWN :
-                            next_dir = {0, 1};
+							next_dir.y += 1;
                             break;
                         case InputKeys::RIGHT :
-                            next_dir = {1, 0};
+							next_dir.x += 1;
                             break;
                         case InputKeys::LEFT :
-                            next_dir = {-1, 0};
+							next_dir.x -= 1;
                             break;
                         default:
                             break;
