@@ -7,8 +7,8 @@
 
 bool BanditAISystem::init(Entity player_1, Entity player_2) {
 	m_currentState = State::IDLE;
-	m_target = player_1;
-	m_target_2 = player_2;
+	m_targets.emplace_back(player_1);
+	m_targets.emplace_back(player_2);
 	return true;
 }
 
@@ -17,6 +17,9 @@ void BanditAISystem::update(float elapsed_ms) {
 	auto iter = entities.begin();
 	m_bandit = 0;
 	if (iter != entities.end()) m_bandit = *iter;
+
+	float distance_1 = getDistance(m_targets[0], m_bandit);
+	float distance_2 = getDistance(m_targets[1], m_bandit);
 
 	switch (m_currentState) {
 	case State::IDLE:
@@ -27,26 +30,29 @@ void BanditAISystem::update(float elapsed_ms) {
 		break;
 	case State::CHASE:
 		//std::cout << (getDistance(m_target, m_bandit) > CHASE_THRESHOLD) << std::endl;
-		if (getDistance(m_target, m_bandit) > CHASE_THRESHOLD) {
+		if (
+			(distance_1 > CHASE_THRESHOLD) && (distance_2 > CHASE_THRESHOLD)
+		) {
 			m_currentState = State::IDLE;
 			return;
 		}
-		followDirection(m_target, m_bandit, elapsed_ms);
+		if (distance_1 < distance_2) {
+			followDirection(m_targets[0], m_bandit, elapsed_ms);
+		}
+		else {
+			followDirection(m_targets[1], m_bandit, elapsed_ms);
+		}
 		break;
 	}
-	checkTarget();
+	checkTarget(distance_1, distance_2);
 }
 
-void BanditAISystem::setTarget(Entity target) {
-	m_target = target;
-}
-
-void BanditAISystem::checkTarget() {
+void BanditAISystem::checkTarget(float distance_1, float distance_2) {
 	if (m_currentState == State::CHASE) {
 		return;
 	}
 
-	if (getDistance(m_target, m_bandit) < CHASE_THRESHOLD) {
+	if ((distance_1 < CHASE_THRESHOLD) || (distance_2 < CHASE_THRESHOLD)) {
 		m_currentState = State::CHASE;
 	}
 }

@@ -32,10 +32,8 @@ private:
 
 	State m_currentState;
 	Entity m_bandit;
-	Entity m_target;
-	Entity m_target_2;
-	void setTarget(Entity target);
-	void checkTarget();
+	std::vector<Entity> m_targets;
+	void checkTarget(float distance_1, float distance_2);
 	float getDistance(Entity target, Entity bandit);
 	void followDirection(Entity target, Entity bandit, float elapsed_ms);
 	bool isTargetMoveTowardBandit(vec2 bandit_transform_pos, vec2 target_transform_pos, vec2 target_motion_dir);
