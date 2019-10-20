@@ -11,7 +11,7 @@
 struct Sprite {
     const char* texture_name;
     int width, height = 0;
-	// sotring index and size of this sprite in sprite sheet
+	// storing index and size of this sprite in sprite sheet
 	vec2 sprite_index = {0, 0};
 	vec2 sprite_size = {0, 0};
 };
@@ -43,8 +43,10 @@ struct Mesh {
 	*                      Enter 0 if there is no gap in the sprite sheet
 	* @return boolean      True if the mesh is created successfully, false otherwise.
 	*/
-	bool init(int textureWidth, int textureHeight, int spriteWidth, int spriteHeight,
-		int spriteIndexX, int spriteIndexY, int spriteGap);
+	bool init(
+		float textureWidth, float textureHeight, float spriteWidth, float spriteHeight,
+		float spriteIndexX, float spriteIndexY, int spriteGap
+	);
 };
 
 // Effect component of Entity for Vertex and Fragment shader, which are then put(linked) together in a
