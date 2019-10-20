@@ -1,8 +1,6 @@
 //
 // Created by Owner on 2019-10-14.
 //
-#pragma once
-
 #include <sstream>
 #include <vector>
 #include "components.hpp"
