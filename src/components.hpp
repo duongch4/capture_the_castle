@@ -43,6 +43,11 @@ struct Mesh {
 	bool init(int textureWidth, int textureHeight, int spriteWidth, int spriteHeight,
 		int spriteIndexX, int spriteIndexY, int spriteGap);
 
+	// Very similar to the init function, but this will only update the vertex
+	// buffer object instead of generating a new vertex buffer object.
+	bool updateSprite(int textureWidth, int textureHeight, int spriteWidth, int spriteHeight, 
+		int spriteIndexX, int spriteIndexY, int spriteGap);
+
     void release();
 };
 

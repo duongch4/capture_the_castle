@@ -459,7 +459,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 }
 
 void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
-    // help_btn.onHover(help_btn.mouseOnButton({static_cast<float>(xpos), static_cast<float>(ypos)}));
+    help_btn.onHover(help_btn.mouseOnButton({static_cast<float>(xpos), static_cast<float>(ypos)}));
 }
 
 void World::reset() {

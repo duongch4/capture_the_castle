@@ -101,11 +101,9 @@ bool HelpButton::mouseOnButton(vec2 mouseloc) {
 void HelpButton::onHover(bool isHovering) {
     if (isHovering && currIndex == 0) {
         currIndex = 1;
-        mesh.release();
-        mesh.init(helpBtnSprite.width, helpBtnSprite.height, helpBtnSprite.height, helpBtnSprite.height, currIndex, 0,0);
+        mesh.updateSprite(helpBtnSprite.width, helpBtnSprite.height, helpBtnSprite.height, helpBtnSprite.height, currIndex, 0,0);
     } else if (!isHovering && currIndex == 1) {
         currIndex = 0;
-        mesh.release();
-        mesh.init(helpBtnSprite.width, helpBtnSprite.height, helpBtnSprite.height, helpBtnSprite.height, currIndex, 0,0);
+        mesh.updateSprite(helpBtnSprite.width, helpBtnSprite.height, helpBtnSprite.height, helpBtnSprite.height, currIndex, 0,0);
     }
 }
