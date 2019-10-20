@@ -8,19 +8,17 @@
 #include <memory>
 #include <random>
 
-
 #include <iostream>
 
-
 #include <ecs/common_ecs.hpp>
-#include <systems/player_input_system.hpp>
-#include <tilemap.hpp>
-#include <texture_manager.hpp>
+#include <ecs/ecs_manager.hpp>
+#include <components.hpp>
 
+extern ECSManager ecsManager;
 
 class BanditAISystem: public System {
 public:
-	bool init(std::shared_ptr<Tilemap> tm, Entity player_1, Entity player_2);
+	bool init(Entity player_1, Entity player_2);
     void update(float ms);
 
 private:
@@ -28,11 +26,8 @@ private:
 		IDLE,
 		CHASE,
 	};
-	const size_t MAX_BANDITS = 1;
-	const size_t BANDIT_DELAY_MS = 15000;
-	const size_t CHASE_THRESHOLD = 15000;
-	const vec2 SCALE = {0.4f, 0.4f};
-	const vec2 INIT_DIRECTION = {0.f, 0.f};
+
+	const size_t CHASE_THRESHOLD = 200;
 	const float SPEED = 70.f;
 
 	State m_currentState;
@@ -45,15 +40,6 @@ private:
 	void followDirection(Entity target, Entity bandit, float elapsed_ms);
 	bool isTargetMoveTowardBandit(vec2 bandit_transform_pos, vec2 target_transform_pos, vec2 target_motion_dir);
 	bool isTargetMoveAwayBandit(vec2 bandit_transform_pos, vec2 target_transform_pos, vec2 target_motion_dir);
-
-    float next_bandit_spawn;
-    std::shared_ptr<Tilemap> tilemap;
-
-    // C++ rng
-    std::default_random_engine rng;
-    std::uniform_real_distribution<float> dist;
-
-    Entity spawn_bandit();
 };
 
 

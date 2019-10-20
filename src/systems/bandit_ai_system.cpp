@@ -4,30 +4,19 @@
 
 #include "bandit_ai_system.hpp"
 
-#include <cmath>
 
-
-bool BanditAISystem::init(std::shared_ptr<Tilemap> tm, Entity player_1, Entity player_2) {
+bool BanditAISystem::init(Entity player_1, Entity player_2) {
 	m_currentState = State::IDLE;
 	m_target = player_1;
 	m_target_2 = player_2;
-
-	// Seeding rng with random device
-	next_bandit_spawn = .0f;
-	rng = std::default_random_engine(std::random_device()());
-	tilemap = tm;
 	return true;
 }
 
 void BanditAISystem::update(float elapsed_ms) {
-	next_bandit_spawn -= elapsed_ms;
-	if (entities.size() < MAX_BANDITS && next_bandit_spawn < 0.f)
-	{
-		m_bandit = spawn_bandit();
 
-		// Next spawn
-		next_bandit_spawn = (BANDIT_DELAY_MS / 2) + dist(rng) * (BANDIT_DELAY_MS / 2);
-	}
+	auto iter = entities.begin();
+	m_bandit = 0;
+	if (iter != entities.end()) m_bandit = *iter;
 
 	switch (m_currentState) {
 	case State::IDLE:
@@ -48,33 +37,6 @@ void BanditAISystem::update(float elapsed_ms) {
 	checkTarget();
 }
 
-Entity BanditAISystem::spawn_bandit() {
-	vec2 nextPos = tilemap->get_random_free_tile_position(MazeRegion::BANDIT);
-
-	Entity bandit = ecsManager.createEntity();
-	ecsManager.addComponent<BanditAIComponent>(bandit, BanditAIComponent{});
-	ecsManager.addComponent<Transform>(bandit, Transform{
-			nextPos,
-			SCALE
-		});
-	ecsManager.addComponent<Motion>(bandit, Motion{
-			INIT_DIRECTION,
-			SPEED
-		});
-	ecsManager.addComponent<Team>(bandit, Team{ TeamType::BANDIT });
-	Effect banditEffect{};
-	banditEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
-	ecsManager.addComponent<Effect>(bandit, banditEffect);
-	Sprite banditSprite = { textures_path("bandit/CaptureTheCastle_bandit_left.png") };
-	TextureManager::instance()->load_from_file(banditSprite);
-	ecsManager.addComponent<Sprite>(bandit, banditSprite);
-	Mesh banditMesh{};
-	banditMesh.init(banditSprite.width, banditSprite.height);
-	ecsManager.addComponent<Mesh>(bandit, banditMesh);
-
-	return bandit;
-}
-
 void BanditAISystem::setTarget(Entity target) {
 	m_target = target;
 }
@@ -93,7 +55,7 @@ float BanditAISystem::getDistance(Entity target, Entity bandit) {
 	vec2 target_transform_pos = ecsManager.getComponent<Transform>(target).position;
 	vec2 bandit_transform_pos = ecsManager.getComponent<Transform>(bandit).position;
 	vec2 difference = { target_transform_pos.x - bandit_transform_pos.x, target_transform_pos.y - bandit_transform_pos.y };
-	return (difference.x * difference.x) + (difference.y * difference.y);
+	return std::sqrtf((difference.x * difference.x) + (difference.y * difference.y));
 }
 
 void BanditAISystem::followDirection(Entity target, Entity bandit, float elapsed_ms) {
@@ -117,10 +79,10 @@ void BanditAISystem::followDirection(Entity target, Entity bandit, float elapsed
 		bandit_transform_pos.y += target_motion_dir.y * step;
 	}
 
-	float distance = getDistance(target, bandit);
+	float distance = getDistance(target, bandit) + 1e-5f;
 	float dir_x = target_transform_pos.x - bandit_transform_pos.x;
 	float dir_y = target_transform_pos.y - bandit_transform_pos.y;
-	bandit_motion_dir = { dir_x / sqrt(distance + 1e-5f), dir_y / sqrt(distance + 1e-5f) };
+	bandit_motion_dir = { dir_x / distance, dir_y / distance };
 	std::cout << "x" << std::endl;
 	std::cout << bandit_motion_dir.x << std::endl;
 	std::cout << "y" << std::endl;

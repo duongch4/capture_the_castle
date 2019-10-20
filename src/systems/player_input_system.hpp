@@ -6,8 +6,8 @@
 #define CAPTURE_THE_CASTLE_PLAYER_INPUT_SYSTEM_HPP
 
 #include <ecs/ecs_manager.hpp>
-#include <components.hpp>
 #include <ecs/events.hpp>
+#include <components.hpp>
 
 extern ECSManager ecsManager;
 
