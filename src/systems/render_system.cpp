@@ -2,10 +2,7 @@
 // Created by Owner on 2019-10-12.
 //
 
-#include <ecs/ecs_manager.hpp>
-#include <components.hpp>
-#include <sstream>
-#include <texture_manager.hpp>
+
 #include "render_system.hpp"
 
 extern ECSManager ecsManager;

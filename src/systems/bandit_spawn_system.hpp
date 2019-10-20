@@ -5,11 +5,14 @@
 #ifndef CAPTURE_THE_CASTLE_BANDIT_SPAWN_SYSTEM_HPP
 #define CAPTURE_THE_CASTLE_BANDIT_SPAWN_SYSTEM_HPP
 
-
-#include <ecs/common_ecs.hpp>
-#include <random>
-#include <tilemap.hpp>
 #include <memory>
+#include <random>
+
+#include <systems/player_input_system.hpp>
+#include <ecs/common_ecs.hpp>
+#include <tilemap.hpp>
+#include <texture_manager.hpp>
+
 
 class BanditSpawnSystem: public System {
 public:
@@ -18,7 +21,7 @@ public:
 
 private:
     const size_t MAX_BANDITS = 5;
-    const size_t BANDIT_DELAY_MS = 20000;
+    const size_t BANDIT_DELAY_MS = 2000;
     float next_bandit_spawn;
     std::shared_ptr<Tilemap> tilemap;
 
@@ -26,7 +29,7 @@ private:
     std::default_random_engine rng;
     std::uniform_real_distribution<float> dist;
 
-    void spawn_bandit();
+	void spawn_bandit();
 };
 
 

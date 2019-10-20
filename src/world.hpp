@@ -1,25 +1,28 @@
 #pragma once
 
-// internal
-#include "common.hpp"
-
-#include "tilemap.hpp"
-//#include "background.hpp"
-
-
 // stlib
 #include <vector>
 #include <random>
 
 #define SDL_MAIN_HANDLED
+#include <memory>
 #include <SDL.h>
 #include <SDL_mixer.h>
+
+// internal
 #include <ecs/common_ecs.hpp>
+#include <ecs/ecs_manager.hpp>
+
 #include <systems/movement_system.hpp>
-#include <memory>
 #include <systems/player_input_system.hpp>
 #include <systems/render_system.hpp>
 #include <systems/bandit_spawn_system.hpp>
+#include <systems/bandit_ai_system.hpp>
+
+#include "common.hpp"
+#include "components.hpp"
+#include "texture_manager.hpp"
+#include "tilemap.hpp"
 
 // Container for all our entities and game logic. Individual rendering / update is
 // deferred to the relative update() methods
@@ -76,6 +79,7 @@ private:
     std::shared_ptr<PlayerInputSystem> playerInputSystem;
     std::shared_ptr<SpriteRenderSystem> spriteRenderSystem;
     std::shared_ptr<BanditSpawnSystem> banditSpawnSystem;
+	std::shared_ptr<BanditAISystem> banditAISystem;
 
 	float m_current_speed;
 };
