@@ -22,6 +22,6 @@ private:
     Mesh mesh{};
     Effect effect{};
     Transform transform;
-    static Texture helpInstrSprite;
+    Texture helpInstrSprite;
     mat3 out;
 };

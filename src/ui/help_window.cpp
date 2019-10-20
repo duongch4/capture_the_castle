@@ -3,6 +3,7 @@
 #include "help_window.hpp"
 
 void HelpWindow::init(vec2 screen_size) {
+    // Initialize help button
     help_instructions.init(screen_size);
     vec2 currPos = help_instructions.get_position();
     vec2 box = help_instructions.get_bounding_box();
@@ -15,7 +16,7 @@ void HelpWindow::destroy() {
 }
 
 void HelpWindow::draw(const mat3 &projection) {
-    //draw all the buttons in window
+    //draw all the UI objects of window
     close_btn.draw(projection);
     help_instructions.draw(projection);
 }

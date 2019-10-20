@@ -75,7 +75,7 @@ private:
 
 	// UI
 	HelpButton help_btn;
-	Entity help_window;
+	std::shared_ptr<HelpWindow>help_window;
 
     std::shared_ptr<MovementSystem> movementSystem;
     std::shared_ptr<PlayerInputSystem> playerInputSystem;

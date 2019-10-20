@@ -2,8 +2,6 @@
 
 #include <cmath>
 
-Texture HelpInstructions::helpInstrSprite;
-
 void HelpInstructions::init(vec2 screen_size) {
     transform = Transform {
             { screen_size.x / 2, screen_size.y / 2 },

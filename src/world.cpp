@@ -402,6 +402,9 @@ void World::draw()
 	tilemap->draw(projection_2D);
     spriteRenderSystem->draw(projection_2D);
     help_btn.draw(projection_2D);
+    if (help_window != NULL) {
+        help_window->draw(projection_2D);
+    }
 
     // Presenting
     glfwSwapBuffers(m_window);
@@ -459,7 +462,9 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 }
 
 void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
-    // help_btn.onHover(help_btn.mouseOnButton({static_cast<float>(xpos), static_cast<float>(ypos)}));
+    if (currState == NORMAL) {
+        help_btn.onHover(help_btn.mouseOnButton({static_cast<float>(xpos), static_cast<float>(ypos)}));
+    }
 }
 
 void World::reset() {
@@ -480,26 +485,13 @@ void World::on_mouse_click(GLFWwindow *pWwindow, int button, int action, int mod
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS &&
         currState == WorldState::NORMAL && help_btn.mouseOnButton({static_cast<float>(xpos), static_cast<float>(ypos)})) {
         currState = WorldState :: HELP;
-
-        // HELP WINDOW
-        Entity helpwnd = ecsManager.createEntity();
-        help_window = helpwnd;
-        ecsManager.addComponent<Transform>(helpwnd, Transform{
-                { m_screen_size.x / 2, m_screen_size.y / 2 },
-                {0.7f, 0.7f}
-        });
-        Effect helpWindowEffect{};
-        helpWindowEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
-        ecsManager.addComponent<Effect>(helpwnd, helpWindowEffect);
-        Sprite helpWndSprite = {textures_path("ui/CaptureTheCastle_help_screen.png")};
-        TextureManager::instance()->load_from_file(helpWndSprite);
-        ecsManager.addComponent<Sprite>(helpwnd, helpWndSprite);
-        Mesh helpWndMesh{};
-        helpWndMesh.init(helpWndSprite.width, helpWndSprite.height);
-        ecsManager.addComponent<Mesh>(helpwnd, helpWndMesh);
+        // Help Window Initialization
+        help_window = std::make_shared<HelpWindow>();
+        help_window->init(m_screen_size);
 
     } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && currState == WorldState::HELP) {
         currState = WorldState::NORMAL;
-        ecsManager.destroyEntity(help_window);
+        help_window->destroy();
+        help_window = nullptr;
     }
 }
