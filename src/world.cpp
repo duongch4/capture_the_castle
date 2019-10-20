@@ -170,7 +170,7 @@ bool World::init(vec2 screen)
     });
     ecsManager.addComponent<Motion>(player1, Motion{
             {0, 0},
-            500.f
+            200.f
     });
     ecsManager.addComponent<Team>(player1, Team{TeamType::PLAYER1});
     ecsManager.addComponent<PlayerInputControlComponent>(player1, PlayerInputControlComponent{});

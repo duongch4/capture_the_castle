@@ -24,16 +24,16 @@ public:
     void update(float ms);
 
 private:
-	enum State {
+	enum struct State {
 		IDLE,
 		CHASE,
 	};
 	const size_t MAX_BANDITS = 1;
 	const size_t BANDIT_DELAY_MS = 15000;
-	const size_t CHASE_THRESHOLD = 10000;
+	const size_t CHASE_THRESHOLD = 15000;
 	const vec2 SCALE = {0.4f, 0.4f};
 	const vec2 INIT_DIRECTION = {0.f, 0.f};
-	const float SPEED = 200.f;
+	const float SPEED = 70.f;
 
 	State m_currentState;
 	Entity m_bandit;
@@ -42,7 +42,9 @@ private:
 	void setTarget(Entity target);
 	void checkTarget();
 	float getDistance(Entity target, Entity bandit);
-	void followDirection(Entity target, Entity bandit);
+	void followDirection(Entity target, Entity bandit, float elapsed_ms);
+	bool isTargetMoveTowardBandit(vec2 bandit_transform_pos, vec2 target_transform_pos, vec2 target_motion_dir);
+	bool isTargetMoveAwayBandit(vec2 bandit_transform_pos, vec2 target_transform_pos, vec2 target_motion_dir);
 
     float next_bandit_spawn;
     std::shared_ptr<Tilemap> tilemap;
