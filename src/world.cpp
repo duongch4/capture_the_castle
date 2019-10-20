@@ -489,9 +489,28 @@ void World::on_mouse_click(GLFWwindow *pWwindow, int button, int action, int mod
         help_window = std::make_shared<HelpWindow>();
         help_window->init(m_screen_size);
 
+//        // HELP WINDOW with ECS
+//        Entity helpwnd = ecsManager.createEntity();
+//        help_win = helpwnd;
+//        ecsManager.addComponent<Transform>(helpwnd, Transform{
+//                { m_screen_size.x / 2, m_screen_size.y / 2 },
+//                {0.7f, 0.7f}
+//        });
+//        Effect helpWindowEffect{};
+//        helpWindowEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+//        ecsManager.addComponent<Effect>(helpwnd, helpWindowEffect);
+//        Sprite helpWndSprite = {textures_path("ui/CaptureTheCastle_help_screen.png")};
+//        TextureManager::instance()->load_from_file(helpWndSprite);
+//        ecsManager.addComponent<Sprite>(helpwnd, helpWndSprite);
+//        Mesh helpWndMesh{};
+//        helpWndMesh.init(helpWndSprite.width, helpWndSprite.height);
+//        ecsManager.addComponent<Mesh>(helpwnd, helpWndMesh);
+
     } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && currState == WorldState::HELP) {
         currState = WorldState::NORMAL;
         help_window->destroy();
         help_window = nullptr;
+
+        // ecsManager.destroyEntity(help_window);
     }
 }
