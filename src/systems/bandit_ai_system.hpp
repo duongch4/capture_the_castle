@@ -28,7 +28,7 @@ private:
 	};
 
 	const size_t CHASE_THRESHOLD = 200;
-	const float SPEED = 70.f;
+	float speed = 70.f;
 
 	State m_currentState;
 	Entity m_bandit;
@@ -38,6 +38,10 @@ private:
 	void followDirection(Entity target, Entity bandit, float elapsed_ms);
 	bool isTargetMoveTowardBandit(vec2 bandit_transform_pos, vec2 target_transform_pos, vec2 target_motion_dir);
 	bool isTargetMoveAwayBandit(vec2 bandit_transform_pos, vec2 target_transform_pos, vec2 target_motion_dir);
+
+	// C++ rng
+	std::default_random_engine rng;
+	std::uniform_real_distribution<float> dist;
 };
 
 

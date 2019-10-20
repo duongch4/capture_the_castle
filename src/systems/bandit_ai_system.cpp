@@ -14,37 +14,38 @@ bool BanditAISystem::init(Entity player_1, Entity player_2) {
 
 void BanditAISystem::update(float elapsed_ms) {
 
-	auto iter = entities.begin();
-	m_bandit = 0;
-	if (iter != entities.end()) m_bandit = *iter;
+	for (auto i = entities.begin(); i != entities.end(); i++) {
+		speed = 70.f * (1.f + dist(rng));
+		m_bandit = *i;
 
-	float distance_1 = getDistance(m_targets[0], m_bandit);
-	float distance_2 = getDistance(m_targets[1], m_bandit);
+		float distance_1 = getDistance(m_targets[0], m_bandit);
+		float distance_2 = getDistance(m_targets[1], m_bandit);
 
-	switch (m_currentState) {
-	case State::IDLE:
-		//if (next_bandit_spawn < 2.0f) {
-		//	m_currentState = CHASE;
-		//}
-		ecsManager.getComponent<Motion>(m_bandit).direction = {0,0};
-		break;
-	case State::CHASE:
-		//std::cout << (getDistance(m_target, m_bandit) > CHASE_THRESHOLD) << std::endl;
-		if (
-			(distance_1 > CHASE_THRESHOLD) && (distance_2 > CHASE_THRESHOLD)
-		) {
-			m_currentState = State::IDLE;
-			return;
+		switch (m_currentState) {
+		case State::IDLE:
+			//if (next_bandit_spawn < 2.0f) {
+			//	m_currentState = CHASE;
+			//}
+			ecsManager.getComponent<Motion>(m_bandit).direction = { 0,0 };
+			break;
+		case State::CHASE:
+			//std::cout << (getDistance(m_target, m_bandit) > CHASE_THRESHOLD) << std::endl;
+			if (
+				(distance_1 > CHASE_THRESHOLD) && (distance_2 > CHASE_THRESHOLD)
+				) {
+				m_currentState = State::IDLE;
+				return;
+			}
+			if (distance_1 < distance_2) {
+				followDirection(m_targets[0], m_bandit, elapsed_ms);
+			}
+			else {
+				followDirection(m_targets[1], m_bandit, elapsed_ms);
+			}
+			break;
 		}
-		if (distance_1 < distance_2) {
-			followDirection(m_targets[0], m_bandit, elapsed_ms);
-		}
-		else {
-			followDirection(m_targets[1], m_bandit, elapsed_ms);
-		}
-		break;
+		checkTarget(distance_1, distance_2);
 	}
-	checkTarget(distance_1, distance_2);
 }
 
 void BanditAISystem::checkTarget(float distance_1, float distance_2) {
@@ -70,7 +71,7 @@ void BanditAISystem::followDirection(Entity target, Entity bandit, float elapsed
 	vec2& target_motion_dir = ecsManager.getComponent<Motion>(target).direction;
 	vec2& bandit_motion_dir = ecsManager.getComponent<Motion>(bandit).direction;
 
-	float step = SPEED * elapsed_ms / 1000.f;
+	float step = speed * elapsed_ms / 1000.f;
 
 	if (
 		isTargetMoveTowardBandit(bandit_transform_pos, target_transform_pos, target_motion_dir)
