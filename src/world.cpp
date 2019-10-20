@@ -310,6 +310,7 @@ bool World::init(vec2 screen)
 	float ty = -(top + bottom) / (top - bottom);
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
+	// Render each tile to our screen texture
 	tilemap->draw_all_tiles(projection_2D);
 
     return true;
@@ -408,6 +409,7 @@ void World::draw()
 
 	/////////////////////
 	// Truely render to the screen
+	// Unbind our custom frame buffer in init function and switch it back
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// Clearing backbuffer
@@ -419,7 +421,7 @@ void World::draw()
 
 	// Bind our texture in Texture Unit 0
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
+	glBindTexture(GL_TEXTURE_2D, m_screen_tex.id); // screen texture
 
 	// Background
 	//m_background.draw(projection_2D);
@@ -427,6 +429,7 @@ void World::draw()
 	// Render the screen texture with all our tiles on it
 	tilemap->draw(projection_2D);
 
+	// Render the remaining entities on top our screen texture
     spriteRenderSystem->draw(projection_2D);
 
     // Presenting
