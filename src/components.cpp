@@ -191,6 +191,42 @@ bool Mesh::init(int textureWidth, int textureHeight, int spriteWidth, int sprite
 	return !gl_has_errors();
 }
 
+bool Mesh::updateSprite(int textureWidth, int textureHeight, int spriteWidth, int spriteHeight, int spriteIndexX, int spriteIndexY, int spriteGap) {
+	// The position corresponds to the center of the texture.
+	float wr = textureWidth * 0.5f;
+	float hr = textureHeight * 0.5f;
+
+	// Normalize the width & height of a sprite in a sprite sheet (including the gap) on the scale of [0..1]
+	float spriteNormalWidth = (float)(spriteWidth + spriteGap) / (float)textureWidth;
+	float spriteNormalHeight = (float)(spriteHeight + spriteGap) / (float)textureHeight;
+
+	// Normalize the actual width & height of a sprite (excluding the gap) on the scale of [0..1]
+	float spriteNormalActWidth = (float)spriteWidth / (float)textureWidth;
+	float spriteNormalActHeight = (float)spriteHeight / (float)textureHeight;
+
+	// Calculate the correct texture coordinate based on the width, height, and the index
+	// Texture coordinate are in the range of 0 and 1, and that is why we use the normalized width and height
+	// The width and height are then multiplied by the index to get the sprite coordinate on the sprite sheet
+	TexturedVertex vertices[4];
+	vertices[0].position = { -wr, +hr, -0.01f };
+	vertices[0].texcoord = { spriteIndexX * spriteNormalWidth, (spriteIndexY * spriteNormalHeight) + spriteNormalActHeight }; // Bottom left
+	vertices[1].position = { +wr, +hr, -0.01f };
+	vertices[1].texcoord = { (spriteIndexX * spriteNormalWidth) + spriteNormalActWidth, (spriteIndexY * spriteNormalHeight) + spriteNormalActHeight }; // Bottom right
+	vertices[2].position = { +wr, -hr, -0.01f };
+	vertices[2].texcoord = { (spriteIndexX * spriteNormalWidth) + spriteNormalActWidth, spriteIndexY * spriteNormalHeight }; // Top Right
+	vertices[3].position = { -wr, -hr, -0.01f };
+	vertices[3].texcoord = { spriteIndexX * spriteNormalWidth, spriteIndexY * spriteNormalHeight }; // Top Left
+
+	// Clearing errors
+	gl_flush_errors();
+
+	// Bind the vertex buffer object and update the data (mainly texture coordinate)
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_STATIC_DRAW);
+	
+	return !gl_has_errors();
+}
+
 void Mesh::release()
 {
     glDeleteBuffers(1, &vbo);
