@@ -37,7 +37,6 @@ World::~World() {
 bool World::init(vec2 screen)
 {
 	m_screen_size = screen;
-    m_current_speed = 1.f;
     currState = WorldState::NORMAL;
 
     //-------------------------------------------------------------------------
@@ -78,8 +77,12 @@ bool World::init(vec2 screen)
     auto cursor_pos_redirect = [](GLFWwindow *wnd, double _0, double _1) {
         ((World *) glfwGetWindowUserPointer(wnd))->on_mouse_move(wnd, _0, _1);
     };
+    auto cursor_click_redirect = [](GLFWwindow *wnd, int _0, int _1, int _2) {
+        ((World *) glfwGetWindowUserPointer(wnd))->on_mouse_click(wnd, _0, _1, _2);
+    };
     glfwSetKeyCallback(m_window, key_redirect);
     glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
+    glfwSetMouseButtonCallback(m_window, cursor_click_redirect);
 
     // Create a frame buffer
     m_frame_buffer = 0;
@@ -312,23 +315,8 @@ bool World::init(vec2 screen)
     player2BoardMesh.init(player2BoardSprite.width, player2BoardSprite.height);
     ecsManager.addComponent<Mesh>(player2_board, player2BoardMesh);
 
-    // HELP BUTTON
-    Entity help_button = ecsManager.createEntity();
-    ecsManager.addComponent<Transform>(help_button, Transform{
-            { screen.x - 50.f, screen.y - 50.f },
-            {0.3f, 0.3f}
-    });
-    Effect helpButtonEffect{};
-    helpButtonEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
-    ecsManager.addComponent<Effect>(help_button, helpButtonEffect);
-    Sprite helpButtonSprite = {textures_path("ui/CaptureTheCastle_help_btn_spriteSheet.png")};
-    TextureManager::instance()->load_from_file(helpButtonSprite);
-    ecsManager.addComponent<Sprite>(help_button, helpButtonSprite);
-    Mesh helpButtonMesh{};
-    helpButtonMesh.init(helpButtonSprite.width, helpButtonSprite.height, helpButtonSprite.height, helpButtonSprite.height, 0, 0, 0);
-    ecsManager.addComponent<Mesh>(help_button, helpButtonMesh);
-
-	//m_background.init();
+    //HELP BUTTON
+    help_btn.init(m_screen_size);
 
     return true;
 }
@@ -340,6 +328,7 @@ void World::destroy() {
     // TODO: MIX_FREEAUDIO AND MIX_FREECHUNK ON ALL AUDIOS
     Mix_CloseAudio();
     tilemap->destroy();
+    help_btn.destroy();
     glfwDestroyWindow(m_window);
 }
 
@@ -349,51 +338,6 @@ bool World::update(float elapsed_ms) {
     glfwGetFramebufferSize(m_window, &w, &h);
     vec2 screen = {(float) w / m_screen_scale, (float) h / m_screen_scale};
 
-    // Player update
-//    for (auto player : players) {
-//            const float offset_x = 100.f;
-//            const float bottom_offset_y = 80.f;
-//            const float top_offset_y = 150.f;
-//
-//            if (player->get_position().x > (screen.x - offset_x)) {
-//                player->set_position({screen.x - offset_x, player->get_position().y});
-//            }
-//            if (player->get_position().x < (0 + offset_x)) {
-//                player->set_position({0 + offset_x, player->get_position().y});
-//            }
-//            if (player->get_position().y > (screen.y - bottom_offset_y)) {
-//                player->set_position({player->get_position().x, screen.y - bottom_offset_y});
-//            }
-//            if (player->get_position().y < (0 + top_offset_y)) {
-//                player->set_position({player->get_position().x, 0 + top_offset_y});
-//            }
-//        }
-//
-//        for (auto &&tile_list : m_tiles) {
-//            for (auto &tile : tile_list) {
-//                if (tile.is_wall()) {
-//                    for (auto player : players) {
-//                        if (player->collides_with_tile(tile) && !player->is_stuck()) {
-//                            player->handle_wall_collision(tile);
-//                        } else {
-//                            player->set_stuck(false);
-//                        }
-//                    }
-//                    for (auto bandit: bandits) {
-//                        if (bandit->collides_with_tile(tile)) {
-//                            bandit->handle_wall_collision();
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        for (auto player : players) {
-//            player->update(elapsed_ms);
-//        }
-//        for (auto bandit: bandits) {
-//            bandit->update(elapsed_ms);
-//        }
-//
     if (currState == WorldState::NORMAL) {
         banditSpawnSystem->update(elapsed_ms);
         playerInputSystem->update();
@@ -439,7 +383,7 @@ void World::draw()
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
 	/////////////////////
-	// Truely render to the screen
+	// Truly render to the screen
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// Clearing backbuffer
@@ -455,9 +399,9 @@ void World::draw()
 
 
 	// Background
-	//m_background.draw(projection_2D);
 	tilemap->draw(projection_2D);
     spriteRenderSystem->draw(projection_2D);
+    help_btn.draw(projection_2D);
 
     // Presenting
     glfwSwapBuffers(m_window);
@@ -512,18 +456,10 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 	{
 		reset();
 	}
-
-	// Control the current speed with `<` `>`
-	if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_COMMA)
-		m_current_speed -= 0.1f;
-	if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_PERIOD)
-		m_current_speed += 0.1f;
-
-	m_current_speed = fmax(0.f, m_current_speed);
 }
 
 void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
-    // TODO: HANDLE MOUSE MOVE (IF NECESSARY)
+    // help_btn.onHover(help_btn.mouseOnButton({static_cast<float>(xpos), static_cast<float>(ypos)}));
 }
 
 void World::reset() {
@@ -535,4 +471,35 @@ void World::reset() {
 //    }
 //    m_background.reset_player_dead_time();
 //    m_current_speed = 1.f;
+}
+
+void World::on_mouse_click(GLFWwindow *pWwindow, int button, int action, int mods) {
+    double xpos, ypos;
+    glfwGetCursorPos(pWwindow, &xpos, &ypos);
+
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS &&
+        currState == WorldState::NORMAL && help_btn.mouseOnButton({static_cast<float>(xpos), static_cast<float>(ypos)})) {
+        currState = WorldState :: HELP;
+
+        // HELP WINDOW
+        Entity helpwnd = ecsManager.createEntity();
+        help_window = helpwnd;
+        ecsManager.addComponent<Transform>(helpwnd, Transform{
+                { m_screen_size.x / 2, m_screen_size.y / 2 },
+                {0.7f, 0.7f}
+        });
+        Effect helpWindowEffect{};
+        helpWindowEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+        ecsManager.addComponent<Effect>(helpwnd, helpWindowEffect);
+        Sprite helpWndSprite = {textures_path("ui/CaptureTheCastle_help_screen.png")};
+        TextureManager::instance()->load_from_file(helpWndSprite);
+        ecsManager.addComponent<Sprite>(helpwnd, helpWndSprite);
+        Mesh helpWndMesh{};
+        helpWndMesh.init(helpWndSprite.width, helpWndSprite.height);
+        ecsManager.addComponent<Mesh>(helpwnd, helpWndMesh);
+
+    } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && currState == WorldState::HELP) {
+        currState = WorldState::NORMAL;
+        ecsManager.destroyEntity(help_window);
+    }
 }

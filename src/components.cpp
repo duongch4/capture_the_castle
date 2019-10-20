@@ -190,3 +190,10 @@ bool Mesh::init(int textureWidth, int textureHeight, int spriteWidth, int sprite
 
 	return !gl_has_errors();
 }
+
+void Mesh::release()
+{
+    glDeleteBuffers(1, &vbo);
+    glDeleteBuffers(1, &ibo);
+    glDeleteBuffers(1, &vao);
+}

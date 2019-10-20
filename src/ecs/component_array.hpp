@@ -35,7 +35,6 @@ public:
         size_t indexToRemove = entityToIndexMap[e];
         size_t indexOfLastComponent = componentArraySize - 1;
         componentArray[indexToRemove] = componentArray[indexOfLastComponent];
-
         Entity entityOfLastComponent = indexToEntityMap[indexOfLastComponent];
         entityToIndexMap[entityOfLastComponent] = indexToRemove;
         indexToEntityMap[indexToRemove] = entityOfLastComponent;
