@@ -37,7 +37,12 @@ enum class InputKeys
 // button actions
 enum class ButtonActions
 {
-    CLOSE, MAIN, RESTART, QUIT, HOWTOPLAY
+    CLOSE,
+    MAIN,
+    RESTART,
+    QUIT,
+    HOWTOPLAY,
+    NONE
 };
 
 class Event
