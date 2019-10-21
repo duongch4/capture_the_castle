@@ -246,7 +246,7 @@ bool World::init(vec2 screen)
 	Entity player1 = ecsManager.createEntity();
 	ecsManager.addComponent<Transform>(player1, Transform{
 		{ 120.f, m_screen_size.y / 2 + 130.f },
-		{0.09f, 0.09f}
+		{0.09, 0.09}
 		});
 	ecsManager.addComponent<Motion>(player1, Motion{
 			{0, 0},
@@ -270,7 +270,7 @@ bool World::init(vec2 screen)
 	Entity player2 = ecsManager.createEntity();
 	ecsManager.addComponent<Transform>(player2, Transform{
 		{ m_screen_size.x - 120.f, m_screen_size.y / 2 + 130.f },
-		{0.09f, 0.09f}
+		{0.09, 0.09}
 		});
 	ecsManager.addComponent<Motion>(player2, Motion{
 			{0, 0},
@@ -404,6 +404,7 @@ bool World::update(float elapsed_ms) {
         playerInputSystem->update();
         movementSystem->update(elapsed_ms);
     }
+
     return true;
 }
 
@@ -456,6 +457,7 @@ void World::draw()
 	// Render the remaining entities on top our screen texture
     spriteRenderSystem->draw(projection_2D);
     help_btn.draw(projection_2D);
+
     if (currState == WorldState::HELP) {
         help_window->draw(projection_2D);
     }
@@ -522,6 +524,7 @@ void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
 }
 
 void World::reset() {
+// TODO: Handle world reset
 //    int w, h;
 //    glfwGetWindowSize(m_window, &w, &h);
 //    for (auto player : players) {
