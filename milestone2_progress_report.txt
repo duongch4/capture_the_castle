@@ -1,8 +1,14 @@
 In Milestone 2, our goals and completed goals were:
 - Implement ECS design pattern
 	- The ECS design pattern includes collision system
+	- ECS design is heavily based on Austin Morlan's simple ecs design
+	(https://austinmorlan.com/posts/entity_component_system/#the-entity)
+	- ECS is currently employed only for the Game elements. UI elements are handled separately.
 - Implement AI for bandit character
 	- Simple AI has been done for bandits but there are still improvements that will be made in future milestones
+	- Bandit has Patrol and Chase mode
+		- in Patrol, the bandits looks for any random open space in maze to walk toward.
+		- in Chase, the bandits have detected the player within a set distance. They will move according the closest path.
 - Implement Help Screen
 	- the help screen is completed with mouse interactions (hover and mouse clicks) for the buttons
 - Animate characters
@@ -10,7 +16,10 @@ In Milestone 2, our goals and completed goals were:
 	- the player and bandit characters are animated when they move
 - Prepare sprites for the powerups
 	- bomb and shield power up sprites have been prepared
-- Defined maze regions
+- Defined maze regions (Bandit, Player1, Player2)
+	- Maze regions facilitates game logic: Based on which region entity vs entity collision occured, the response is different.
+	- Player1 and Player2 colliding in Player1 region will cause Player2 to respawned back at their initial posiiton, while
+	if the coolision was in Player2 region, Player1 is respawned
 - Added main background music
 
 Discrepancy in Week 3 ~ 4 from project proposal
@@ -19,4 +28,8 @@ Left to do:
 	- the sprites are ready for the screens
 Did more:
 - Improved Bandit movement and spawning mechanism
-- Performance optimization for maze	
+	- instead of hardcoded initial position, bandits are spawned at random position within the bandit maze region
+- Major performance optimization for maze
+	- after last sprint, we realized drawing the maze tiles at every update was causing performance issues to some machines.
+	- in this sprint, we modified the tilemap draw to only draw the tiles once per game, and in the subsequent draws, we reuse
+	the pre-drawn tilemap as texture.

@@ -15,11 +15,11 @@ void MovementSystem::init() {
 }
 
 void MovementSystem::update(float ms) {
-    for(auto const& entity: entities) {
-        auto& motion = ecsManager.getComponent<Motion>(entity);
-        auto& transform = ecsManager.getComponent<Transform>(entity);
-		auto& sprite = ecsManager.getComponent<Sprite>(entity);
-		auto& mesh = ecsManager.getComponent<Mesh>(entity);
+    for (auto const &entity: entities) {
+        auto &motion = ecsManager.getComponent<Motion>(entity);
+        auto &transform = ecsManager.getComponent<Transform>(entity);
+        auto &sprite = ecsManager.getComponent<Sprite>(entity);
+        auto &mesh = ecsManager.getComponent<Mesh>(entity);
         float step = motion.speed * (ms / 1000);
         transform.old_position = transform.position;
 		if (sprite.sprite_size.x > 0 && (motion.direction.x != 0 || motion.direction.y != 0))
@@ -52,5 +52,27 @@ void MovementSystem::update(float ms) {
 
         transform.position.x += motion.direction.x * step;
         transform.position.y += motion.direction.y * step;
+
+        const float offset_x = 100.f;
+        const float offset_y = 80.f;
+
+        if (transform.position.x > (screenSize.x - offset_x)) {
+            transform.position.x= screenSize.x - offset_x;
+        }
+        if (transform.position.x < offset_x) {
+            transform.position.x = offset_x;
+        }
+        if (transform.position.y > (screenSize.y - offset_y)) {
+            transform.position.y = screenSize.y - offset_y;
+        }
+        if (transform.position.y < 2 * offset_y) {
+            transform.position.y = 2 * offset_y;
+
+        }
     }
+}
+
+void MovementSystem::setScreenSize(vec2 screen) {
+    this->screenSize.x = screen.x;
+    this->screenSize.y = screen.y;
 }

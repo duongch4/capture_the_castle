@@ -22,6 +22,10 @@ private:
 		RIGHT = 3,
 		DOWN = 4 
 	};
+    void setScreenSize(vec2 screen);
+
+private:
+    vec2 screenSize;
 };
 
 
