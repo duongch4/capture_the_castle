@@ -5,11 +5,13 @@
 #ifndef CAPTURE_THE_CASTLE_RENDER_SYSTEM_HPP
 #define CAPTURE_THE_CASTLE_RENDER_SYSTEM_HPP
 
+#include <sstream>
 
+#include <ecs/ecs_manager.hpp>
 #include <ecs/common_ecs.hpp>
 #include <common.hpp>
-
-class Effect;
+#include <components.hpp>
+#include <texture_manager.hpp>
 
 class SpriteRenderSystem : public System {
 public:

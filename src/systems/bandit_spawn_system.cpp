@@ -2,9 +2,8 @@
 // Created by Owner on 2019-10-16.
 //
 
-#include <texture_manager.hpp>
 #include "bandit_spawn_system.hpp"
-#include "player_input_system.hpp"
+
 
 bool BanditSpawnSystem::init(std::shared_ptr<Tilemap> tm) {
     // Seeding rng with random device
@@ -32,20 +31,23 @@ void BanditSpawnSystem::spawn_bandit() {
     ecsManager.addComponent<BanditSpawnComponent>(bandit, BanditSpawnComponent{});
     ecsManager.addComponent<Transform>(bandit, Transform{
             nextPos,
-            {0.3, 0.3}
+			{0.08, 0.08}
     });
     ecsManager.addComponent<Motion>(bandit, Motion{
             {1, 0},
             100.f
     });
     ecsManager.addComponent<Team>(bandit, Team{TeamType::BANDIT});
+	ecsManager.addComponent<BanditAIComponent>(bandit, BanditAIComponent{});
     Effect banditEffect{};
     banditEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(bandit, banditEffect);
-    Sprite banditSprite = {textures_path("bandit/CaptureTheCastle_bandit_right.png")};
+    Sprite banditSprite = {textures_path("bandit_sprite_sheet-01.png")};
     TextureManager::instance()->load_from_file(banditSprite);
+	banditSprite.sprite_index = { 0 , 3 };
+	banditSprite.sprite_size = { banditSprite.width / 7.0f , banditSprite.height / 5.0f };
     ecsManager.addComponent<Sprite>(bandit, banditSprite);
     Mesh banditMesh{};
-    banditMesh.init(banditSprite.width, banditSprite.height);
+    banditMesh.init(banditSprite.width, banditSprite.height, banditSprite.sprite_size.x, banditSprite.sprite_size.y, banditSprite.sprite_index.x, banditSprite.sprite_index.y, 0);
     ecsManager.addComponent<Mesh>(bandit, banditMesh);
 }

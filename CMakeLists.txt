@@ -38,6 +38,7 @@ set(SOURCE_FILES
         src/systems/player_input_system.cpp
         src/systems/render_system.cpp
         src/systems/bandit_spawn_system.cpp
+		src/systems/bandit_ai_system.cpp
         src/texture_manager.cpp
         src/components.cpp
         src/player.cpp
@@ -62,6 +63,7 @@ set(SOURCE_FILES
         src/systems/player_input_system.hpp
         src/systems/render_system.hpp
         src/systems/bandit_spawn_system.hpp
+        src/systems/bandit_ai_system.hpp
         src/texture_manager.hpp
         src/player.hpp
         src/world.hpp
