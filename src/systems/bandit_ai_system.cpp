@@ -29,6 +29,7 @@ void BanditAISystem::update(float& elapsed_ms)
 		size_t& idleTime = m_idle_times[idx];
 		size_t& chaseTime = m_chase_times[idx];
 		float speed = BASE_SPEED * (1.f + dist(rng));
+		ecsManager.getComponent<Motion>(bandit).speed = speed;
 		//std::cout << speed << std::endl;
 
 		float distance_1 = get_distance(m_targets[0], bandit);
@@ -54,8 +55,116 @@ void BanditAISystem::update(float& elapsed_ms)
 		case State::SEARCH:
 			handle_search(state, idleTime, chaseTime, distance_1, distance_2, bandit, speed, elapsed_ms);
 			break;
+		case State::PATROL:
+			handle_patrol(state, idleTime, chaseTime, distance_1, distance_2, bandit, speed, elapsed_ms);
+			break;
 		}
+		//check(state, idleTime, chaseTime, distance_1, distance_2, bandit, speed, elapsed_ms);
 	}
+}
+
+void BanditAISystem::check(
+	State& state, size_t& idle_time, size_t& chase_time,
+	float& distance_1, float& distance_2,
+	Entity& bandit, float& speed, float& elapsed_ms
+)
+{
+	std::cout << "a::" << idle_time << std::endl;
+	if (can_chase(distance_1, distance_2, idle_time))
+	{
+		//std::cout << "b" << std::endl;
+
+		state = State::CHASE;
+		chase_time = 0;
+		return;
+	}
+	//std::cout << "c" << std::endl;
+
+	if (can_search(m_targets[0]) || can_search(m_targets[1]))
+	{
+		state = State::SEARCH;
+		return;
+	}
+
+	if (idle_time > IDLE_LIMIT)
+	{
+		//std::cout << "d" << std::endl;
+
+		state = State::PATROL;
+		chase_time = 0;
+		return;
+	}
+	//std::cout << "e" << std::endl;
+
+	if (chase_time > CHASE_LIMIT)
+	{
+		state = State::IDLE;
+		idle_time = 0;
+		return;
+	}
+
+	//std::cout << chase_time << std::endl;
+	if (cannot_chase(distance_1, distance_2, chase_time))
+	{
+		//if (can_search(m_targets[0]) || can_search(m_targets[1]))
+		//{
+		//	state = State::SEARCH;
+		//	return;
+		//}
+		state = State::IDLE;
+		idle_time = 0;
+		return;
+	}
+	std::cout << "aaa" << std::endl;
+}
+
+void BanditAISystem::handle_patrol(
+	State& state, size_t& idle_time, size_t& chase_time,
+	float& distance_1, float& distance_2,
+	Entity& bandit, float& speed, float& elapsed_ms
+)
+{
+	if (chase_time > CHASE_LIMIT)
+	{
+		state = State::IDLE;
+		idle_time = 0;
+		return;
+	}
+	if (can_chase(distance_1, distance_2, idle_time))
+	{
+		state = State::CHASE;
+		chase_time = 0;
+		return;
+	}
+
+	//if (can_search(m_targets[0]) || can_search(m_targets[1]))
+	//{
+	//	state = State::SEARCH;
+	//	return;
+	//}
+
+	if (chase_time == 1) {
+		float prev_speed = ecsManager.getComponent<Motion>(bandit).speed;
+		vec2& prev_dir = ecsManager.getComponent<Motion>(bandit).direction;
+		vec2& prev_pos = ecsManager.getComponent<Transform>(bandit).position;
+		vec2 next_pos = m_tilemap->get_random_free_tile_position(MazeRegion::BANDIT);
+		//std::cout << next_pos.x << ":" << next_pos.y << ":" << prev_speed << std::endl;
+
+		float dir_x = next_pos.x - prev_pos.x;
+		float dir_y = next_pos.y - prev_pos.y;
+		float distance = std::sqrtf((dir_x * dir_x) + (dir_y * dir_y)) + 1e-5f;
+
+		prev_dir = { (dir_x / distance), (dir_y / distance) };
+	}
+
+
+
+
+	//prev_pos = next_pos;
+
+	//ecsManager.getComponent<Motion>(bandit).direction = { -1, 0 };
+
+	chase_time++;
 }
 
 void BanditAISystem::handle_idle(
@@ -64,18 +173,32 @@ void BanditAISystem::handle_idle(
 	Entity& bandit, float& speed, float& elapsed_ms
 )
 {
+	std::cout << "a:" << idle_time << std::endl;
 	if (can_chase(distance_1, distance_2, idle_time))
 	{
+		std::cout << "b" << std::endl;
+
 		state = State::CHASE;
 		chase_time = 0;
 		return;
 	}
-	
-	if (can_search(m_targets[0]) || can_search(m_targets[1]))
+	std::cout << "c" << std::endl;
+
+	//if (can_search(m_targets[0]) || can_search(m_targets[1]))
+	//{
+	//	state = State::SEARCH;
+	//	return;
+	//}
+
+	if (idle_time > IDLE_LIMIT)
 	{
-		state = State::SEARCH;
+		std::cout << "d" << std::endl;
+
+		state = State::PATROL;
+		chase_time = 0;
 		return;
 	}
+	std::cout << "e" << std::endl;
 
 	ecsManager.getComponent<Motion>(bandit).direction = { 0, 0 };
 	idle_time++;
@@ -121,8 +244,11 @@ void BanditAISystem::handle_chase(
 		idle_time = 0;
 		return;
 	}
+	std::cout << "aaa" << std::endl;
 
 	chase(distance_1, distance_2, bandit, speed, elapsed_ms);
+	std::cout << "bbb" << std::endl;
+
 	chase_time++;
 }
 

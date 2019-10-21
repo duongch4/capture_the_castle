@@ -29,16 +29,19 @@ private:
 		IDLE,
 		CHASE,
 		SEARCH,
+		PATROL
 	};
 
 	const size_t MAX_BANDITS = 5;
 	const size_t IDLE_LIMIT = 70; // beats
 	const size_t CHASE_THRESHOLD = 100;
-	const size_t CHASE_LIMIT = 70; // beats
-	const float BASE_SPEED = 5.f;
+	const size_t CHASE_LIMIT = 80; // beats
+	//const size_t PATROL_LIMIT = 20;
+	const float BASE_SPEED = 80.f;
 
 	std::vector<size_t> m_idle_times;
 	std::vector<size_t> m_chase_times;
+	//std::vector<size_t> m_patrol_times;
 	std::vector<State> m_states;
 	std::vector<Entity> m_bandits;
 	std::vector<Entity> m_targets;
@@ -69,6 +72,19 @@ private:
 		float& distance_1, float& distance_2,
 		Entity& bandit, float& speed, float& elapsed_ms
 	);
+
+	void handle_patrol(
+		State& state, size_t& idle_time, size_t& chase_time,
+		float& distance_1, float& distance_2,
+		Entity& bandit, float& speed, float& elapsed_ms
+	);
+
+	void check(
+		State& state, size_t& idle_time, size_t& chase_time,
+		float& distance_1, float& distance_2,
+		Entity& bandit, float& speed, float& elapsed_ms
+	);
+
 	// C++ rng
 	std::default_random_engine rng;
 	std::uniform_real_distribution<float> dist;
