@@ -8,10 +8,20 @@
 
 #include <ecs/common_ecs.hpp>
 
-class MovementSystem : public System {
+class MovementSystem : public System
+{
 public:
     void init();
     void update(float ms);
+private:
+	enum struct SPRITE_SHEET_DIR: int
+	{
+		DEFAULT = 0,
+		UP = 1,
+		LEFT = 2,
+		RIGHT = 3,
+		DOWN = 4 
+	};
 };
 
 
