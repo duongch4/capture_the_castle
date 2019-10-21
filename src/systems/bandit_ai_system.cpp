@@ -71,7 +71,7 @@ void BanditAISystem::handleChase(
 	Entity& bandit, float& speed, float& elapsed_ms
 )
 {
-	std::cout << chase_time << std::endl;
+//	std::cout << chase_time << std::endl;
 	if (cannotChase(distance_1, distance_2, chase_time))
 	{
 		state = State::IDLE;

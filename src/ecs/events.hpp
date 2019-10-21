@@ -20,4 +20,14 @@ struct KeyReleaseEvent: public Event {
     }
     InputKeys keyReleased;
 };
+
+struct CollisionEvent: public Event{
+    CollisionEvent(Entity entity1, Entity entity2){
+        this->e1 = entity1;
+        this->e2 = entity2;
+    }
+    Entity e1;
+    Entity e2;
+};
+
 #endif //CAPTURE_THE_CASTLE_EVENTS_HPP

@@ -26,7 +26,7 @@ public:
 	vec2 get_random_free_tile_position(MazeRegion mazeRegion);
 	
 	// Return the region based on the position 
-	MazeRegion get_region(int positionX, int positionY);
+	static MazeRegion get_region(int positionX, int positionY);
 
 	bool spawn_tile(int sprite_id, int num_horizontal, int num_vertical, int width, int gap_width, int gridX, int gridY);
 

@@ -192,7 +192,7 @@ vec2 Tilemap::get_random_free_tile_position(MazeRegion mazeRegion)
 	}
 }
 
-MazeRegion Tilemap::get_region(int positionX, int positionY) 
+MazeRegion Tilemap::get_region(int positionX, int positionY)
 {
 	// Convert to the array index of the tile
 	int gridX = (positionX - 23) / 48;

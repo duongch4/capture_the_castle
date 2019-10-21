@@ -31,7 +31,8 @@ void BanditSpawnSystem::spawn_bandit() {
     ecsManager.addComponent<BanditSpawnComponent>(bandit, BanditSpawnComponent{});
     ecsManager.addComponent<Transform>(bandit, Transform{
             nextPos,
-			{0.08f, 0.08f}
+            nextPos,
+            {0.08f, 0.08f}
     });
     ecsManager.addComponent<Motion>(bandit, Motion{
             {1, 0},
@@ -53,4 +54,9 @@ void BanditSpawnSystem::spawn_bandit() {
 		banditSprite.sprite_index.x, banditSprite.sprite_index.y, 0
 	);
     ecsManager.addComponent<Mesh>(bandit, banditMesh);
+    float radius = banditSprite.width/2*0.08;
+    ecsManager.addComponent<C_Collision>(bandit, C_Collision{
+            CollisionLayer::Enemy,
+            radius
+    });
 }

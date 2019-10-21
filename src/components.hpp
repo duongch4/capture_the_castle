@@ -76,11 +76,15 @@ struct Motion {
 // specification pdf.
 struct Transform {
     vec2 position;
+    vec2 init_position;
     vec2 scale;
 };
+
 // Collision component of an entity handles collision testing and collision handling
-struct Collision {
-    vec2 bounding_box;
+struct C_Collision{
+    CollisionLayer layer;
+    float radius;
+    vec2 boundingBox;
 };
 
 // Team component to specify an entity belongs to a team

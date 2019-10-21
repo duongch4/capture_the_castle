@@ -56,6 +56,16 @@ enum class MazeRegion {
 	BANDIT
 };
 
+enum class CollisionLayer
+{
+    PLAYER1 = 1,    // bit 0
+    PLAYER2 = 2,
+    Enemy = 3,// bit 1
+    Tile = 4,        // bit 2
+    Castle = 5
+
+};
+
 // Single Vertex Buffer element for non-textured meshes (coloured.vs.glsl & player.vs.glsl)
 struct Vertex
 {
