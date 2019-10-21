@@ -143,8 +143,11 @@ bool Mesh::init(int width, int height) {
 	return !gl_has_errors();
 }
 
-bool Mesh::init(int textureWidth, int textureHeight, int spriteWidth, int spriteHeight,
-        int spriteIndexX, int spriteIndexY, int spriteGap) {
+
+bool Mesh::init(
+	int textureWidth, int textureHeight, float spriteWidth,
+	float spriteHeight, float spriteIndexX, float spriteIndexY, int spriteGap
+) {
 	// The position corresponds to the center of the texture.
 	float wr = textureWidth * 0.5f;
 	float hr = textureHeight * 0.5f;

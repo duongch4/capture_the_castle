@@ -308,7 +308,7 @@ bool World::init(vec2 screen)
 		signature.set(ecsManager.getComponentType<BanditAIComponent>());
 		ecsManager.setSystemSignature<BanditAISystem>(signature);
 	}
-	banditAISystem->init(player1, player2);
+	banditAISystem->init(tilemap, player1, player2);
 
     // ITEM BOARD (PLAYER 1)
     Entity player1_board = ecsManager.createEntity();
