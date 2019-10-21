@@ -6,7 +6,10 @@ void HelpButton::init(vec2 screen_size) {
     currIndex = 0;
     transform = Transform {
             { screen_size.x - 50.f, screen_size.y - 50.f },
-            {0.15f, 0.3f}
+            { screen_size.x - 50.f, screen_size.y - 50.f },
+            {0.15f, 0.3f},
+            { screen_size.x - 50.f, screen_size.y - 50.f }
+
     };
     effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
 

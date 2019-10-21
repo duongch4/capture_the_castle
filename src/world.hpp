@@ -25,6 +25,8 @@
 #include <systems/render_system.hpp>
 #include <systems/bandit_spawn_system.hpp>
 #include <systems/bandit_ai_system.hpp>
+#include <systems/collision_system.hpp>
+#include <systems/box_collision_system.hpp>
 
 #include "common.hpp"
 #include "components.hpp"
@@ -93,8 +95,10 @@ private:
     std::shared_ptr<SpriteRenderSystem> spriteRenderSystem;
     std::shared_ptr<BanditSpawnSystem> banditSpawnSystem;
 	std::shared_ptr<BanditAISystem> banditAISystem;
+    std::shared_ptr<CollisionSystem> collisionSystem;
+    std::shared_ptr<BoxCollisionSystem> boxCollisionSystem;
 
-	//World state
+    //World state
 	enum WorldState { HELP, WIN, NORMAL };
 	WorldState currState;
 

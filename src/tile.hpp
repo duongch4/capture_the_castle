@@ -33,6 +33,8 @@ public:
 
     void change_color(bool colliding);
 
+
+
 	// Set tile index when making a tilemap
 	void set_idx(std::pair<int, int> idx);
 	// Get tile index
