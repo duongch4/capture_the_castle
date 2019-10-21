@@ -219,7 +219,7 @@ bool Tilemap::spawn_tile(int sprite_id, int num_horizontal, int num_vertical, in
 	Tile tile;
 	if (tile.init(sprite_id, num_horizontal, num_vertical, width, gap_width))
 	{
-		m_tiles[gridY].emplace(m_tiles[gridY].begin() + gridX, tile);
+		m_tiles[gridY][gridX] = tile;
 		return true;
 	}
 	fprintf(stderr, "Failed to spawn tile");
