@@ -6,8 +6,6 @@
 #include <cassert>
 #include <sstream>
 
-
-
 // Same as static in c, local to compilation unit
 namespace {
     namespace {
@@ -336,8 +334,10 @@ bool World::init(vec2 screen)
     help_btn.init(m_screen_size);
 
     // Help Window Initialization
-    help_window = std::make_shared<HelpWindow>();
-    help_window->init(m_screen_size);
+    help_window.init(m_screen_size);
+
+    // Winner's Window Initialization
+    win_window.init(m_screen_size);
 
 	//--------------------------------------------------------------------------
 	// Render all the tiles once to the screen texture
@@ -387,7 +387,8 @@ void World::destroy() {
     Mix_CloseAudio();
     tilemap->destroy();
     help_btn.destroy();
-    help_window->destroy();
+    help_window.destroy();
+    win_window.destroy();
     glfwDestroyWindow(m_window);
 }
 
@@ -458,7 +459,11 @@ void World::draw()
     help_btn.draw(projection_2D);
 
     if (currState == WorldState::HELP) {
-        help_window->draw(projection_2D);
+        help_window.draw(projection_2D);
+    }
+
+    if (currState == WorldState::WIN) {
+        win_window.draw(projection_2D);
     }
 
     // Presenting
@@ -521,7 +526,10 @@ void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
         help_btn.onHover(help_btn.mouseOnButton({ (float)xpos, (float) ypos }));
     }
     if (currState == WorldState::HELP) {
-        help_window->checkButtonHovers({ (float) xpos, (float) ypos });
+        help_window.checkButtonHovers({ (float) xpos, (float) ypos });
+    }
+    if (currState == WorldState::WIN) {
+        win_window.checkButtonHovers({ (float) xpos, (float) ypos });
     }
 }
 
@@ -540,21 +548,32 @@ void World::reset() {
 void World::on_mouse_click(GLFWwindow *pWwindow, int button, int action, int mods) {
     double xpos, ypos;
     glfwGetCursorPos(pWwindow, &xpos, &ypos);
-
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS &&
-        currState == WorldState::NORMAL && help_btn.mouseOnButton({ (float) xpos, (float) ypos })) {
-        currState = WorldState :: HELP;
-
-    } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && currState == WorldState::HELP) {
-        switch (help_window->checkButtonClicks({ (float) xpos, (float) ypos }))
-        {
-            case (ButtonActions::CLOSE):
-                currState = WorldState :: NORMAL;
-                break;
-            case (ButtonActions::HOWTOPLAY):
-                break;
-            default:
-                break;
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        if (currState == WorldState::NORMAL && help_btn.mouseOnButton({ (float) xpos, (float) ypos })) {
+            currState = WorldState :: HELP;
+        } else if (currState == WorldState::HELP) {
+            switch (help_window.checkButtonClicks({ (float) xpos, (float) ypos }))
+            {
+                case (ButtonActions::CLOSE):
+                    currState = WorldState :: NORMAL;
+                    break;
+                case (ButtonActions::HOWTOPLAY):
+                    break;
+                default:
+                    break;
+            }
+        } else if (currState == WorldState::WIN) {
+            switch (win_window.checkButtonClicks({ (float) xpos, (float) ypos }))
+            {
+                case (ButtonActions::MAIN):
+                    break;
+                case (ButtonActions::QUIT):
+                    break;
+                case (ButtonActions::RESTART):
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
