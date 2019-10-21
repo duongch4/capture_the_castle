@@ -177,15 +177,28 @@ bool World::init(vec2 screen)
     }
     collisionSystem->init();
 
-	// Team 1 Soldiers
+    boxCollisionSystem = ecsManager.registerSystem<BoxCollisionSystem>();
+    {
+        Signature signature;
+        signature.set(ecsManager.getComponentType<Transform>());
+        signature.set(ecsManager.getComponentType<C_Collision>());
+        signature.set(ecsManager.getComponentType<Motion>());
+        ecsManager.setSystemSignature<BoxCollisionSystem>(signature);
+    }
+    boxCollisionSystem->init(tilemap);
+
+
+    // Team 1 Soldiers
 	Entity soldier1Team1 = ecsManager.createEntity();
 	ecsManager.addComponent<Team>(soldier1Team1, Team{ TeamType::PLAYER1 });
 	ecsManager.addComponent<PlaceableComponent>(soldier1Team1, PlaceableComponent{});
-	ecsManager.addComponent<Transform>(soldier1Team1, Transform{
-		tilemap->get_random_free_tile_position(MazeRegion::PLAYER1),
-        tilemap->get_random_free_tile_position(MazeRegion::PLAYER1),
-        {0.08, 0.08}
-		});
+	vec2 pos = tilemap->get_random_free_tile_position(MazeRegion::PLAYER1);
+    ecsManager.addComponent<Transform>(soldier1Team1, Transform{
+		pos,
+        pos,
+        {0.08, 0.08},
+        pos
+    });
 	Effect soldier1Team1Effect{};
 	soldier1Team1Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
 	ecsManager.addComponent<Effect>(soldier1Team1, soldier1Team1Effect);
@@ -199,19 +212,24 @@ bool World::init(vec2 screen)
 		soldier1Team1Sprite.sprite_index.x, soldier1Team1Sprite.sprite_index.y, 0);
 	ecsManager.addComponent<Mesh>(soldier1Team1, soldier1Team1Mesh);
     float soldier_radius = soldier1Team1Sprite.width/2 * 0.08f;
+    float sb_width = soldier1Team1Sprite.width * 0.08f*0.8;
+    float sb_height = soldier1Team1Sprite.height * 0.08f*0.8;
     ecsManager.addComponent(soldier1Team1, C_Collision{
             CollisionLayer::Enemy,
-            soldier_radius
+            soldier_radius,
+            {sb_height, sb_height}
     });
 
 	// Team 2 Soldiers
 	Entity soldier1Team2 = ecsManager.createEntity();
 	ecsManager.addComponent<Team>(soldier1Team2, Team{ TeamType::PLAYER2 });
 	ecsManager.addComponent<PlaceableComponent>(soldier1Team2, PlaceableComponent{});
+	pos = tilemap->get_random_free_tile_position(MazeRegion::PLAYER2);
 	ecsManager.addComponent<Transform>(soldier1Team2, Transform{
-			tilemap->get_random_free_tile_position(MazeRegion::PLAYER2),
-            tilemap->get_random_free_tile_position(MazeRegion::PLAYER2),
-            {0.08, 0.08}
+	    pos,
+	    pos,
+	    {0.08, 0.08},
+	    pos
 		});
 	Effect soldier1Team2Effect{};
 	soldier1Team2Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
@@ -225,9 +243,11 @@ bool World::init(vec2 screen)
 	soldier1Team2Mesh.init(soldier1Team2Sprite.width, soldier1Team2Sprite.height, soldier1Team2Sprite.sprite_size.x, soldier1Team2Sprite.sprite_size.y,
 		soldier1Team2Sprite.sprite_index.x, soldier1Team2Sprite.sprite_index.y, 0);
 	ecsManager.addComponent<Mesh>(soldier1Team2, soldier1Team2Mesh);
+
     ecsManager.addComponent(soldier1Team2, C_Collision{
             CollisionLayer::Enemy,
-            soldier_radius
+            soldier_radius,
+            {sb_height, sb_height}
     });
 
 	// CASTLE 1
@@ -235,8 +255,9 @@ bool World::init(vec2 screen)
 	ecsManager.addComponent<Transform>(castle1, Transform{
 			{ 120.f, m_screen_size.y / 2 },
             { 120.f, m_screen_size.y / 2 },
-            {0.5f, 0.5f}
-		});
+            {0.5f, 0.5f},
+            { 120.f, m_screen_size.y / 2 }
+    });
 	ecsManager.addComponent<Team>(castle1, Team{ TeamType::PLAYER1 });
 	Effect castle1Effect{};
 	castle1Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
@@ -253,8 +274,9 @@ bool World::init(vec2 screen)
 	ecsManager.addComponent<Transform>(castle2, Transform{
 			{m_screen_size.x - 120.f, m_screen_size.y / 2},
             {m_screen_size.x - 120.f, m_screen_size.y / 2},
-            {0.5f, 0.5f}
-		});
+            {0.5f, 0.5f},
+            {m_screen_size.x - 120.f, m_screen_size.y / 2}
+    });
 	ecsManager.addComponent<Team>(castle2, Team{ TeamType::PLAYER2 });
 	Effect castle2Effect{};
 	castle2Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
@@ -271,8 +293,9 @@ bool World::init(vec2 screen)
 	ecsManager.addComponent<Transform>(player1, Transform{
 		{ 120.f, m_screen_size.y / 2 + 130.f },
         { 120.f, m_screen_size.y / 2 + 130.f },
-		{0.09, 0.09}
-		});
+		{0.09, 0.09},
+        { 120.f, m_screen_size.y / 2 + 130.f }
+    });
 	ecsManager.addComponent<Motion>(player1, Motion{
 			{0, 0},
 			100.f
@@ -291,9 +314,12 @@ bool World::init(vec2 screen)
 	player1Mesh.init(player1Sprite.width, player1Sprite.height, player1Sprite.sprite_size.x, player1Sprite.sprite_size.y, player1Sprite.sprite_index.x, player1Sprite.sprite_index.y, 0);
 	ecsManager.addComponent<Mesh>(player1, player1Mesh);
     float player_radius = player1Sprite.width/2 * 0.09f;
+    float player_bounding_width =player1Sprite.width*0.09*0.8;
+    float player_bounding_height =player1Sprite.height*0.09*0.8;
     ecsManager.addComponent(player1, C_Collision{
             CollisionLayer::PLAYER1,
-            player_radius
+            player_radius,
+            {player_bounding_width, player_bounding_height}
     });
 
 	// PLAYER 2
@@ -301,8 +327,9 @@ bool World::init(vec2 screen)
 	ecsManager.addComponent<Transform>(player2, Transform{
 		{ m_screen_size.x - 120.f, m_screen_size.y / 2 + 130.f },
         { m_screen_size.x - 120.f, m_screen_size.y / 2 + 130.f },
-        {0.09, 0.09}
-		});
+        {0.09, 0.09},
+        { 120.f, m_screen_size.y / 2 + 130.f }
+    });
 	ecsManager.addComponent<Motion>(player2, Motion{
 			{0, 0},
 			100.f
@@ -322,7 +349,8 @@ bool World::init(vec2 screen)
 	ecsManager.addComponent<Mesh>(player2, player2Mesh);
     ecsManager.addComponent(player2, C_Collision{
             CollisionLayer::PLAYER2,
-            player_radius
+            player_radius,
+            {player_bounding_width, player_bounding_height}
     });
 
 
@@ -438,9 +466,11 @@ bool World::update(float elapsed_ms) {
         banditSpawnSystem->update(elapsed_ms);
         banditAISystem->update(elapsed_ms);
         playerInputSystem->update();
-        movementSystem->update(elapsed_ms);
         collisionSystem->checkCollision();
         collisionSystem->update();
+        boxCollisionSystem->checkCollision();
+        boxCollisionSystem->update();
+        movementSystem->update(elapsed_ms);
     }
 
     return true;

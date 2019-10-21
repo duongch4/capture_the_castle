@@ -19,6 +19,7 @@ void MovementSystem::update(float ms) {
 		auto& sprite = ecsManager.getComponent<Sprite>(entity);
 		auto& mesh = ecsManager.getComponent<Mesh>(entity);
         float step = motion.speed * (ms / 1000);
+        transform.old_position = transform.position;
 		if (sprite.sprite_size.x > 0 && (motion.direction.x != 0 || motion.direction.y != 0))
 		{
 			if (sprite.sprite_index.x < 6)

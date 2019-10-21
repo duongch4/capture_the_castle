@@ -80,6 +80,8 @@ struct TexturedVertex
 	vec2 texcoord;
 };
 
+struct CollisionResponse {bool up, down, left, right;};
+
 // Texture wrapper
 struct Texture
 {

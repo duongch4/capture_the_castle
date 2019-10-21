@@ -76,7 +76,7 @@ set(SOURCE_FILES
         src/ui/help_window.cpp
         src/ui/help_window.hpp
         src/ui/closebtn.cpp
-        src/ui/closebtn.hpp src/ui/help_instructions.cpp src/ui/help_instructions.hpp src/systems/collision_system.cpp src/systems/collision_system.hpp)
+        src/ui/closebtn.hpp src/ui/help_instructions.cpp src/ui/help_instructions.hpp src/systems/collision_system.cpp src/systems/collision_system.hpp src/systems/box_collision_system.cpp src/systems/box_collision_system.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

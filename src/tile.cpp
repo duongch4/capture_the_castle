@@ -34,10 +34,10 @@ bool Tile::init(int sprite_id, int num_horizontal, int num_vertical, int width, 
 	float tile_act_width = (float)width / (float)((num_horizontal * width) + ((num_horizontal - 1) * gap_width));
 	float tile_act_height = (float)width / (float)((num_vertical * width) + ((num_vertical - 1) * gap_width));
 
-    set_wall(false);
+    set_wall(true);
 	const int floor[3] = { 19, 23, 24 };
-    if (sprite_id != 19 && sprite_id != 23 && sprite_id != 24){
-        set_wall(true);
+    if (sprite_id == 19 || sprite_id == 23 || sprite_id == 24){
+        set_wall(false);
     }
 
 	// Calculate the texture coordinate based on the id, width, and height of the sprite
@@ -172,7 +172,7 @@ vec2 Tile::get_bounding_box() const
 	// fabs is to avoid negative scale due to the facing direction.
 	//return { std::fabs(transform.scale.x) * tile_texture.width * 0.75f, std::fabs(transform.scale.y) * tile_texture.height * 0.75f};
 	// Each tile is 48x48 pixel
-	return { 48, 48 };
+	return {35 , 35 }; //make collision look smoother
 }
 
 bool Tile::is_wall() const {

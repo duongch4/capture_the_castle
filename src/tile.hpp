@@ -32,9 +32,11 @@ public:
 	bool is_wall() const;
 
     void change_color(bool colliding);
+    int tile_id;
+
+
 
 private:
-	int tile_id;
     vec3 tile_color;
     bool wall;
 
