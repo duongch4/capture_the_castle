@@ -220,12 +220,12 @@ bool World::init(vec2 screen)
 	soldier1Team1Sprite.sprite_size = { soldier1Team1Sprite.width / 7.0f , soldier1Team1Sprite.height / 5.0f };
 	ecsManager.addComponent<Sprite>(soldier1Team1, soldier1Team1Sprite);
 	Mesh soldier1Team1Mesh{};
-	soldier1Team1Mesh.init(soldier1Team1Sprite.width, soldier1Team1Sprite.height, (int) soldier1Team1Sprite.sprite_size.x, (int) soldier1Team1Sprite.sprite_size.y,
-		(int) soldier1Team1Sprite.sprite_index.x, (int) soldier1Team1Sprite.sprite_index.y, 0);
+	soldier1Team1Mesh.init(soldier1Team1Sprite.width, soldier1Team1Sprite.height, soldier1Team1Sprite.sprite_size.x, soldier1Team1Sprite.sprite_size.y,
+		 soldier1Team1Sprite.sprite_index.x,  soldier1Team1Sprite.sprite_index.y, 0);
 	ecsManager.addComponent<Mesh>(soldier1Team1, soldier1Team1Mesh);
     float soldier_radius = soldier1Team1Sprite.width/2 * 0.08f;
-    float sb_width = soldier1Team1Sprite.width * 0.08f*0.8;
-    float sb_height = soldier1Team1Sprite.height * 0.08f*0.8;
+    float sb_width = soldier1Team1Sprite.width * 0.08f*0.8f;
+    float sb_height = soldier1Team1Sprite.height * 0.08f*0.8f;
     ecsManager.addComponent(soldier1Team1, C_Collision{
             CollisionLayer::Enemy,
             soldier_radius,
@@ -253,8 +253,8 @@ bool World::init(vec2 screen)
 	soldier1Team2Sprite.sprite_size = { soldier1Team2Sprite.width / 7.0f , soldier1Team2Sprite.height / 5.0f };
 	ecsManager.addComponent<Sprite>(soldier1Team2, soldier1Team2Sprite);
 	Mesh soldier1Team2Mesh{};
-	soldier1Team2Mesh.init(soldier1Team2Sprite.width, soldier1Team2Sprite.height, (int) soldier1Team2Sprite.sprite_size.x, (int) soldier1Team2Sprite.sprite_size.y,
-		(int) soldier1Team2Sprite.sprite_index.x, (int) soldier1Team2Sprite.sprite_index.y, 0);
+	soldier1Team2Mesh.init(soldier1Team2Sprite.width, soldier1Team2Sprite.height, soldier1Team2Sprite.sprite_size.x, soldier1Team2Sprite.sprite_size.y,
+		soldier1Team2Sprite.sprite_index.x, soldier1Team2Sprite.sprite_index.y, 0);
 	ecsManager.addComponent<Mesh>(soldier1Team2, soldier1Team2Mesh);
 
     ecsManager.addComponent(soldier1Team2, C_Collision{
@@ -324,11 +324,11 @@ bool World::init(vec2 screen)
 	player1Sprite.sprite_size = { player1Sprite.width / 7.0f , player1Sprite.height / 5.0f };
 	ecsManager.addComponent<Sprite>(player1, player1Sprite);
 	Mesh player1Mesh{};
-	player1Mesh.init(player1Sprite.width, player1Sprite.height, (int) player1Sprite.sprite_size.x, (int)player1Sprite.sprite_size.y, (int)player1Sprite.sprite_index.x, (int) player1Sprite.sprite_index.y, 0);
+	player1Mesh.init(player1Sprite.width, player1Sprite.height, player1Sprite.sprite_size.x, player1Sprite.sprite_size.y, player1Sprite.sprite_index.x, player1Sprite.sprite_index.y, 0);
 	ecsManager.addComponent<Mesh>(player1, player1Mesh);
     float player_radius = player1Sprite.width/2 * 0.09f;
-    float player_bounding_width =player1Sprite.width*0.09*0.8;
-    float player_bounding_height =player1Sprite.height*0.09*0.8;
+    float player_bounding_width =player1Sprite.width*0.09f*0.8f;
+    float player_bounding_height =player1Sprite.height*0.09f*0.8f;
     ecsManager.addComponent(player1, C_Collision{
             CollisionLayer::PLAYER1,
             player_radius,
@@ -358,7 +358,7 @@ bool World::init(vec2 screen)
 	player2Sprite.sprite_index = { 0 , 0 };
 	ecsManager.addComponent<Sprite>(player2, player2Sprite);
 	Mesh player2Mesh{};
-	player2Mesh.init(player2Sprite.width, player2Sprite.height, (int) player2Sprite.sprite_size.x, (int) player2Sprite.sprite_size.y, (int) player2Sprite.sprite_index.x, (int) player2Sprite.sprite_index.y, 0);
+	player2Mesh.init(player2Sprite.width, player2Sprite.height, player2Sprite.sprite_size.x, player2Sprite.sprite_size.y, player2Sprite.sprite_index.x, player2Sprite.sprite_index.y, 0);
 	ecsManager.addComponent<Mesh>(player2, player2Mesh);
     ecsManager.addComponent(player2, C_Collision{
             CollisionLayer::PLAYER2,
