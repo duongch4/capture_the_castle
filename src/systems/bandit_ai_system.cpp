@@ -1,11 +1,8 @@
-//
-// Created by Owner on 2019-10-16.
-//
-
 #include "bandit_ai_system.hpp"
 
 
 bool BanditAISystem::init(std::shared_ptr<Tilemap> tilemap, Entity& player_1, Entity& player_2)
+
 {
 	m_targets.emplace_back(player_1);
 	m_targets.emplace_back(player_2);
@@ -283,7 +280,7 @@ float BanditAISystem::get_distance(Entity& target, Entity& bandit)
 	vec2 target_transform_pos = ecsManager.getComponent<Transform>(target).position;
 	vec2 bandit_transform_pos = ecsManager.getComponent<Transform>(bandit).position;
 	vec2 difference = { target_transform_pos.x - bandit_transform_pos.x, target_transform_pos.y - bandit_transform_pos.y };
-	return std::sqrtf((difference.x * difference.x) + (difference.y * difference.y));
+	return sqrtf((difference.x * difference.x) + (difference.y * difference.y));
 }
 
 void BanditAISystem::follow_direction(Entity& target, Entity& bandit, float& speed, float& elapsed_ms)

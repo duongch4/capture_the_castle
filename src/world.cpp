@@ -32,7 +32,7 @@ World::~World() {
 bool World::init(vec2 screen)
 {
 	m_screen_size = screen;
-	m_current_speed = 1.f;
+    currState = WorldState::NORMAL;
 
 	//-------------------------------------------------------------------------
 	// GLFW / OGL Initialization
@@ -72,8 +72,12 @@ bool World::init(vec2 screen)
 	auto cursor_pos_redirect = [](GLFWwindow *wnd, double _0, double _1) {
 		((World *)glfwGetWindowUserPointer(wnd))->on_mouse_move(wnd, _0, _1);
 	};
+    auto cursor_click_redirect = [](GLFWwindow *wnd, int _0, int _1, int _2) {
+        ((World *) glfwGetWindowUserPointer(wnd))->on_mouse_click(wnd, _0, _1, _2);
+    };
 	glfwSetKeyCallback(m_window, key_redirect);
 	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
+    glfwSetMouseButtonCallback(m_window, cursor_click_redirect);
 
 	// Create a frame buffer
 	m_frame_buffer = 0;
@@ -101,6 +105,18 @@ bool World::init(vec2 screen)
 		return false;
 	}
 
+    m_background_music = Mix_LoadMUS(audio_path("capturethecastle_background.wav"));
+
+    if (m_background_music == nullptr)
+    {
+        fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+                audio_path("music.wav"));
+        return false;
+    }
+
+    // Playing background music indefinitely
+    Mix_PlayMusic(m_background_music, -1);
+
 	//--------------------------------------------------------------------------
 	// Initializing game
 
@@ -119,7 +135,6 @@ bool World::init(vec2 screen)
 	ecsManager.registerComponent<BanditSpawnComponent>();
 	ecsManager.registerComponent<PlayerInputControlComponent>();
 	ecsManager.registerComponent<PlaceableComponent>();
-
 	ecsManager.registerComponent<BanditAIComponent>();
 
 	// Register Systems and Entities
@@ -179,8 +194,8 @@ bool World::init(vec2 screen)
 	soldier1Team1Sprite.sprite_size = { soldier1Team1Sprite.width / 7.0f , soldier1Team1Sprite.height / 5.0f };
 	ecsManager.addComponent<Sprite>(soldier1Team1, soldier1Team1Sprite);
 	Mesh soldier1Team1Mesh{};
-	soldier1Team1Mesh.init(soldier1Team1Sprite.width, soldier1Team1Sprite.height, soldier1Team1Sprite.sprite_size.x, soldier1Team1Sprite.sprite_size.y,
-		soldier1Team1Sprite.sprite_index.x, soldier1Team1Sprite.sprite_index.y, 0);
+	soldier1Team1Mesh.init(soldier1Team1Sprite.width, soldier1Team1Sprite.height, (int) soldier1Team1Sprite.sprite_size.x, (int) soldier1Team1Sprite.sprite_size.y,
+		(int) soldier1Team1Sprite.sprite_index.x, (int) soldier1Team1Sprite.sprite_index.y, 0);
 	ecsManager.addComponent<Mesh>(soldier1Team1, soldier1Team1Mesh);
 
 	// Team 2 Soldiers
@@ -200,8 +215,8 @@ bool World::init(vec2 screen)
 	soldier1Team2Sprite.sprite_size = { soldier1Team2Sprite.width / 7.0f , soldier1Team2Sprite.height / 5.0f };
 	ecsManager.addComponent<Sprite>(soldier1Team2, soldier1Team2Sprite);
 	Mesh soldier1Team2Mesh{};
-	soldier1Team2Mesh.init(soldier1Team2Sprite.width, soldier1Team2Sprite.height, soldier1Team2Sprite.sprite_size.x, soldier1Team2Sprite.sprite_size.y, 
-		soldier1Team2Sprite.sprite_index.x, soldier1Team2Sprite.sprite_index.y, 0);
+	soldier1Team2Mesh.init(soldier1Team2Sprite.width, soldier1Team2Sprite.height, (int) soldier1Team2Sprite.sprite_size.x, (int) soldier1Team2Sprite.sprite_size.y,
+		(int) soldier1Team2Sprite.sprite_index.x, (int) soldier1Team2Sprite.sprite_index.y, 0);
 	ecsManager.addComponent<Mesh>(soldier1Team2, soldier1Team2Mesh);
 
 	// CASTLE 1
@@ -259,7 +274,7 @@ bool World::init(vec2 screen)
 	player1Sprite.sprite_size = { player1Sprite.width / 7.0f , player1Sprite.height / 5.0f };
 	ecsManager.addComponent<Sprite>(player1, player1Sprite);
 	Mesh player1Mesh{};
-	player1Mesh.init(player1Sprite.width, player1Sprite.height, player1Sprite.sprite_size.x, player1Sprite.sprite_size.y, player1Sprite.sprite_index.x, player1Sprite.sprite_index.y, 0);
+	player1Mesh.init(player1Sprite.width, player1Sprite.height, (int) player1Sprite.sprite_size.x, (int)player1Sprite.sprite_size.y, (int)player1Sprite.sprite_index.x, (int) player1Sprite.sprite_index.y, 0);
 	ecsManager.addComponent<Mesh>(player1, player1Mesh);
 
 	// PLAYER 2
@@ -283,7 +298,7 @@ bool World::init(vec2 screen)
 	player2Sprite.sprite_index = { 0 , 0 };
 	ecsManager.addComponent<Sprite>(player2, player2Sprite);
 	Mesh player2Mesh{};
-	player2Mesh.init(player2Sprite.width, player2Sprite.height, player2Sprite.sprite_size.x, player2Sprite.sprite_size.y, player2Sprite.sprite_index.x, player2Sprite.sprite_index.y, 0);
+	player2Mesh.init(player2Sprite.width, player2Sprite.height, (int) player2Sprite.sprite_size.x, (int) player2Sprite.sprite_size.y, (int) player2Sprite.sprite_index.x, (int) player2Sprite.sprite_index.y, 0);
 	ecsManager.addComponent<Mesh>(player2, player2Mesh);
 
   	// AI
@@ -329,7 +344,12 @@ bool World::init(vec2 screen)
     player2BoardMesh.init(player2BoardSprite.width, player2BoardSprite.height);
     ecsManager.addComponent<Mesh>(player2_board, player2BoardMesh);
 
-	//m_background.init();
+    //HELP BUTTON
+    help_btn.init(m_screen_size);
+
+    // Help Window Initialization
+    help_window = std::make_shared<HelpWindow>();
+    help_window->init(m_screen_size);
 
 	//--------------------------------------------------------------------------
 	// Render all the tiles once to the screen texture
@@ -378,6 +398,8 @@ void World::destroy() {
     // TODO: MIX_FREEAUDIO AND MIX_FREECHUNK ON ALL AUDIOS
     Mix_CloseAudio();
     tilemap->destroy();
+    help_btn.destroy();
+    help_window->destroy();
     glfwDestroyWindow(m_window);
 }
 
@@ -387,10 +409,13 @@ bool World::update(float elapsed_ms) {
     glfwGetFramebufferSize(m_window, &w, &h);
     vec2 screen = {(float) w / m_screen_scale, (float) h / m_screen_scale};
 
-    banditSpawnSystem->update(elapsed_ms);
-	banditAISystem->update(elapsed_ms);
-    playerInputSystem->update();
-    movementSystem->update(elapsed_ms);
+    if (currState == WorldState::NORMAL) {
+        banditSpawnSystem->update(elapsed_ms);
+        banditAISystem->update(elapsed_ms);
+        playerInputSystem->update();
+        movementSystem->update(elapsed_ms);
+    }
+
     return true;
 }
 
@@ -419,7 +444,7 @@ void World::draw()
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
 	/////////////////////
-	// Truely render to the screen
+	// Truly render to the screen
 	// Unbind our custom frame buffer in init function and switch it back
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -442,6 +467,11 @@ void World::draw()
 
 	// Render the remaining entities on top our screen texture
     spriteRenderSystem->draw(projection_2D);
+    help_btn.draw(projection_2D);
+
+    if (currState == WorldState::HELP) {
+        help_window->draw(projection_2D);
+    }
 
     // Presenting
     glfwSwapBuffers(m_window);
@@ -496,21 +526,19 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 	{
 		reset();
 	}
-
-	// Control the current speed with `<` `>`
-	if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_COMMA)
-		m_current_speed -= 0.1f;
-	if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_PERIOD)
-		m_current_speed += 0.1f;
-
-	m_current_speed = fmax(0.f, m_current_speed);
 }
 
 void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
-    // TODO: HANDLE MOUSE MOVE (IF NECESSARY)
+    if (currState == WorldState::NORMAL) {
+        help_btn.onHover(help_btn.mouseOnButton({ (float)xpos, (float) ypos }));
+    }
+    if (currState == WorldState::HELP) {
+        help_window->checkButtonHovers({ (float) xpos, (float) ypos });
+    }
 }
 
 void World::reset() {
+// TODO: Handle world reset
 //    int w, h;
 //    glfwGetWindowSize(m_window, &w, &h);
 //    for (auto player : players) {
@@ -519,4 +547,26 @@ void World::reset() {
 //    }
 //    m_background.reset_player_dead_time();
 //    m_current_speed = 1.f;
+}
+
+void World::on_mouse_click(GLFWwindow *pWwindow, int button, int action, int mods) {
+    double xpos, ypos;
+    glfwGetCursorPos(pWwindow, &xpos, &ypos);
+
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS &&
+        currState == WorldState::NORMAL && help_btn.mouseOnButton({ (float) xpos, (float) ypos })) {
+        currState = WorldState :: HELP;
+
+    } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && currState == WorldState::HELP) {
+        switch (help_window->checkButtonClicks({ (float) xpos, (float) ypos }))
+        {
+            case (ButtonActions::CLOSE):
+                currState = WorldState :: NORMAL;
+                break;
+            case (ButtonActions::HOWTOPLAY):
+                break;
+            default:
+                break;
+        }
+    }
 }

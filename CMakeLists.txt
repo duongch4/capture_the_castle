@@ -72,14 +72,19 @@ set(SOURCE_FILES
         src/tile.hpp
 		src/tilemap.hpp
         src/soldier.hpp
-        )
+        src/ui/helpbtn.cpp
+        src/ui/helpbtn.hpp
+        src/ui/help_window.cpp
+        src/ui/help_window.hpp
+        src/ui/closebtn.cpp
+        src/ui/closebtn.hpp src/ui/help_instructions.cpp src/ui/help_instructions.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)
     link_directories(/usr/local/lib)
 endif()
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+add_executable(${PROJECT_NAME} ${SOURCE_FILES} src/ui/helpbtn.cpp)
 target_include_directories(${PROJECT_NAME} PUBLIC src/)
 
 # Added this so policy CMP0065 doesn't scream
