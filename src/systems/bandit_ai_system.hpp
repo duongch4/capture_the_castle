@@ -37,7 +37,7 @@ private:
 	const size_t CHASE_THRESHOLD = 100;
 	const size_t CHASE_LIMIT = 80; // beats
 	//const size_t PATROL_LIMIT = 20;
-	const float BASE_SPEED = 80.f;
+	const float BASE_SPEED = 50.f;
 
 	std::vector<size_t> m_idle_times;
 	std::vector<size_t> m_chase_times;

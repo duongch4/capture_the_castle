@@ -27,7 +27,7 @@ public:
 	
 	// Return the region based on the position 
 
-	MazeRegion get_region(float positionX, float positionY);
+	static MazeRegion get_region(float positionX, float positionY);
 
 	bool spawn_tile(int sprite_id, int num_horizontal, int num_vertical, int width, int gap_width, int gridX, int gridY);
 

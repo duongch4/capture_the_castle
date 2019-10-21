@@ -26,7 +26,7 @@ void MovementSystem::update(float ms) {
 				sprite.sprite_index.x++;
 			else
 				sprite.sprite_index.x = 0;
-			mesh.init(sprite.width, sprite.height, (int) sprite.sprite_size.x, (int) sprite.sprite_size.y, (int) sprite.sprite_index.x, (int) sprite.sprite_index.y, 0);
+			    mesh.updateSprite(sprite.width, sprite.height, (int) sprite.sprite_size.x, (int) sprite.sprite_size.y, (int) sprite.sprite_index.x, (int) sprite.sprite_index.y, 0);
 		}
         transform.position.x += motion.direction.x * step;
         transform.position.y += motion.direction.y * step;

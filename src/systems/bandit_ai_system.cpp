@@ -149,7 +149,7 @@ void BanditAISystem::handle_patrol(
 
 		float dir_x = next_pos.x - prev_pos.x;
 		float dir_y = next_pos.y - prev_pos.y;
-		float distance = std::sqrtf((dir_x * dir_x) + (dir_y * dir_y)) + 1e-5f;
+		float distance = sqrtf((dir_x * dir_x) + (dir_y * dir_y)) + 1e-5f;
 
 		prev_dir = { (dir_x / distance), (dir_y / distance) };
 	}
@@ -386,7 +386,7 @@ void BanditAISystem::move_on_path(std::vector<Tile> path, float& speed, float& e
 
 		float dir_x = tile_pos.x - prev_pos.x;
 		float dir_y = tile_pos.y - prev_pos.y;
-		float distance = std::sqrtf((dir_x * dir_x) + (dir_y * dir_y)) + 1e-5f;
+		float distance = sqrtf((dir_x * dir_x) + (dir_y * dir_y)) + 1e-5f;
 
 		bandit_pos.x += dir_x / distance * step;
 		bandit_pos.y += dir_y / distance * step;

@@ -6,7 +6,9 @@ void CloseButton::init(vec2 pos) {
     currIndex = 0;
     transform = Transform {
             { pos.x, pos.y },
-            {0.3f,0.6f}
+            { pos.x, pos.y },
+            {0.3f,0.6f},
+            { pos.x, pos.y },
     };
     effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     if (!closebtn_texture.is_valid())

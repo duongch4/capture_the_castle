@@ -380,7 +380,9 @@ bool World::init(vec2 screen)
     Entity player1_board = ecsManager.createEntity();
     ecsManager.addComponent<Transform>(player1_board, Transform{
             { 180.f, 65 },
-            {0.5f, 0.5f}
+            { 180.f, 65 },
+            {0.5f, 0.5f},
+            { 180.f, 65 }
     });
     ecsManager.addComponent<Team>(player1_board, Team{TeamType::PLAYER1});
     Effect player1BoardEffect{};
@@ -397,7 +399,9 @@ bool World::init(vec2 screen)
     Entity player2_board = ecsManager.createEntity();
     ecsManager.addComponent<Transform>(player2_board, Transform{
             { screen.x - 180.f, 65.f },
-            {0.5f, 0.5f}
+            { screen.x - 180.f, 65.f },
+            {0.5f, 0.5f},
+            { screen.x - 180.f, 65.f }
     });
     ecsManager.addComponent<Team>(player2_board, Team{TeamType::PLAYER2});
     Effect player2BoardEffect{};

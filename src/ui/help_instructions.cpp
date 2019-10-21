@@ -5,7 +5,9 @@
 void HelpInstructions::init(vec2 screen_size) {
     transform = Transform {
             { screen_size.x / 2, screen_size.y / 2 },
-            {0.8f, 0.8f }
+            { screen_size.x / 2, screen_size.y / 2 },
+            {0.8f, 0.8f },
+            { screen_size.x / 2, screen_size.y / 2 }
     };
     effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
 
