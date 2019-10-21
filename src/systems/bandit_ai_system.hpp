@@ -13,13 +13,14 @@
 #include <ecs/common_ecs.hpp>
 #include <ecs/ecs_manager.hpp>
 #include <components.hpp>
+#include <tilemap.hpp>
 
 extern ECSManager ecsManager;
 
 class BanditAISystem : public System
 {
 public:
-	bool init(Entity& player_1, Entity& player_2);
+	bool init(std::shared_ptr<Tilemap> tilemap, Entity& player_1, Entity& player_2);
 	void update(float& ms);
 
 private:
@@ -27,43 +28,81 @@ private:
 	{
 		IDLE,
 		CHASE,
+		SEARCH,
 	};
 
 	const size_t MAX_BANDITS = 5;
-	const size_t IDLE_LIMIT = 30; // beats
-	const size_t CHASE_THRESHOLD = 200;
-	const size_t CHASE_LIMIT = 100; // beats
-	const float BASE_SPEED = 70.f;
+	const size_t IDLE_LIMIT = 70; // beats
+	const size_t CHASE_THRESHOLD = 100;
+	const size_t CHASE_LIMIT = 70; // beats
+	const float BASE_SPEED = 5.f;
 
-	std::vector<size_t> m_idleTimes;
-	std::vector<size_t> m_chaseTimes;
+	std::vector<size_t> m_idle_times;
+	std::vector<size_t> m_chase_times;
 	std::vector<State> m_states;
 	std::vector<Entity> m_bandits;
 	std::vector<Entity> m_targets;
 
-	float getDistance(Entity& target, Entity& bandit);
+	float get_distance(Entity& target, Entity& bandit);
 
-	void handleIdle(
+	void handle_idle(
 		State& state, size_t& idle_time, size_t& chase_time,
 		float& distance_1, float& distance_2,
 		Entity& bandit, float& speed, float& elapsed_ms
 	);
-	bool canChase(float& distance_1, float& distance_2, size_t& idle_time);
+	bool can_chase(float& distance_1, float& distance_2, size_t& idle_time);
+	bool can_search(Entity target);
 
-	void handleChase(
+	void handle_chase(
 		State& state, size_t& idle_time, size_t& chase_time,
 		float& distance_1, float& distance_2,
 		Entity& bandit, float& speed, float& elapsed_ms
 	);
-	bool cannotChase(float& distance_1, float& distance_2, size_t& chase_time);
+	bool cannot_chase(float& distance_1, float& distance_2, size_t& chase_time);
 	void chase(float& distance_1, float& distance_2, Entity& bandit, float& speed, float& elapsed_ms);
-	void followDirection(Entity& target, Entity& bandit, float& speed, float& elapsed_ms);
-	bool isTargetMoveTowardBandit(vec2& bandit_transform_pos, vec2& target_transform_pos, vec2& target_motion_dir);
-	bool isTargetMoveAwayBandit(vec2& bandit_transform_pos, vec2& target_transform_pos, vec2& target_motion_dir);
+	void follow_direction(Entity& target, Entity& bandit, float& speed, float& elapsed_ms);
+	bool is_target_move_toward_bandit(vec2& bandit_transform_pos, vec2& target_transform_pos, vec2& target_motion_dir);
+	bool is_target_move_away_bandit(vec2& bandit_transform_pos, vec2& target_transform_pos, vec2& target_motion_dir);
 
+	void handle_search(
+		State& state, size_t& idle_time, size_t& chase_time,
+		float& distance_1, float& distance_2,
+		Entity& bandit, float& speed, float& elapsed_ms
+	);
 	// C++ rng
 	std::default_random_engine rng;
 	std::uniform_real_distribution<float> dist;
+
+	// Path finding
+	const float THRESHOLD_DECIMAL_POINTS = 1e-3f;
+	enum struct PathState
+	{
+		NONE,
+		INIT,
+		FOUND,
+		NOT_FOUND,
+		OUT_OF_BOUND
+	};
+
+	int OFFSET_ROWS = 6;
+	int OFFSET_COLS = 12;
+	
+	std::shared_ptr<Tilemap> m_tilemap;
+	std::vector<Tile> m_path;
+	Tile m_init_tile;
+	Tile m_goal_tile;
+	
+	void init_path_finding(std::shared_ptr<Tilemap> tilemap, Tile init_tile, Tile goal_tile);
+	void clear_path_finding();
+	void do_BFS();
+	bool is_next_good(Tile next, Tile curr, std::vector<std::vector<bool>>& visited_matrix);
+	//std::vector<Tile> getNeighbours(Tile curr);
+	std::vector<Tile> assemble_path(std::vector<std::vector<Tile>>& parents_matrix, Tile init_tile, Tile goal_tile);
+	bool is_equal(Tile a, Tile b);
+	bool is_visited(Tile tile, std::vector<std::vector<bool>>& visited_matrix);
+	bool is_within_bandit_region(Tile tile);
+	bool is_within_bandit_region(int idx_row, int idx_col, vec2 pos);
+	void move_on_path(std::vector<Tile> path, float& speed, float& elapsed_ms, vec2& bandit_pos);
 };
 
 

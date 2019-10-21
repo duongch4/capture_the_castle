@@ -42,6 +42,7 @@ bool Tilemap::init()
 
 			// Setting the tile initial position
 			new_tile.set_position({ i * 48.f + 23.f, j * 48.f + 23.f });
+			new_tile.set_idx(std::pair<int, int>{j, i});
 		}
 	}
 	
@@ -134,25 +135,27 @@ void Tilemap::draw_all_tiles(const mat3& projection)
 	}
 }
 
-Tile Tilemap::get_tile(int positionX, int positionY)
+Tile Tilemap::get_tile(float positionX, float positionY)
 {	
 	// Convert to the array index of the tile
-	int gridX = (positionX - 23) / 48;
-	int gridY = (positionY - 23) / 48;
+	int gridX = ((int)positionX - 23) / 48;
+	int gridY = ((int)positionY - 23) / 48;
 	return m_tiles[gridY][gridX]; 
 }
 
-std::vector<Tile> Tilemap::get_adjacent_tiles(int positionX, int positionY)
-{ 
+std::vector<Tile> Tilemap::get_adjacent_tiles(float positionX, float positionY)
+{
 	// Convert to the array index of the tile
-	int gridX = (positionX - 23) / 48;
-	int gridY = (positionY - 23) / 48;
+	int gridX = ((int)positionX - 23) / 48;
+	int gridY = ((int)positionY - 23) / 48;
 
 	// Get the adjacent 9 tiles and return it
 	std::vector<Tile> adjacentTiles;
 	for (int j = -1; j < 2; j++) {
 		for (int i = -1; i < 2; i++) {
-			adjacentTiles.emplace_back(m_tiles[gridY + j][gridX + i]);
+			int row = gridY + j;
+			int col = gridX + i;
+			adjacentTiles.emplace_back(m_tiles[row][col]);
 		}
 	}
 	return adjacentTiles;
@@ -189,14 +192,16 @@ vec2 Tilemap::get_random_free_tile_position(MazeRegion mazeRegion)
 				return m_tiles[randomY][randomX].get_position();
 			}
 		}
+	default:
+		return { 0,0 };
 	}
 }
 
-MazeRegion Tilemap::get_region(int positionX, int positionY) 
+MazeRegion Tilemap::get_region(float positionX, float positionY) 
 {
 	// Convert to the array index of the tile
-	int gridX = (positionX - 23) / 48;
-	int gridY = (positionY - 23) / 48;
+	int gridX = ((int)positionX - 23) / 48;
+	int gridY = ((int)positionY - 23) / 48;
 
 	if (gridX < 11) {
 		return MazeRegion::PLAYER1;
@@ -221,3 +226,7 @@ bool Tilemap::spawn_tile(int sprite_id, int num_horizontal, int num_vertical, in
 	return false;
 }
 
+std::pair<int,int> Tilemap::get_height_width()
+{
+	return { tilemap_height, tilemap_width }; // [row, col] style
+}

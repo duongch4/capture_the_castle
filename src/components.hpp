@@ -44,7 +44,7 @@ struct Mesh {
 	* @return boolean      True if the mesh is created successfully, false otherwise.
 	*/
 	bool init(
-		float textureWidth, float textureHeight, float spriteWidth, float spriteHeight,
+		int textureWidth, int textureHeight, float spriteWidth, float spriteHeight,
 		float spriteIndexX, float spriteIndexY, int spriteGap
 	);
 };

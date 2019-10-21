@@ -144,7 +144,7 @@ bool Mesh::init(int width, int height) {
 }
 
 bool Mesh::init(
-	float textureWidth, float textureHeight, float spriteWidth,
+	int textureWidth, int textureHeight, float spriteWidth,
 	float spriteHeight, float spriteIndexX, float spriteIndexY, int spriteGap
 ) {
 	// The position corresponds to the center of the texture.

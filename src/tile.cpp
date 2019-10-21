@@ -166,6 +166,21 @@ void Tile::set_position(vec2 position1)
     transform.position.y = position1.y;
 }
 
+void Tile::set_idx(std::pair<int, int> idx)
+{
+	tile_idx = idx;
+}
+
+std::pair<int, int> Tile::get_idx()
+{
+	return tile_idx;
+}
+
+int Tile::get_id()
+{
+	return tile_id;
+}
+
 vec2 Tile::get_bounding_box() const
 {
 	// Returns the local bounding coordinates scaled by the current size of the tile

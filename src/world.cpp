@@ -168,7 +168,7 @@ bool World::init(vec2 screen)
 	ecsManager.addComponent<PlaceableComponent>(soldier1Team1, PlaceableComponent{});
 	ecsManager.addComponent<Transform>(soldier1Team1, Transform{
 		tilemap->get_random_free_tile_position(MazeRegion::PLAYER1),
-		{0.08, 0.08}
+		{0.08f, 0.08f}
 		});
 	Effect soldier1Team1Effect{};
 	soldier1Team1Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
@@ -189,7 +189,7 @@ bool World::init(vec2 screen)
 	ecsManager.addComponent<PlaceableComponent>(soldier1Team2, PlaceableComponent{});
 	ecsManager.addComponent<Transform>(soldier1Team2, Transform{
 			tilemap->get_random_free_tile_position(MazeRegion::PLAYER2),
-			{0.08, 0.08}
+			{0.08f, 0.08f}
 		});
 	Effect soldier1Team2Effect{};
 	soldier1Team2Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
@@ -293,7 +293,7 @@ bool World::init(vec2 screen)
 		signature.set(ecsManager.getComponentType<BanditAIComponent>());
 		ecsManager.setSystemSignature<BanditAISystem>(signature);
 	}
-	banditAISystem->init(player1, player2);
+	banditAISystem->init(tilemap, player1, player2);
 
     // ITEM BOARD (PLAYER 1)
     Entity player1_board = ecsManager.createEntity();
