@@ -105,6 +105,18 @@ bool World::init(vec2 screen)
 		return false;
 	}
 
+    m_background_music = Mix_LoadMUS(audio_path("capturethecastle_background.wav"));
+
+    if (m_background_music == nullptr)
+    {
+        fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+                audio_path("music.wav"));
+        return false;
+    }
+
+    // Playing background music indefinitely
+    Mix_PlayMusic(m_background_music, -1);
+
 	//--------------------------------------------------------------------------
 	// Initializing game
 

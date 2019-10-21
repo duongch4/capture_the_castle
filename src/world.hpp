@@ -97,4 +97,7 @@ private:
 	//World state
 	enum WorldState { HELP, WIN, NORMAL };
 	WorldState currState;
+
+	// Audio
+    Mix_Music* m_background_music;
 };
