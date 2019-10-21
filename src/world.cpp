@@ -171,7 +171,7 @@ bool World::init(vec2 screen)
 	ecsManager.addComponent<PlaceableComponent>(soldier1Team1, PlaceableComponent{});
 	ecsManager.addComponent<Transform>(soldier1Team1, Transform{
 		tilemap->get_random_free_tile_position(MazeRegion::PLAYER1),
-		{0.08, 0.08}
+		{0.08f, 0.08f}
 		});
 	Effect soldier1Team1Effect{};
 	soldier1Team1Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
@@ -182,8 +182,8 @@ bool World::init(vec2 screen)
 	soldier1Team1Sprite.sprite_size = { soldier1Team1Sprite.width / 7.0f , soldier1Team1Sprite.height / 5.0f };
 	ecsManager.addComponent<Sprite>(soldier1Team1, soldier1Team1Sprite);
 	Mesh soldier1Team1Mesh{};
-	soldier1Team1Mesh.init(soldier1Team1Sprite.width, soldier1Team1Sprite.height, soldier1Team1Sprite.sprite_size.x, soldier1Team1Sprite.sprite_size.y,
-		soldier1Team1Sprite.sprite_index.x, soldier1Team1Sprite.sprite_index.y, 0);
+	soldier1Team1Mesh.init(soldier1Team1Sprite.width, soldier1Team1Sprite.height, (int) soldier1Team1Sprite.sprite_size.x, (int) soldier1Team1Sprite.sprite_size.y,
+		(int) soldier1Team1Sprite.sprite_index.x, (int) soldier1Team1Sprite.sprite_index.y, 0);
 	ecsManager.addComponent<Mesh>(soldier1Team1, soldier1Team1Mesh);
 
 	// Team 2 Soldiers
@@ -192,7 +192,7 @@ bool World::init(vec2 screen)
 	ecsManager.addComponent<PlaceableComponent>(soldier1Team2, PlaceableComponent{});
 	ecsManager.addComponent<Transform>(soldier1Team2, Transform{
 			tilemap->get_random_free_tile_position(MazeRegion::PLAYER2),
-			{0.08, 0.08}
+			{0.08f, 0.08f}
 		});
 	Effect soldier1Team2Effect{};
 	soldier1Team2Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
@@ -203,8 +203,8 @@ bool World::init(vec2 screen)
 	soldier1Team2Sprite.sprite_size = { soldier1Team2Sprite.width / 7.0f , soldier1Team2Sprite.height / 5.0f };
 	ecsManager.addComponent<Sprite>(soldier1Team2, soldier1Team2Sprite);
 	Mesh soldier1Team2Mesh{};
-	soldier1Team2Mesh.init(soldier1Team2Sprite.width, soldier1Team2Sprite.height, soldier1Team2Sprite.sprite_size.x, soldier1Team2Sprite.sprite_size.y,
-		soldier1Team2Sprite.sprite_index.x, soldier1Team2Sprite.sprite_index.y, 0);
+	soldier1Team2Mesh.init(soldier1Team2Sprite.width, soldier1Team2Sprite.height, (int) soldier1Team2Sprite.sprite_size.x, (int) soldier1Team2Sprite.sprite_size.y,
+		(int) soldier1Team2Sprite.sprite_index.x, (int) soldier1Team2Sprite.sprite_index.y, 0);
 	ecsManager.addComponent<Mesh>(soldier1Team2, soldier1Team2Mesh);
 
 	// CASTLE 1
@@ -245,7 +245,7 @@ bool World::init(vec2 screen)
 	Entity player1 = ecsManager.createEntity();
 	ecsManager.addComponent<Transform>(player1, Transform{
 		{ 120.f, m_screen_size.y / 2 + 130.f },
-		{0.09, 0.09}
+		{0.09f, 0.09f}
 		});
 	ecsManager.addComponent<Motion>(player1, Motion{
 			{0, 0},
@@ -262,14 +262,14 @@ bool World::init(vec2 screen)
 	player1Sprite.sprite_size = { player1Sprite.width / 7.0f , player1Sprite.height / 5.0f };
 	ecsManager.addComponent<Sprite>(player1, player1Sprite);
 	Mesh player1Mesh{};
-	player1Mesh.init(player1Sprite.width, player1Sprite.height, player1Sprite.sprite_size.x, player1Sprite.sprite_size.y, player1Sprite.sprite_index.x, player1Sprite.sprite_index.y, 0);
+	player1Mesh.init(player1Sprite.width, player1Sprite.height, (int) player1Sprite.sprite_size.x, (int)player1Sprite.sprite_size.y, (int)player1Sprite.sprite_index.x, (int) player1Sprite.sprite_index.y, 0);
 	ecsManager.addComponent<Mesh>(player1, player1Mesh);
 
 	// PLAYER 2
 	Entity player2 = ecsManager.createEntity();
 	ecsManager.addComponent<Transform>(player2, Transform{
 		{ m_screen_size.x - 120.f, m_screen_size.y / 2 + 130.f },
-		{0.09, 0.09}
+		{0.09f, 0.09f}
 		});
 	ecsManager.addComponent<Motion>(player2, Motion{
 			{0, 0},
@@ -286,7 +286,7 @@ bool World::init(vec2 screen)
 	player2Sprite.sprite_index = { 0 , 0 };
 	ecsManager.addComponent<Sprite>(player2, player2Sprite);
 	Mesh player2Mesh{};
-	player2Mesh.init(player2Sprite.width, player2Sprite.height, player2Sprite.sprite_size.x, player2Sprite.sprite_size.y, player2Sprite.sprite_index.x, player2Sprite.sprite_index.y, 0);
+	player2Mesh.init(player2Sprite.width, player2Sprite.height, (int) player2Sprite.sprite_size.x, (int) player2Sprite.sprite_size.y, (int) player2Sprite.sprite_index.x, (int) player2Sprite.sprite_index.y, 0);
 	ecsManager.addComponent<Mesh>(player2, player2Mesh);
 
   	// AI

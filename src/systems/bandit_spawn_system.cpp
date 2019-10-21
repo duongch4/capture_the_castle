@@ -49,8 +49,8 @@ void BanditSpawnSystem::spawn_bandit() {
     ecsManager.addComponent<Sprite>(bandit, banditSprite);
     Mesh banditMesh{};
     banditMesh.init(
-		banditSprite.width, banditSprite.height, banditSprite.sprite_size.x, banditSprite.sprite_size.y,
-		banditSprite.sprite_index.x, banditSprite.sprite_index.y, 0
+		banditSprite.width, banditSprite.height, (int) banditSprite.sprite_size.x, (int) banditSprite.sprite_size.y,
+		(int) banditSprite.sprite_index.x, (int) banditSprite.sprite_index.y, 0
 	);
     ecsManager.addComponent<Mesh>(bandit, banditMesh);
 }
