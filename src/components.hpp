@@ -43,10 +43,16 @@ struct Mesh {
 	*                      Enter 0 if there is no gap in the sprite sheet
 	* @return boolean      True if the mesh is created successfully, false otherwise.
 	*/
-	bool init(
-		float textureWidth, float textureHeight, float spriteWidth, float spriteHeight,
-		float spriteIndexX, float spriteIndexY, int spriteGap
-	);
+
+	bool init(int textureWidth, int textureHeight, int spriteWidth, int spriteHeight,
+		int spriteIndexX, int spriteIndexY, int spriteGap);
+
+	// Very similar to the init function, but this will only update the vertex
+	// buffer object instead of generating a new vertex buffer object.
+	bool updateSprite(int textureWidth, int textureHeight, int spriteWidth, int spriteHeight,
+		int spriteIndexX, int spriteIndexY, int spriteGap);
+
+    void release();
 };
 
 // Effect component of Entity for Vertex and Fragment shader, which are then put(linked) together in a

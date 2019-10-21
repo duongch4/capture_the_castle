@@ -1,9 +1,4 @@
-//
-// Created by Owner on 2019-10-16.
-//
-
 #include "bandit_ai_system.hpp"
-
 
 bool BanditAISystem::init(Entity& player_1, Entity& player_2)
 {
@@ -113,7 +108,7 @@ float BanditAISystem::getDistance(Entity& target, Entity& bandit)
 	vec2 target_transform_pos = ecsManager.getComponent<Transform>(target).position;
 	vec2 bandit_transform_pos = ecsManager.getComponent<Transform>(bandit).position;
 	vec2 difference = { target_transform_pos.x - bandit_transform_pos.x, target_transform_pos.y - bandit_transform_pos.y };
-	return std::sqrtf((difference.x * difference.x) + (difference.y * difference.y));
+	return sqrtf((difference.x * difference.x) + (difference.y * difference.y));
 }
 
 void BanditAISystem::followDirection(Entity& target, Entity& bandit, float& speed, float& elapsed_ms)

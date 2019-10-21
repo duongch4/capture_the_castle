@@ -1,5 +1,12 @@
 #pragma once
 
+// internal
+#include "common.hpp"
+
+#include "tilemap.hpp"
+#include "ui/helpbtn.hpp"
+
+
 // stlib
 #include <vector>
 #include <random>
@@ -23,6 +30,7 @@
 #include "components.hpp"
 #include "texture_manager.hpp"
 #include "tilemap.hpp"
+#include <ui/help_window.hpp>
 
 // Container for all our entities and game logic. Individual rendering / update is
 // deferred to the relative update() methods
@@ -55,8 +63,9 @@ private:
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
+    void on_mouse_click(GLFWwindow *pWwindow, int button, int action, int mods);
 
-	// Reset
+    // Reset
 	void reset();
 
 private:
@@ -75,11 +84,17 @@ private:
 	// Game entities
 	std::shared_ptr<Tilemap> tilemap;
 
+	// UI
+	HelpButton help_btn;
+	std::shared_ptr<HelpWindow>help_window;
+
     std::shared_ptr<MovementSystem> movementSystem;
     std::shared_ptr<PlayerInputSystem> playerInputSystem;
     std::shared_ptr<SpriteRenderSystem> spriteRenderSystem;
     std::shared_ptr<BanditSpawnSystem> banditSpawnSystem;
 	std::shared_ptr<BanditAISystem> banditAISystem;
 
-	float m_current_speed;
+	//World state
+	enum WorldState { HELP, WIN, NORMAL };
+	WorldState currState;
 };
