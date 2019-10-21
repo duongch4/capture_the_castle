@@ -161,7 +161,7 @@ std::vector<Tile> Tilemap::get_adjacent_tiles(int positionX, int positionY)
 vec2 Tilemap::get_random_free_tile_position(MazeRegion mazeRegion) 
 {
 	// Intialize a random seed for rand() 
-	srand(time(NULL));
+	srand((unsigned int)(time(NULL)));
 	bool resultNotFound = true;
 
 	switch (mazeRegion) {

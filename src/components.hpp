@@ -11,7 +11,7 @@
 struct Sprite {
     const char* texture_name;
     int width, height = 0;
-	// sotring index and size of this sprite in sprite sheet
+	// storing index and size of this sprite in sprite sheet
 	vec2 sprite_index = {0, 0};
 	vec2 sprite_size = {0, 0};
 };
@@ -43,12 +43,13 @@ struct Mesh {
 	*                      Enter 0 if there is no gap in the sprite sheet
 	* @return boolean      True if the mesh is created successfully, false otherwise.
 	*/
+
 	bool init(int textureWidth, int textureHeight, int spriteWidth, int spriteHeight,
 		int spriteIndexX, int spriteIndexY, int spriteGap);
 
 	// Very similar to the init function, but this will only update the vertex
 	// buffer object instead of generating a new vertex buffer object.
-	bool updateSprite(int textureWidth, int textureHeight, int spriteWidth, int spriteHeight, 
+	bool updateSprite(int textureWidth, int textureHeight, int spriteWidth, int spriteHeight,
 		int spriteIndexX, int spriteIndexY, int spriteGap);
 
     void release();

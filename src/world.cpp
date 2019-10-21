@@ -113,7 +113,7 @@ bool World::init(vec2 screen)
 	tilemap->init();
 
 	// ECS initialization
-  // Register ALL Components
+	// Register ALL Components
 	ecsManager.registerComponent<Motion>();
 	ecsManager.registerComponent<Transform>();
 	ecsManager.registerComponent<Team>();
