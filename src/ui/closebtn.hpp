@@ -21,10 +21,13 @@ public:
 
     bool mouseOnButton(vec2 mouseloc);
 
+    void onHover(bool isHovering);
+
 private:
     Mesh mesh{};
     Effect effect{};
     Transform transform;
     Texture closebtn_texture;
     mat3 out;
+    int currIndex;
 };

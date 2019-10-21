@@ -3,9 +3,10 @@
 #include <cmath>
 
 void CloseButton::init(vec2 pos) {
+    currIndex = 0;
     transform = Transform {
             { pos.x, pos.y },
-            {0.15f,0.3f}
+            {0.3f,0.6f}
     };
     effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     if (!closebtn_texture.is_valid())
@@ -95,3 +96,13 @@ bool CloseButton::mouseOnButton(vec2 mouseloc) {
             mouseloc.y >= button_pos.y - button_box.y/2 &&
             mouseloc.y <= button_pos.y + button_box.y/2;
 }
+void CloseButton::onHover(bool isHovering) {
+    if (isHovering && currIndex == 0) {
+        currIndex = 1;
+        mesh.updateSprite(closebtn_texture.width, closebtn_texture.height, closebtn_texture.height, closebtn_texture.height, currIndex, 0,0);
+    } else if (!isHovering && currIndex == 1) {
+        currIndex = 0;
+        mesh.updateSprite(closebtn_texture.width, closebtn_texture.height, closebtn_texture.height, closebtn_texture.height, currIndex, 0,0);
+    }
+}
+

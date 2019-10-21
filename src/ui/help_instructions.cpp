@@ -86,6 +86,6 @@ vec2 HelpInstructions::get_position() {
 }
 
 vec2 HelpInstructions::get_bounding_box() {
-    return {static_cast<float>(fabs(transform.scale.x) * helpInstrSprite.width),
-            static_cast<float>(fabs(transform.scale.y) * helpInstrSprite.height)};
+    return {(float)(fabs(transform.scale.x) * helpInstrSprite.width),
+            (float)(fabs(transform.scale.y) * helpInstrSprite.height)};
 }

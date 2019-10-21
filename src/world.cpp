@@ -123,7 +123,6 @@ bool World::init(vec2 screen)
 	ecsManager.registerComponent<BanditSpawnComponent>();
 	ecsManager.registerComponent<PlayerInputControlComponent>();
 	ecsManager.registerComponent<PlaceableComponent>();
-
 	ecsManager.registerComponent<BanditAIComponent>();
 
 	// Register Systems and Entities
@@ -518,8 +517,11 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 }
 
 void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
-    if (currState == NORMAL) {
-        help_btn.onHover(help_btn.mouseOnButton({static_cast<float>(xpos), static_cast<float>(ypos)}));
+    if (currState == WorldState::NORMAL) {
+        help_btn.onHover(help_btn.mouseOnButton({ (float)xpos, (float) ypos }));
+    }
+    if (currState == WorldState::HELP) {
+        help_window->checkButtonHovers({ (float) xpos, (float) ypos });
     }
 }
 
@@ -540,10 +542,19 @@ void World::on_mouse_click(GLFWwindow *pWwindow, int button, int action, int mod
     glfwGetCursorPos(pWwindow, &xpos, &ypos);
 
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS &&
-        currState == WorldState::NORMAL && help_btn.mouseOnButton({static_cast<float>(xpos), static_cast<float>(ypos)})) {
+        currState == WorldState::NORMAL && help_btn.mouseOnButton({ (float) xpos, (float) ypos })) {
         currState = WorldState :: HELP;
 
     } else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && currState == WorldState::HELP) {
-        currState = WorldState::NORMAL;
+        switch (help_window->checkButtonClicks({ (float) xpos, (float) ypos }))
+        {
+            case (ButtonActions::CLOSE):
+                currState = WorldState :: NORMAL;
+                break;
+            case (ButtonActions::HOWTOPLAY):
+                break;
+            default:
+                break;
+        }
     }
 }
