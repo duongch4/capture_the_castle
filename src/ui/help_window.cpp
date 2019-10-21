@@ -23,6 +23,8 @@ void HelpWindow::draw(const mat3 &projection) {
 ButtonActions HelpWindow::checkButtonClicks(vec2 mouseloc) {
     if (close_btn.mouseOnButton(mouseloc)) {
         return ButtonActions::CLOSE;
+    } else {
+        return ButtonActions::NONE;
     }
 }
 

@@ -17,18 +17,22 @@ public:
 	void draw_all_tiles(const mat3& projection);
 
 	// Return the tile located at postionX, positionY
-	Tile get_tile(int positionX, int positionY);
+	Tile get_tile(float positionX, float positionY);
 
 	// Return all 9 tiles around the position in a vector
-	std::vector<Tile> get_adjacent_tiles(int positionX, int positionY);
+	std::vector<Tile> get_adjacent_tiles(float positionX, float positionY);
 
 	// Get a random free tile in the maze region and return their position 
 	vec2 get_random_free_tile_position(MazeRegion mazeRegion);
 	
 	// Return the region based on the position 
-	static MazeRegion get_region(int positionX, int positionY);
+
+	MazeRegion get_region(float positionX, float positionY);
 
 	bool spawn_tile(int sprite_id, int num_horizontal, int num_vertical, int width, int gap_width, int gridX, int gridY);
+
+	// Get tilemap width and height
+	std::pair<int, int> get_height_width();
 
 private:
 	// Contain vao, vbo, shader to render the screen texture 

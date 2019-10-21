@@ -32,11 +32,19 @@ public:
 	bool is_wall() const;
 
     void change_color(bool colliding);
-    int tile_id;
 
 
+
+	// Set tile index when making a tilemap
+	void set_idx(std::pair<int, int> idx);
+	// Get tile index
+	std::pair<int, int> get_idx();
+
+	int get_id();
 
 private:
+	int tile_id;
+	std::pair<int, int> tile_idx;
     vec3 tile_color;
     bool wall;
 
