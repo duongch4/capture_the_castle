@@ -22,7 +22,7 @@ void CollisionSystem::checkCollision() {
             auto& e1_transform = ecsManager.getComponent<Transform>(entity1);
             auto& e2_transform = ecsManager.getComponent<Transform>(entity2);
             if (e1_collision.layer < e2_collision.layer){
-                if (distance(e1_transform.position, e2_transform.position) < (e1_collision.radius + e2_collision.radius)){
+                if (distance(e1_transform.position, e2_transform.position) < fmin(e1_collision.radius, e2_collision.radius)){
                     ecsManager.publish(new CollisionEvent(entity1, entity2));
                 }
             }
