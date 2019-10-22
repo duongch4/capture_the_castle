@@ -1,10 +1,15 @@
 In Milestone 2, our goals and completed goals were:
 - Implement ECS design pattern
-	- The ECS design pattern includes collision system
+	- The ECS design pattern includes collision system between: 
+		- player vs player
+		- player vs bandit
+		- player vs soldier
+		- all characters and maze wall
 - Implement AI for bandit character
 	- Simple AI has been done for bandits but there are still improvements that will be made in future milestones
 - Implement Help Screen
 	- the help screen is completed with mouse interactions (hover and mouse clicks) for the buttons
+	- Help screen pauses the game then resumes when window has been closed
 - Animate characters
 	- the sprite sheets for character animation has been prepared
 	- the player and bandit characters are animated when they move
@@ -12,11 +17,10 @@ In Milestone 2, our goals and completed goals were:
 	- bomb and shield power up sprites have been prepared
 - Defined maze regions
 - Added main background music
+- Implemented end game screen
+	- quit button works but there is some delay between the time that the button was clicked and when the window actually closes
 
 Discrepancy in Week 3 ~ 4 from project proposal
-Left to do:
-- Implement the end game screen
-	- the sprites are ready for the screens
 Did more:
 - Improved Bandit movement and spawning mechanism
 - Performance optimization for maze	
