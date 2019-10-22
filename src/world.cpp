@@ -281,6 +281,13 @@ bool World::init(vec2 screen)
 	Mesh castle1Mesh{};
 	castle1Mesh.init(castle1Sprite.width, castle1Sprite.height);
 	ecsManager.addComponent<Mesh>(castle1, castle1Mesh);
+    float castleWidth = castle1Sprite.width * 0.5;
+    float castleHeight = castle1Sprite.height * 0.5;
+    ecsManager.addComponent(castle1, C_Collision{
+            CollisionLayer::Castle,
+            0,
+            {castleWidth, castleHeight}
+    });
 
 	// CASTLE 2
 	Entity castle2 = ecsManager.createEntity();
@@ -300,6 +307,11 @@ bool World::init(vec2 screen)
 	Mesh castle2Mesh{};
 	castle2Mesh.init(castle2Sprite.width, castle2Sprite.height);
 	ecsManager.addComponent<Mesh>(castle2, castle2Mesh);
+    ecsManager.addComponent(castle2, C_Collision{
+            CollisionLayer::Castle,
+            0,
+            {castleWidth, castleHeight}
+    });
 
 	// PLAYER 1
 	Entity player1 = ecsManager.createEntity();
@@ -420,6 +432,8 @@ bool World::init(vec2 screen)
     // Help Window Initialization
     help_window = std::make_shared<HelpWindow>();
     help_window->init(m_screen_size);
+
+    ecsManager.subscribe(this, &World::winListener);
 
 	//--------------------------------------------------------------------------
 	// Render all the tiles once to the screen texture
@@ -644,3 +658,9 @@ void World::on_mouse_click(GLFWwindow *pWwindow, int button, int action, int mod
         }
     }
 }
+
+void World::winListener(WinEvent* winEvent){
+    currState = WorldState :: WIN;
+
+}
+

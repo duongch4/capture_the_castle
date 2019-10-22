@@ -21,6 +21,7 @@ public:
 
 private:
     void collisionListener(CollisionEvent* collisionEvent);
+    bool collideWithCastle(Entity player, Entity castle);
     float distance(vec2 e1, vec2 e2);
     std::queue<std::pair<Entity, Entity>> collision_queue;
 };

@@ -98,9 +98,12 @@ private:
     std::shared_ptr<CollisionSystem> collisionSystem;
     std::shared_ptr<BoxCollisionSystem> boxCollisionSystem;
 
+    void winListener(WinEvent* winEvent);
+
     //World state
 	enum WorldState { HELP, WIN, NORMAL };
 	WorldState currState;
+	CollisionLayer winner;
 
 	// Audio
     Mix_Music* m_background_music;
