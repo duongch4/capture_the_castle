@@ -23,12 +23,12 @@ void CollisionSystem::checkCollision() {
             auto& e1_transform = ecsManager.getComponent<Transform>(entity1);
             auto& e2_transform = ecsManager.getComponent<Transform>(entity2);
             if (e1_collision.layer < e2_collision.layer){
-                if (e2_collision.layer == CollisionLayer :: Castle & (e1_collision.layer == CollisionLayer :: PLAYER2 || e1_collision.layer == CollisionLayer :: PLAYER1)){
+                if (e2_collision.layer == CollisionLayer::Castle && (e1_collision.layer == CollisionLayer::PLAYER2 || e1_collision.layer == CollisionLayer::PLAYER1)){
                     if (collideWithCastle(entity1, entity2)){
                         ecsManager.publish(new CollisionEvent (entity1, entity2));
                     }
                 }
-                if (distance(e1_transform.position, e2_transform.position) < fmin(e1_collision.radius, e2_collision.radius) & e2_collision.layer != CollisionLayer :: Castle){
+                if (distance(e1_transform.position, e2_transform.position) < fmin(e1_collision.radius, e2_collision.radius) && e2_collision.layer != CollisionLayer::Castle){
                     ecsManager.publish(new CollisionEvent(entity1, entity2));
                 }
             }
