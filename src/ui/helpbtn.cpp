@@ -21,7 +21,7 @@ void HelpButton::init(vec2 screen_size) {
             fprintf(stderr, "Failed to load tile texture!");
         }
     }
-    mesh.init(helpBtnSprite.width, helpBtnSprite.height, helpBtnSprite.height, helpBtnSprite.height, currIndex, 0,0);
+    mesh.init(helpBtnSprite.width, helpBtnSprite.height, (float) helpBtnSprite.height, (float) helpBtnSprite.height, (float)currIndex, 0.f, 0);
 }
 
 void HelpButton::destroy() {
