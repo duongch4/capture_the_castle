@@ -96,7 +96,9 @@ bool TextureManager::bind_texture(const std::string tex_name)
 void TextureManager::unload_all_textures()
 {
     auto i = nameToId.begin();
-    while(i != nameToId.end())
-        unload_texture(i->first);
+    while(i != nameToId.end()) {
+        glDeleteTextures(1, &(i->second));
+        i = nameToId.erase(i);
+    }
     nameToId.clear();
 }

@@ -11,6 +11,7 @@ extern ECSManager ecsManager;
 
 void CollisionSystem::init() {
     ecsManager.subscribe(this, &CollisionSystem::collisionListener);
+    player_respawn_sound = Mix_LoadWAV(audio_path("capturethecastle_player_respawn.wav"));
 }
 
 void CollisionSystem::checkCollision() {
@@ -22,7 +23,7 @@ void CollisionSystem::checkCollision() {
             auto& e1_transform = ecsManager.getComponent<Transform>(entity1);
             auto& e2_transform = ecsManager.getComponent<Transform>(entity2);
             if (e1_collision.layer < e2_collision.layer){
-                if (e2_collision.layer == CollisionLayer :: Castle && (e1_collision.layer == CollisionLayer :: PLAYER2 || e1_collision.layer == CollisionLayer :: PLAYER1)){
+                if (e2_collision.layer == CollisionLayer :: Castle & (e1_collision.layer == CollisionLayer :: PLAYER2 || e1_collision.layer == CollisionLayer :: PLAYER1)){
                     if (collideWithCastle(entity1, entity2)){
                         ecsManager.publish(new CollisionEvent (entity1, entity2));
                     }
@@ -63,9 +64,11 @@ void CollisionSystem::update() {
                 switch(region){
                     case MazeRegion::PLAYER1:
                         e2_transform.position = e2_transform.init_position;
+                        Mix_PlayChannel(-1, player_respawn_sound, 0);
                         break;
                     case MazeRegion::PLAYER2:
                         e1_transform.position = e1_transform.init_position;
+                        Mix_PlayChannel(-1, player_respawn_sound, 0);
                         break;
                     case MazeRegion::BANDIT:
                         break;
@@ -75,15 +78,18 @@ void CollisionSystem::update() {
                     case MazeRegion::PLAYER1:
                         if (e1_team == TeamType::PLAYER2){
                             e1_transform.position = e1_transform.init_position;
+                            Mix_PlayChannel(-1, player_respawn_sound, 0);
                         }
                         break;
                     case MazeRegion::PLAYER2:
                         if (e1_team == TeamType::PLAYER1){
                             e1_transform.position = e1_transform.init_position;
+                            Mix_PlayChannel(-1, player_respawn_sound, 0);
                         }
                         break;
                     case MazeRegion::BANDIT:
                         e1_transform.position = e1_transform.init_position;
+                        Mix_PlayChannel(-1, player_respawn_sound, 0);
                         break;
                 }
             }
@@ -135,4 +141,5 @@ bool CollisionSystem::collideWithCastle(Entity player, Entity castle){
     bool y_overlap = col_res.down || col_res.up || y_over;
 
     return x_overlap && y_overlap;
+
 }

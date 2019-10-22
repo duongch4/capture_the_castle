@@ -51,13 +51,13 @@ void BanditSpawnSystem::spawn_bandit() {
     ecsManager.addComponent<Sprite>(bandit, banditSprite);
     Mesh banditMesh{};
     banditMesh.init(
-		banditSprite.width, banditSprite.height, (int) banditSprite.sprite_size.x, (int) banditSprite.sprite_size.y,
-		(int) banditSprite.sprite_index.x, (int) banditSprite.sprite_index.y, 0
+		banditSprite.width, banditSprite.height, banditSprite.sprite_size.x, banditSprite.sprite_size.y,
+		banditSprite.sprite_index.x, banditSprite.sprite_index.y, 0
 	);
     ecsManager.addComponent<Mesh>(bandit, banditMesh);
-    float radius = banditSprite.width/2*0.08;
-    float b_width = banditSprite.width*0.08*0.8;
-    float b_height = banditSprite.height*0.08*0.8;
+    float radius = banditSprite.width/2*0.08f;
+    float b_width = banditSprite.width*0.08f*0.8f;
+    float b_height = banditSprite.height*0.08f*0.8f;
     ecsManager.addComponent<C_Collision>(bandit, C_Collision{
             CollisionLayer::Enemy,
             radius,

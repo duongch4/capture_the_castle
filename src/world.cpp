@@ -227,7 +227,7 @@ bool World::init(vec2 screen)
     ecsManager.addComponent(soldier1Team1, C_Collision{
             CollisionLayer::Enemy,
             soldier_radius,
-            {sb_height, sb_height}
+            {sb_width, sb_height}
     });
 
 	// Team 2 Soldiers
@@ -426,6 +426,7 @@ bool World::init(vec2 screen)
     player2BoardMesh.init(player2BoardSprite.width, player2BoardSprite.height);
     ecsManager.addComponent<Mesh>(player2_board, player2BoardMesh);
 
+    movementSystem->setScreenSize(screen);
     //HELP BUTTON
     help_btn.init(m_screen_size);
 
@@ -481,12 +482,13 @@ bool World::init(vec2 screen)
 void World::destroy() {
     glDeleteFramebuffers(1, &m_frame_buffer);
 
-    // TODO: MIX_FREEAUDIO AND MIX_FREECHUNK ON ALL AUDIOS
+    if (m_background_music != nullptr)
+        Mix_FreeMusic(m_background_music);
     Mix_CloseAudio();
     tilemap->destroy();
     help_btn.destroy();
-    help_window.destroy();
-    win_window.destroy();
+    help_window->destroy();
+    TextureManager::instance()->unload_all_textures();
     glfwDestroyWindow(m_window);
 }
 
