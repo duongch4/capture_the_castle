@@ -60,7 +60,7 @@ void CollisionSystem::update() {
 
             if (e2_layer == CollisionLayer::Castle){
                 ecsManager.publish(new WinEvent(e1));
-            } else if (e1_layer == CollisionLayer::PLAYER1 & e2_layer == CollisionLayer::PLAYER2){
+            } else if (e1_layer == CollisionLayer::PLAYER1 && e2_layer == CollisionLayer::PLAYER2){
                 switch(region){
                     case MazeRegion::PLAYER1:
                         e2_transform.position = e2_transform.init_position;
