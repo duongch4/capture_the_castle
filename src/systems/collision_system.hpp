@@ -5,6 +5,8 @@
 #ifndef CAPTURE_THE_CASTLE_COLLISION_SYSTEM_HPP
 #define CAPTURE_THE_CASTLE_COLLISION_SYSTEM_HPP
 
+#include <SDL_mixer.h>
+
 #include <ecs/ecs_manager.hpp>
 #include <components.hpp>
 #include <ecs/events.hpp>
@@ -23,6 +25,8 @@ private:
     void collisionListener(CollisionEvent* collisionEvent);
     float distance(vec2 e1, vec2 e2);
     std::queue<std::pair<Entity, Entity>> collision_queue;
+
+    Mix_Chunk* player_respawn_sound;
 };
 
 

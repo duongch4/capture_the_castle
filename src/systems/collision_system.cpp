@@ -11,6 +11,7 @@ extern ECSManager ecsManager;
 
 void CollisionSystem::init() {
     ecsManager.subscribe(this, &CollisionSystem::collisionListener);
+    player_respawn_sound = Mix_LoadWAV(audio_path("capturethecastle_player_respawn.wav"));
 }
 
 void CollisionSystem::checkCollision() {
@@ -56,9 +57,11 @@ void CollisionSystem::update() {
                 switch(region){
                     case MazeRegion::PLAYER1:
                         e2_transform.position = e2_transform.init_position;
+                        Mix_PlayChannel(-1, player_respawn_sound, 0);
                         break;
                     case MazeRegion::PLAYER2:
                         e1_transform.position = e1_transform.init_position;
+                        Mix_PlayChannel(-1, player_respawn_sound, 0);
                         break;
                     case MazeRegion::BANDIT:
                         break;
@@ -68,15 +71,18 @@ void CollisionSystem::update() {
                     case MazeRegion::PLAYER1:
                         if (e1_team == TeamType::PLAYER2){
                             e1_transform.position = e1_transform.init_position;
+                            Mix_PlayChannel(-1, player_respawn_sound, 0);
                         }
                         break;
                     case MazeRegion::PLAYER2:
                         if (e1_team == TeamType::PLAYER1){
                             e1_transform.position = e1_transform.init_position;
+                            Mix_PlayChannel(-1, player_respawn_sound, 0);
                         }
                         break;
                     case MazeRegion::BANDIT:
                         e1_transform.position = e1_transform.init_position;
+                        Mix_PlayChannel(-1, player_respawn_sound, 0);
                         break;
                 }
             }
@@ -94,5 +100,4 @@ float CollisionSystem::distance(vec2 e1, vec2 e2) {
 
 void CollisionSystem::collisionListener(CollisionEvent* collisionEvent) {
     collision_queue.push(std::make_pair(collisionEvent->e1, collisionEvent->e2));
-    std::pair<Entity, Entity> temp = collision_queue.front();
 }

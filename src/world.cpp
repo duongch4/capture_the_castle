@@ -466,11 +466,13 @@ bool World::init(vec2 screen)
 void World::destroy() {
     glDeleteFramebuffers(1, &m_frame_buffer);
 
-    // TODO: MIX_FREEAUDIO AND MIX_FREECHUNK ON ALL AUDIOS
+    if (m_background_music != nullptr)
+        Mix_FreeMusic(m_background_music);
     Mix_CloseAudio();
     tilemap->destroy();
     help_btn.destroy();
     help_window->destroy();
+    TextureManager::instance()->unload_all_textures();
     glfwDestroyWindow(m_window);
 }
 
