@@ -6,8 +6,7 @@ In Milestone 2, our goals and completed goals were:
 		- player vs soldier
         - player vs castle
 		- all characters and maze wall
-	- The ECS design pattern includes collision system
-	- ECS design is heavily based on Austin Morlan's simple ecs design
+	- our ECS design is heavily based on Austin Morlan's simple ecs design
 	(https://austinmorlan.com/posts/entity_component_system/#the-entity)
 	- ECS is currently employed only for the Game elements. UI elements are handled separately.
 - Implement AI for bandit character
@@ -34,7 +33,7 @@ In Milestone 2, our goals and completed goals were:
 The discrepancy in Week 3 ~ 4 from project proposal
 Did more:
 - Improved Bandit movement and spawning mechanism
-	- instead of the hardcoded initial position, bandits are spawned at random position within the bandit maze region
+	- instead of the hardcoded initial position, bandits are spawned at random position and only within the bandit maze region
 - Major performance optimization for maze
 	- after the last sprint, we realized drawing the maze tiles at every update was causing performance issues to some machines.
 	- in this sprint, we modified the tilemap draw to only draw the tiles once per game, and in the subsequent draws, we reuse
