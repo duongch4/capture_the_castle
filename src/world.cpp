@@ -487,7 +487,7 @@ void World::destroy() {
     Mix_CloseAudio();
     tilemap->destroy();
     help_btn.destroy();
-    help_window->destroy();
+    help_window.destroy();
     TextureManager::instance()->unload_all_textures();
     glfwDestroyWindow(m_window);
 }
