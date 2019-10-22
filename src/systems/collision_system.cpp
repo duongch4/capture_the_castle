@@ -26,7 +26,8 @@ void CollisionSystem::checkCollision() {
                     if (collideWithCastle(entity1, entity2)){
                         ecsManager.publish(new CollisionEvent (entity1, entity2));
                     }
-                } else if (distance(e1_transform.position, e2_transform.position) < fmin(e1_collision.radius, e2_collision.radius)){
+                }
+                if (distance(e1_transform.position, e2_transform.position) < fmin(e1_collision.radius, e2_collision.radius) & e2_collision.layer != CollisionLayer :: Castle){
                     ecsManager.publish(new CollisionEvent(entity1, entity2));
                 }
             }
@@ -116,10 +117,10 @@ bool CollisionSystem::collideWithCastle(Entity player, Entity castle){
     float pt = p_position.y;
     float pb = pt + p_boundingBox.y;
 
-    float tt = c_position.y;
-    float tb = tt + c_boundingBox.y;
-    float tl = c_position.x;
-    float tr = tl + c_boundingBox.x;
+    float tt = c_position.y - c_boundingBox.y;
+    float tb = tt + 2 * c_boundingBox.y;
+    float tl = c_position.x- c_boundingBox.x;
+    float tr = tl + 2 * c_boundingBox.x;
     CollisionResponse col_res = {false, false, false, false};
 
     col_res.left = (pr >= tl && pr <= tr); //approach from left

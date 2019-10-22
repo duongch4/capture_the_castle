@@ -279,8 +279,8 @@ bool World::init(vec2 screen)
 	Mesh castle1Mesh{};
 	castle1Mesh.init(castle1Sprite.width, castle1Sprite.height);
 	ecsManager.addComponent<Mesh>(castle1, castle1Mesh);
-    float castleWidth = castle1Sprite.width * 0.5;
-    float castleHeight = castle1Sprite.height * 0.5;
+    float castleWidth = castle1Sprite.width * 0.2f;
+    float castleHeight = castle1Sprite.height * 0.2f;
     ecsManager.addComponent(castle1, C_Collision{
             CollisionLayer::Castle,
             0,
@@ -315,6 +315,7 @@ bool World::init(vec2 screen)
 	Entity player1 = ecsManager.createEntity();
 	ecsManager.addComponent<Transform>(player1, Transform{
 		{ 120.f, m_screen_size.y / 2 + 130.f },
+//        { 120.f - castleWidth, m_screen_size.y / 2 - castleHeight},  debugging purpose
         { 120.f, m_screen_size.y / 2 + 130.f },
 		{0.09f, 0.09f},
         { 120.f, m_screen_size.y / 2 + 130.f }
@@ -349,6 +350,7 @@ bool World::init(vec2 screen)
 	Entity player2 = ecsManager.createEntity();
 	ecsManager.addComponent<Transform>(player2, Transform{
 		{ m_screen_size.x - 120.f, m_screen_size.y / 2 + 130.f },
+		//            { 120.f, m_screen_size.y / 2}, debugging purpose
         { m_screen_size.x - 120.f, m_screen_size.y / 2 + 130.f },
         {0.09f, 0.09f},
         { 120.f, m_screen_size.y / 2 + 130.f }
