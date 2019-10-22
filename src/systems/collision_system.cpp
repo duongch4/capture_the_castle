@@ -53,7 +53,7 @@ void CollisionSystem::update() {
 //           auto& e2_motion = ecsManager.getComponent<Motion>(e2);
             MazeRegion region = Tilemap::get_region(e1_transform.position.x, e1_transform.position.y);
 
-            if (e1_layer == CollisionLayer::PLAYER1 & e2_layer == CollisionLayer::PLAYER2){
+            if (e1_layer == CollisionLayer::PLAYER1 && e2_layer == CollisionLayer::PLAYER2){
                 switch(region){
                     case MazeRegion::PLAYER1:
                         e2_transform.position = e2_transform.init_position;
