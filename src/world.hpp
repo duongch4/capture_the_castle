@@ -33,6 +33,7 @@
 #include "texture_manager.hpp"
 #include "tilemap.hpp"
 #include <ui/help_window.hpp>
+#include <ui/win_window.hpp>
 
 // Container for all our entities and game logic. Individual rendering / update is
 // deferred to the relative update() methods
@@ -80,15 +81,13 @@ private:
 	GLuint m_frame_buffer;
 	Texture m_screen_tex;
 
-	// Background
-	//Background m_background;
-
 	// Game entities
 	std::shared_ptr<Tilemap> tilemap;
 
 	// UI
 	HelpButton help_btn;
-	std::shared_ptr<HelpWindow>help_window;
+	HelpWindow help_window;
+	WinWindow win_window;
 
     std::shared_ptr<MovementSystem> movementSystem;
     std::shared_ptr<PlayerInputSystem> playerInputSystem;
@@ -98,9 +97,12 @@ private:
     std::shared_ptr<CollisionSystem> collisionSystem;
     std::shared_ptr<BoxCollisionSystem> boxCollisionSystem;
 
+    void winListener(WinEvent* winEvent);
+
     //World state
 	enum WorldState { HELP, WIN, NORMAL };
 	WorldState currState;
+	CollisionLayer winner;
 
 	// Audio
     Mix_Music* m_background_music;

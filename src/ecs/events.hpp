@@ -43,4 +43,12 @@ struct BoxCollisionEvent: public Event{
     CollisionResponse collisionResponse;
 };
 
+
+struct WinEvent: public Event{
+    WinEvent(Entity player){
+        this->player = player;
+    }
+    Entity player;
+};
+
 #endif //CAPTURE_THE_CASTLE_EVENTS_HPP
