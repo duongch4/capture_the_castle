@@ -25,7 +25,7 @@ void MovementSystem::update(float ms) {
 		if (sprite.sprite_size.x > 0 && (motion.direction.x != 0 || motion.direction.y != 0))
 		{
 			sprite.sprite_index.x++;
-			sprite.sprite_index.x = (int)sprite.sprite_index.x % (int)sprite.sprite_size.x;
+			sprite.sprite_index.x = (float) ((int)sprite.sprite_index.x % (int)sprite.sprite_size.x);
 		}
 		if (motion.direction.x < 0)
 		{

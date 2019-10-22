@@ -19,7 +19,7 @@ void CloseButton::init(vec2 pos) {
             return;
         }
     }
-    mesh.init(closebtn_texture.width, closebtn_texture.height, closebtn_texture.height, closebtn_texture.height, 0, 0,0);
+    mesh.init(closebtn_texture.width, closebtn_texture.height, (float) closebtn_texture.height, (float) closebtn_texture.height, 0.f, 0.f, 0);
 }
 
 void CloseButton::destroy() {
