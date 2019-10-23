@@ -115,12 +115,13 @@ private:
 	
 	std::shared_ptr<Tilemap> m_tilemap;
 	std::vector<Tile> m_path;
+	int path_idx = 0;
 	Tile m_init_tile;
 	Tile m_goal_tile;
 	
-	void init_path_finding(std::shared_ptr<Tilemap> tilemap, Tile init_tile, Tile goal_tile);
+	std::vector<Tile> init_path_finding(std::shared_ptr<Tilemap> tilemap, Tile init_tile, Tile goal_tile);
 	void clear_path_finding();
-	void do_BFS();
+	std::vector<Tile> do_BFS();
 	bool is_next_good(Tile next, Tile curr, std::vector<std::vector<bool>>& visited_matrix);
 	//std::vector<Tile> getNeighbours(Tile curr);
 	std::vector<Tile> assemble_path(std::vector<std::vector<Tile>>& parents_matrix, Tile init_tile, Tile goal_tile);
