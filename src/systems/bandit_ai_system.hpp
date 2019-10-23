@@ -95,6 +95,7 @@ private:
 	// C++ rng
 	std::default_random_engine rng;
 	std::uniform_real_distribution<float> dist;
+	std::random_device rd;
 
 	// Path finding
 	const float THRESHOLD_DECIMAL_POINTS = 1e-3f;

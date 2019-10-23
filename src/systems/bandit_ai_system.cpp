@@ -105,51 +105,29 @@ void BanditAISystem::handle_patrol(
 	//}
 
 	vec2& curr_pos = ecsManager.getComponent<Transform>(bandit).position;
-	if (chase_time == 1) {
-		vec2& prev_dir = ecsManager.getComponent<Motion>(bandit).direction;
-		//float prev_speed = ecsManager.getComponent<Motion>(bandit).speed;
-		vec2 next_pos = m_tilemap->get_random_free_tile_position(MazeRegion::BANDIT);
-		//std::cout << next_pos.x << ":" << next_pos.y << ":" << prev_speed << std::endl;
-
-		float dir_x = next_pos.x - curr_pos.x;
-		float dir_y = next_pos.y - curr_pos.y;
-		float distance = std::sqrtf((dir_x * dir_x) + (dir_y * dir_y)) + 1e-5f;
-
-		prev_dir = { (dir_x / distance), (dir_y / distance) };
-	}
-
+	vec2& curr_dir = ecsManager.getComponent<Motion>(bandit).direction;
 	Tile curr_tile = m_tilemap->get_tile(curr_pos.x, curr_pos.y);
-	std::pair<int, int> curr_idx = curr_tile.get_idx();
-	if (!is_within_bandit_region(curr_idx.first, curr_idx.second, curr_pos))
+
+	if (chase_time == 1 || !is_within_bandit_region(curr_tile))
 	{
-		//std::cout << "out of bound" << std::endl;
+		std::vector<Tile> adj_tiles = m_tilemap->get_adjacent_tiles(curr_pos.x, curr_pos.y);
 
-		if (curr_idx.first < 4)
+		std::mt19937 g(rd());
+		std::shuffle(adj_tiles.begin(), adj_tiles.end(), g);
+
+		for (auto tile : adj_tiles)
 		{
-			curr_pos.y += 5.f;
+			if (is_within_bandit_region(tile) && !tile.is_wall())
+			{
+				vec2 next_pos = tile.get_position();
+				float dir_x = next_pos.x - curr_pos.x;
+				float dir_y = next_pos.y - curr_pos.y;
+				float distance = std::sqrtf((dir_x * dir_x) + (dir_y * dir_y)) + 1e-5f;
+				curr_dir = { (dir_x / distance), (dir_y / distance) };
+				break;
+			}
 		}
-		if (curr_idx.first > 13)
-		{
-			curr_pos.y -= 5.f;
-		}
-		if (curr_idx.second < 6 + 5)
-		{
-			curr_pos.x += 5.f;
-		}
-		if (curr_idx.second > 20 - 5)
-		{
-			curr_pos.x -= 5.f;
-		}
-		//idle_time = 0;
-		//chase_time = 0;
-		return;
 	}
-
-
-
-	//prev_pos = next_pos;
-
-	//ecsManager.getComponent<Motion>(bandit).direction = { -1, 0 };
 
 	chase_time++;
 }
