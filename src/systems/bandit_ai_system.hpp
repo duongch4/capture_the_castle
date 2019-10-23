@@ -10,6 +10,8 @@
 
 #include <iostream>
 
+#include <systems/bandit_spawn_system.hpp>
+
 #include <ecs/common_ecs.hpp>
 #include <ecs/ecs_manager.hpp>
 #include <components.hpp>
@@ -33,10 +35,10 @@ private:
 		OUT_OF_BOUND
 	};
 
-	const size_t MAX_BANDITS = 5;
+	const size_t MAX_BANDITS = BanditSpawnSystem::get_max_bandits();
 	const size_t IDLE_LIMIT = 70; // beats
 	const size_t CHASE_THRESHOLD = 100;
-	const size_t CHASE_LIMIT = 80; // beats
+	const size_t CHASE_LIMIT = 120; // beats
 	//const size_t PATROL_LIMIT = 20;
 	const float BASE_SPEED = 40.f;
 
@@ -95,6 +97,7 @@ private:
 	// C++ rng
 	std::default_random_engine rng;
 	std::uniform_real_distribution<float> dist;
+	std::random_device rd;
 
 	// Path finding
 	const float THRESHOLD_DECIMAL_POINTS = 1e-3f;

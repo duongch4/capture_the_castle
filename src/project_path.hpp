@@ -2,4 +2,4 @@
 
 // Please don't change the content of this header
 
-#define PROJECT_SOURCE_DIR "/Users/tianyan/427/"
+#define PROJECT_SOURCE_DIR "D:/courses/cs427/capture_the_castle/"

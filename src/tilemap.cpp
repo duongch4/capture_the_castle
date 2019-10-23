@@ -138,16 +138,16 @@ void Tilemap::draw_all_tiles(const mat3& projection)
 Tile Tilemap::get_tile(float positionX, float positionY)
 {	
 	// Convert to the array index of the tile
-	int gridX = ((int)positionX - 23) / 48;
-	int gridY = ((int)positionY - 23) / 48;
+	int gridX = ((int)std::ceil(positionX) - 23) / 48;
+	int gridY = ((int)std::ceil(positionY) - 23) / 48;
 	return m_tiles[gridY][gridX]; 
 }
 
 std::vector<Tile> Tilemap::get_adjacent_tiles(float positionX, float positionY)
 {
 	// Convert to the array index of the tile
-	int gridX = ((int)positionX - 23) / 48;
-	int gridY = ((int)positionY - 23) / 48;
+	int gridX = ((int)std::ceil(positionX) - 23) / 48;
+	int gridY = ((int)std::ceil(positionY) - 23) / 48;
 
 	// Get the adjacent 9 tiles and return it
 	std::vector<Tile> adjacentTiles;
@@ -158,6 +158,21 @@ std::vector<Tile> Tilemap::get_adjacent_tiles(float positionX, float positionY)
 			adjacentTiles.emplace_back(m_tiles[row][col]);
 		}
 	}
+	return adjacentTiles;
+}
+
+std::vector<Tile> Tilemap::get_adjacent_tiles_wesn(float positionX, float positionY)
+{
+	// Convert to the array index of the tile
+	int gridX = ((int)std::ceil(positionX) - 23) / 48;
+	int gridY = ((int)std::ceil(positionY) - 23) / 48;
+
+	// Get the adjacent 4 tiles and return it
+	std::vector<Tile> adjacentTiles;
+	adjacentTiles.emplace_back(m_tiles[gridY - 1][gridX + 0]); // north
+	adjacentTiles.emplace_back(m_tiles[gridY + 0][gridX - 1]); // west
+	adjacentTiles.emplace_back(m_tiles[gridY + 0][gridX + 1]); // east
+	adjacentTiles.emplace_back(m_tiles[gridY + 1][gridX + 0]); // south
 	return adjacentTiles;
 }
 
@@ -201,8 +216,8 @@ vec2 Tilemap::get_random_free_tile_position(MazeRegion mazeRegion)
 MazeRegion Tilemap::get_region(float positionX, float positionY) 
 {
 	// Convert to the array index of the tile
-	int gridX = ((int)positionX - 23) / 48;
-	int gridY = ((int)positionY - 23) / 48;
+	int gridX = ((int)std::ceil(positionX) - 23) / 48;
+	int gridY = ((int)std::ceil(positionY) - 23) / 48;
 
 	if (gridX < 11) {
 		return MazeRegion::PLAYER1;
