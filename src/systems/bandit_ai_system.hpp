@@ -51,12 +51,6 @@ private:
 
 	float get_distance(Entity& target, Entity& bandit);
 
-	void handle_out_of_bound(
-		State& state, size_t& idle_time, size_t& chase_time,
-		float& distance_1, float& distance_2,
-		Entity& bandit, float& speed, float& elapsed_ms
-	);
-
 	void handle_idle(
 		State& state, size_t& idle_time, size_t& chase_time,
 		float& distance_1, float& distance_2,
@@ -123,7 +117,6 @@ private:
 	void clear_path_finding();
 	std::vector<Tile> do_BFS();
 	bool is_next_good(Tile next, Tile curr, std::vector<std::vector<bool>>& visited_matrix);
-	//std::vector<Tile> getNeighbours(Tile curr);
 	std::vector<Tile> assemble_path(std::vector<std::vector<Tile>>& parents_matrix, Tile init_tile, Tile goal_tile);
 	bool is_equal(Tile a, Tile b);
 	bool is_visited(Tile tile, std::vector<std::vector<bool>>& visited_matrix);

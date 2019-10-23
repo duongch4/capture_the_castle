@@ -190,8 +190,13 @@ void BanditAISystem::handle_chase(
 		return;
 	}
 	//std::cout << "aaa" << std::endl;
-
-	chase(distance_1, distance_2, bandit, speed, elapsed_ms);
+	
+	vec2& curr_pos = ecsManager.getComponent<Transform>(bandit).position;
+	Tile curr_tile = m_tilemap->get_tile(curr_pos.x, curr_pos.y);
+	if (is_within_bandit_region(curr_tile) && !curr_tile.is_wall())
+	{
+		chase(distance_1, distance_2, bandit, speed, elapsed_ms);
+	}
 	//std::cout << "bbb" << std::endl;
 
 	chase_time++;

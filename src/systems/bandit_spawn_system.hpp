@@ -21,7 +21,7 @@ public:
 	static const size_t get_max_bandits() { return MAX_BANDITS; }
 
 private:
-	static const size_t MAX_BANDITS = 1;
+	static const size_t MAX_BANDITS = 3;
     const size_t BANDIT_DELAY_MS = 10000;
     float next_bandit_spawn;
     std::shared_ptr<Tilemap> tilemap;
