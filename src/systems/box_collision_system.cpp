@@ -71,7 +71,7 @@ std::pair<bool, CollisionResponse> BoxCollisionSystem::collides_with_tile(Entity
     col_res = v_collision(entity, tile, col_res);
     col_res = h_collision(entity, tile, col_res);
     bool x_over = (pr >= tl && pl <= tl); //overlap
-    bool y_over =  (pb >= tb && pt <= tt); //overlap
+    bool y_over = (pb >= tb && pt <= tt); //overlap
 
     bool x_overlap = col_res.left || col_res.right || x_over;
     bool y_overlap = col_res.down || col_res.up || y_over;
@@ -79,7 +79,7 @@ std::pair<bool, CollisionResponse> BoxCollisionSystem::collides_with_tile(Entity
     if (x_overlap && y_overlap){
         return std::make_pair(true, col_res);
     } else {
-        return  std::make_pair(false, col_res);
+        return std::make_pair(false, col_res);
     }
 }
 

@@ -1,9 +1,9 @@
 #include "bandit_ai_system.hpp"
 
-
 bool BanditAISystem::init(std::shared_ptr<Tilemap> tilemap, Entity& player_1, Entity& player_2)
 
 {
+
 	m_targets.emplace_back(player_1);
 	m_targets.emplace_back(player_2);
 	for (size_t i = 0; i < MAX_BANDITS; ++i)
@@ -108,7 +108,7 @@ void BanditAISystem::handle_patrol(
 	vec2& curr_dir = ecsManager.getComponent<Motion>(bandit).direction;
 	Tile curr_tile = m_tilemap->get_tile(curr_pos.x, curr_pos.y);
 
-	if (chase_time == 1 || !is_within_bandit_region(curr_tile))
+	if (chase_time == 1 || !is_within_bandit_region(curr_tile) || curr_tile.is_wall())
 	{
 		std::vector<Tile> adj_tiles = m_tilemap->get_adjacent_tiles(curr_pos.x, curr_pos.y);
 
@@ -128,7 +128,6 @@ void BanditAISystem::handle_patrol(
 			}
 		}
 	}
-
 	chase_time++;
 }
 
@@ -392,60 +391,30 @@ void BanditAISystem::do_BFS()
 
 	while (!queue.empty())
 	{
-		//std::cout << "a" << std::endl;
 		Tile curr = queue.front();
 		queue.pop();
 
-		//std::cout << "a111:::" << curr.get_idx().first << ":" << curr.get_idx().second << std::endl;
-
 		std::vector<Tile> adj_list = m_tilemap->get_adjacent_tiles(curr.get_position().x, curr.get_position().y);
-
-		//std::cout << "a1" << std::endl;
 
 		for (size_t i = 0; i < adj_list.size(); ++i) 
 		{
-			//std::cout << "b" << std::endl;
-			//vec2 curr_pos = curr.get_position();
-			//std::cout << "Curr in Bandit region::" << (MazeRegion::BANDIT == m_tilemap->get_region(curr_pos.x, curr_pos.y)) << std::endl;
-
-
 			Tile next = adj_list[i];
-			//std::cout << "b_1" << std::endl;
-			//vec2 next_pos = next.get_position();
-			//std::cout << "Next in Bandit region::" << (MazeRegion::BANDIT == m_tilemap->get_region(next_pos.x, next_pos.y)) << std::endl;
-
 
 			if (is_next_good(next, curr, V))
 			{
-				//std::cout << "c" << std::endl;
-
 				std::pair<int, int> next_idx = next.get_idx();
 				V[next_idx.first][next_idx.second] = true;
 				P[next_idx.first][next_idx.second] = curr;
 				queue.push(next);
 			}
-			//std::cout << "d" << std::endl;
-
 		}
-		//std::cout << "e" << std::endl;
-
 	}
 	m_path = assemble_path(P, m_init_tile, m_goal_tile);
 }
 
 bool BanditAISystem::is_next_good(Tile next, Tile curr, std::vector<std::vector<bool>>& visited_matrix)
 {
-	//std::cout << "is_next_good::begin" << std::endl;
-	//bool test_1 = !is_visited(next, visited_matrix);
-	//std::cout << "is_visited::end" << std::endl;
-	//bool test_2 = is_within_bandit_region(next);
-	//std::cout << "is_within::end" << std::endl;
-	//bool test_3 = !next.is_wall();
-	////bool test = ( && is_within_bandit_region(next) && !next.is_wall());
-	//std::cout << "is_next_good::end" << std::endl;
 	return (!is_visited(next, visited_matrix) && is_within_bandit_region(next) && !next.is_wall() && !curr.is_wall());
-	//return true;
-	//return false;
 }
 
 bool BanditAISystem::is_visited(Tile tile, std::vector<std::vector<bool>>& visited_matrix)
@@ -466,7 +435,7 @@ bool BanditAISystem::is_within_bandit_region(Tile tile)
 bool BanditAISystem::is_within_bandit_region(int idx_row, int idx_col, vec2 pos)
 {
 	return (
-		idx_row > 3 && idx_row < 14 &&
+		idx_row > 3 && idx_row < 15 &&
 		idx_col > 5 && idx_col < 18 &&
 		m_tilemap->get_region(pos.x, pos.y) == MazeRegion::BANDIT
 		);

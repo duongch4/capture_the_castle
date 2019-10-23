@@ -187,7 +187,7 @@ vec2 Tile::get_bounding_box() const
 	// fabs is to avoid negative scale due to the facing direction.
 	//return { std::fabs(transform.scale.x) * tile_texture.width * 0.75f, std::fabs(transform.scale.y) * tile_texture.height * 0.75f};
 	// Each tile is 48x48 pixel
-	return {42 , 42 }; //make collision look smoother
+	return { 47, 47 }; //make collision look smoother
 }
 
 bool Tile::is_wall() const {
