@@ -29,6 +29,6 @@ private:
 
     Mix_Chunk* player_respawn_sound;
 };
-//test message
+//
 
 #endif //CAPTURE_THE_CASTLE_COLLISION_SYSTEM_HPP
