@@ -43,6 +43,10 @@ void MovementSystem::update(float ms) {
 		{
 			sprite.sprite_index.y = (int)SPRITE_SHEET_DIR::DOWN;
 		}
+		else
+		{
+			sprite.sprite_index.y = (int)SPRITE_SHEET_DIR::DEFAULT;
+		}
 		
 		mesh.updateSprite(
 			sprite.width, sprite.height,

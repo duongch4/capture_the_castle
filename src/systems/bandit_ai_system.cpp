@@ -91,6 +91,7 @@ void BanditAISystem::handle_patrol(
 
 	if (chase_time == 1 || !is_within_bandit_region(curr_tile) || curr_tile.is_wall())
 	{
+		//std::vector<Tile> adj_tiles = m_tilemap->get_adjacent_tiles_wesn(curr_pos.x, curr_pos.y);
 		std::vector<Tile> adj_tiles = m_tilemap->get_adjacent_tiles(curr_pos.x, curr_pos.y);
 
 		std::mt19937 g(rd());
@@ -105,6 +106,13 @@ void BanditAISystem::handle_patrol(
 				float dir_y = next_pos.y - curr_pos.y;
 				float distance = std::sqrtf((dir_x * dir_x) + (dir_y * dir_y)) + 1e-5f;
 				curr_dir = { (dir_x / distance), (dir_y / distance) };
+				
+				//std::pair<int, int> tile_idx = tile.get_idx();
+				//std::pair<int, int> curr_idx = curr_tile.get_idx();
+				//if (tile_idx.first < curr_idx.first) curr_dir = { -1,0 };
+				//if (tile_idx.first > curr_idx.first) curr_dir = { 1,0 };
+				//if (tile_idx.second < curr_idx.second) curr_dir = { 0,-1 };
+				//if (tile_idx.second > curr_idx.second) curr_dir = { 0,1 };
 				break;
 			}
 		}
