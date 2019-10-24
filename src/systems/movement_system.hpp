@@ -25,6 +25,9 @@ private:
 		DOWN = 4 
 	};
 	vec2 screenSize;
+	void set_bounding_window(Transform& transform);
+	void set_sprite_motion(Sprite& sprite, Motion& motion);
+	void set_sprite_direction(Motion& motion, Sprite& sprite);
 };
 
 

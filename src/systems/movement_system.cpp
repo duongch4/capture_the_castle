@@ -22,31 +22,8 @@ void MovementSystem::update(float ms) {
         auto &mesh = ecsManager.getComponent<Mesh>(entity);
         float step = motion.speed * (ms / 1000);
         transform.old_position = transform.position;
-		if (sprite.sprite_size.x > 0 && (motion.direction.x != 0 || motion.direction.y != 0))
-		{
-			sprite.sprite_index.x++;
-			sprite.sprite_index.x = (float) ((int)sprite.sprite_index.x % (int)sprite.sprite_size.x);
-		}
-		if (motion.direction.x < 0)
-		{
-			sprite.sprite_index.y = (int)SPRITE_SHEET_DIR::LEFT;
-		}
-		else if (motion.direction.x > 0)
-		{
-			sprite.sprite_index.y = (int)SPRITE_SHEET_DIR::RIGHT;
-		}
-		else if (motion.direction.y < 0)
-		{
-			sprite.sprite_index.y = (int)SPRITE_SHEET_DIR::UP;
-		}
-		else if (motion.direction.y > 0)
-		{
-			sprite.sprite_index.y = (int)SPRITE_SHEET_DIR::DOWN;
-		}
-		else
-		{
-			sprite.sprite_index.y = (int)SPRITE_SHEET_DIR::DEFAULT;
-		}
+		set_sprite_motion(sprite, motion);
+		set_sprite_direction(motion, sprite);
 		
 		mesh.updateSprite(
 			sprite.width, sprite.height,
@@ -57,23 +34,65 @@ void MovementSystem::update(float ms) {
         transform.position.x += motion.direction.x * step;
         transform.position.y += motion.direction.y * step;
 
-        const float offset_x = 100.f;
-        const float offset_y = 80.f;
-
-        if (transform.position.x > (screenSize.x - offset_x)) {
-            transform.position.x= screenSize.x - offset_x;
-        }
-        if (transform.position.x < offset_x) {
-            transform.position.x = offset_x;
-        }
-        if (transform.position.y > (screenSize.y - offset_y)) {
-            transform.position.y = screenSize.y - offset_y;
-        }
-        if (transform.position.y < 2 * offset_y) {
-            transform.position.y = 2 * offset_y;
-
-        }
+		set_bounding_window(transform);
     }
+}
+
+void MovementSystem::set_bounding_window(Transform& transform)
+{
+	const float offset_x = 100.f;
+	const float offset_y = 80.f;
+
+	if (transform.position.x > (screenSize.x - offset_x))
+	{
+		transform.position.x = screenSize.x - offset_x;
+	}
+	if (transform.position.x < offset_x)
+	{
+		transform.position.x = offset_x;
+	}
+	if (transform.position.y >(screenSize.y - offset_y))
+	{
+		transform.position.y = screenSize.y - offset_y;
+	}
+	if (transform.position.y < 2 * offset_y)
+	{
+		transform.position.y = 2 * offset_y;
+
+	}
+}
+
+void MovementSystem::set_sprite_motion(Sprite& sprite, Motion& motion)
+{
+	if (sprite.sprite_size.x > 0 && (motion.direction.x != 0 || motion.direction.y != 0))
+	{
+		sprite.sprite_index.x++;
+		sprite.sprite_index.x = (float)((int)sprite.sprite_index.x % (int)sprite.sprite_size.x);
+	}
+}
+
+void MovementSystem::set_sprite_direction(Motion& motion, Sprite& sprite)
+{
+	if (motion.direction.x < 0)
+	{
+		sprite.sprite_index.y = (int)SPRITE_SHEET_DIR::LEFT;
+	}
+	else if (motion.direction.x > 0)
+	{
+		sprite.sprite_index.y = (int)SPRITE_SHEET_DIR::RIGHT;
+	}
+	else if (motion.direction.y < 0)
+	{
+		sprite.sprite_index.y = (int)SPRITE_SHEET_DIR::UP;
+	}
+	else if (motion.direction.y > 0)
+	{
+		sprite.sprite_index.y = (int)SPRITE_SHEET_DIR::DOWN;
+	}
+	else
+	{
+		sprite.sprite_index.y = (int)SPRITE_SHEET_DIR::DEFAULT;
+	}
 }
 
 void MovementSystem::setScreenSize(vec2 screen) {
