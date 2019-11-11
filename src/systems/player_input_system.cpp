@@ -44,7 +44,7 @@ void PlayerInputSystem::update()
 						next_dir.x -= 1;
 						break;
 					case InputKeys::Q:
-						if (canSpawn(soldier_count_1, wait_1, transform, tile.get_idx(), MazeRegion::PLAYER1))
+						if (can_spawn(soldier_count_1, wait_1, transform, tile.get_idx(), MazeRegion::PLAYER1))
 						{
 							Transform transform_soldier = transform;
 							transform_soldier.scale = { 0.08f, 0.08f };
@@ -86,7 +86,7 @@ void PlayerInputSystem::update()
 						next_dir.x -= 1;
 						break;
 					case InputKeys::SLASH:
-						if (canSpawn(soldier_count_2, wait_2, transform, tile.get_idx(), MazeRegion::PLAYER2))
+						if (can_spawn(soldier_count_2, wait_2, transform, tile.get_idx(), MazeRegion::PLAYER2))
 						{
 							Transform transform_soldier = transform;
 							transform_soldier.scale = { 0.08f, 0.08f };
@@ -110,7 +110,7 @@ void PlayerInputSystem::update()
 	}
 }
 
-bool PlayerInputSystem::canSpawn(
+bool PlayerInputSystem::can_spawn(
 	const size_t& soldier_count, const size_t& wait_time, const Transform& transform,
 	const std::pair<int,int>& tile_idx, const MazeRegion& maze_region
 )

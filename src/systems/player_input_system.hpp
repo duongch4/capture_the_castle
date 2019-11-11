@@ -47,7 +47,7 @@ private:
 	static const size_t RESPAWN_IDLE = 200;
 
 private:
-	bool canSpawn(
+	bool can_spawn(
 		const size_t& soldier_count, const size_t& wait_time, const Transform& transform,
 		const std::pair<int, int>& tile_idx, const MazeRegion& maze_region
 	);
