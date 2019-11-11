@@ -23,7 +23,7 @@ public:
 	std::vector<Tile> get_adjacent_tiles(float positionX, float positionY);
 
 	// Return 4 main tiles (west, east, south, north) around (X,Y)
-	std::vector<Tile> get_adjacent_tiles_wesn(float positionX, float positionY);
+	std::vector<Tile> get_adjacent_tiles_nesw(float positionX, float positionY);
 
 	// Get a random free tile in the maze region and return their position 
 	vec2 get_random_free_tile_position(MazeRegion mazeRegion);

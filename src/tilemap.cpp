@@ -161,7 +161,7 @@ std::vector<Tile> Tilemap::get_adjacent_tiles(float positionX, float positionY)
 	return adjacentTiles;
 }
 
-std::vector<Tile> Tilemap::get_adjacent_tiles_wesn(float positionX, float positionY)
+std::vector<Tile> Tilemap::get_adjacent_tiles_nesw(float positionX, float positionY)
 {
 	// Convert to the array index of the tile
 	int gridX = ((int)std::ceil(positionX) - 23) / 48;
@@ -170,9 +170,9 @@ std::vector<Tile> Tilemap::get_adjacent_tiles_wesn(float positionX, float positi
 	// Get the adjacent 4 tiles and return it
 	std::vector<Tile> adjacentTiles;
 	adjacentTiles.emplace_back(m_tiles[gridY - 1][gridX + 0]); // north
-	adjacentTiles.emplace_back(m_tiles[gridY + 0][gridX - 1]); // west
 	adjacentTiles.emplace_back(m_tiles[gridY + 0][gridX + 1]); // east
 	adjacentTiles.emplace_back(m_tiles[gridY + 1][gridX + 0]); // south
+	adjacentTiles.emplace_back(m_tiles[gridY + 0][gridX - 1]); // west
 	return adjacentTiles;
 }
 

@@ -77,13 +77,13 @@ bool World::init(vec2 screen)
 	registerBanditAiSystem(players);
 
 	// Soldier AI System
-	//soldierAiSystem = ecsManager.registerSystem<SoldierAiSystem>();
-	//{
-	//	Signature signature;
-	//	signature.set(ecsManager.getComponentType<SoldierAiComponent>());
-	//	ecsManager.setSystemSignature<SoldierAiSystem>(signature);
-	//}
-	//soldierAiSystem->init(tilemap, players[0], players[1]);
+	soldierAiSystem = ecsManager.registerSystem<SoldierAiSystem>();
+	{
+		Signature signature;
+		signature.set(ecsManager.getComponentType<SoldierAiComponent>());
+		ecsManager.setSystemSignature<SoldierAiSystem>(signature);
+	}
+	soldierAiSystem->init(tilemap, players);
 
 	// Item boards
 	registerItemBoards(screen);
@@ -504,14 +504,15 @@ bool World::update(float elapsed_ms)
 
 	if (currState == WorldState::NORMAL)
 	{
-		banditSpawnSystem->update(elapsed_ms);
-		banditAiSystem->update(elapsed_ms);
 		playerInputSystem->update();
+		movementSystem->update(elapsed_ms);
 		collisionSystem->checkCollision();
 		collisionSystem->update();
 		boxCollisionSystem->checkCollision();
 		boxCollisionSystem->update();
-		movementSystem->update(elapsed_ms);
+		banditSpawnSystem->update(elapsed_ms);
+		banditAiSystem->update(elapsed_ms);
+		soldierAiSystem->update(elapsed_ms);
 	}
 
 	return true;

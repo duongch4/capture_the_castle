@@ -93,7 +93,7 @@ void PlayerInputSystem::update()
 							Motion motion_soldier = Motion{ { 0, 0 }, 100.f };
 							spawn_soldier(
 								transform_soldier, motion_soldier,
-								TeamType::PLAYER1, textures_path("blue_soldier_sprite_sheet-01.png")
+								TeamType::PLAYER2, textures_path("blue_soldier_sprite_sheet-01.png")
 							);
 							++soldier_count_2;
 							wait_2 = 0;
