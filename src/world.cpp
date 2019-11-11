@@ -53,7 +53,7 @@ bool World::init(vec2 screen)
 	registerComponents();
 
 	// Register Systems and Entities
-	registerMovementSystem();
+	registerMovementSystem(screen);
 	registerPlayerInputSystem();
 	registerSpriteRenderSystem();
 	registerBanditSpawnSystem();
@@ -78,7 +78,6 @@ bool World::init(vec2 screen)
 	registerItemBoards(screen);
 
     // HELP BUTTON
-	movementSystem->setScreenSize(screen); // The "?" button is more responsive if putting this line here!
     help_btn.init(m_screen_size);
 
     // Help Window Initialization
@@ -494,7 +493,7 @@ void World::registerPlayerInputSystem()
 	playerInputSystem->init();
 }
 
-void World::registerMovementSystem()
+void World::registerMovementSystem(const vec2& screen)
 {
 	movementSystem = ecsManager.registerSystem<MovementSystem>();
 	{
@@ -504,6 +503,8 @@ void World::registerMovementSystem()
 		ecsManager.setSystemSignature<MovementSystem>(signature);
 	}
 	movementSystem->init();
+	movementSystem->setScreenSize(screen); // The "?" button is more responsive if putting this line here!
+
 }
 
 void World::registerComponents()

@@ -80,7 +80,7 @@ public:
 
 	void registerPlayerInputSystem();
 
-	void registerMovementSystem();
+	void registerMovementSystem(const vec2& screen);
 
 	void registerComponents();
 

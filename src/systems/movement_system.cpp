@@ -95,7 +95,7 @@ void MovementSystem::set_sprite_direction(Motion& motion, Sprite& sprite)
 	}
 }
 
-void MovementSystem::setScreenSize(vec2 screen) {
+void MovementSystem::setScreenSize(const vec2& screen) {
     this->screenSize.x = screen.x;
     this->screenSize.y = screen.y;
 }
