@@ -39,9 +39,10 @@ set(SOURCE_FILES
         src/systems/render_system.cpp
         src/systems/bandit_spawn_system.cpp
 		src/systems/bandit_ai_system.cpp
+		src/systems/soldier_spawn_system.cpp
+		src/systems/soldier_ai_system.cpp
         src/texture_manager.cpp
         src/components.cpp
-        src/player.cpp
         src/world.cpp
         src/background.cpp
         src/tile.cpp
@@ -65,8 +66,9 @@ set(SOURCE_FILES
         src/systems/render_system.hpp
         src/systems/bandit_spawn_system.hpp
         src/systems/bandit_ai_system.hpp
+		src/systems/soldier_spawn_system.hpp
+		src/systems/soldier_ai_system.hpp
         src/texture_manager.hpp
-        src/player.hpp
         src/world.hpp
         src/background.hpp
         src/tile.hpp

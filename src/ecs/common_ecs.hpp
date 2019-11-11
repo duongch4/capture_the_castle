@@ -30,7 +30,7 @@ enum class InputKeys
 {
     UP, DOWN, RIGHT, LEFT,
     W, A, S, D,
-    R,
+    R, Q, SLASH,
     DEFAULT
 };
 
