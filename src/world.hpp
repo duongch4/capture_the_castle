@@ -59,6 +59,31 @@ public:
 	bool is_over()const;
 
 private:
+	bool initAssetsOpenGL(vec2& screen);
+	bool loadAudio();
+	
+	void registerComponents();
+
+	void registerItemBoards(vec2& screen);
+	void registerSoldiers();
+	void registerPlayers(std::vector<Entity>& players);
+	void registerCastles();
+	void registerItemBoard(const Transform& transform, const TeamType& team_type, const char* texture_path);
+	void registerSoldier(const Transform& transform, const Motion& motion, const TeamType& team_type, const char* texture_path);
+	Entity registerPlayer(const Transform& transform, const Motion& motion, const TeamType& team_type, const char* texture_path);
+	void registerCastle(const Transform& transform, const TeamType& team_type, const char* texture_path);
+	
+	void registerBanditAiSystem(Entity& player1, Entity& player2);
+	void registerBoxCollisionSystem();
+	void registerCollisionSystem();
+	void registerBanditSpawnSystem();
+	void registerSpriteRenderSystem();
+	void registerPlayerInputSystem();
+	void registerMovementSystem(const vec2& screen);
+	
+	void renderTilesToScreenTexture();
+
+private:
 
 	// Generates a new tile
 	//bool spawn_tile(int sprite_id, int num_horizontal, int num_vertical, int width, int gap_width, int gridX, int gridY);
