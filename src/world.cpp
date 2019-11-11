@@ -35,85 +35,11 @@ bool World::init(vec2 screen)
 	//-------------------------------------------------------------------------
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
-	glfwSetErrorCallback(glfw_err_cb);
-	if (!glfwInit())
-	{
-		fprintf(stderr, "Failed to initialize GLFW");
-		return false;
-	}
-
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
-#if __APPLE__
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-	glfwWindowHint(GLFW_RESIZABLE, 0);
-	m_window = glfwCreateWindow((int)screen.x, (int)screen.y, "Capture the Castle", nullptr, nullptr);
-	if (m_window == nullptr)
-		return false;
-
-	glfwMakeContextCurrent(m_window);
-	glfwSwapInterval(1); // vsync
-
-	// Load OpenGL function pointers
-	gl3w_init();
-
-	// Setting callbacks to member functions (that's why the redirect is needed)
-	// Input is handled using GLFW, for more info see
-	// http://www.glfw.org/docs/latest/input_guide.html
-	glfwSetWindowUserPointer(m_window, this);
-	auto key_redirect = [](GLFWwindow *wnd, int _0, int _1, int _2, int _3) {
-		((World *)glfwGetWindowUserPointer(wnd))->on_key(wnd, _0, _1, _2, _3);
-	};
-	auto cursor_pos_redirect = [](GLFWwindow *wnd, double _0, double _1) {
-		((World *)glfwGetWindowUserPointer(wnd))->on_mouse_move(wnd, _0, _1);
-	};
-    auto cursor_click_redirect = [](GLFWwindow *wnd, int _0, int _1, int _2) {
-        ((World *) glfwGetWindowUserPointer(wnd))->on_mouse_click(wnd, _0, _1, _2);
-    };
-	glfwSetKeyCallback(m_window, key_redirect);
-	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
-    glfwSetMouseButtonCallback(m_window, cursor_click_redirect);
-
-	// Create a frame buffer
-	m_frame_buffer = 0;
-	glGenFramebuffers(1, &m_frame_buffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, m_frame_buffer);
-
-	// For some high DPI displays (ex. Retina Display on Macbooks)
-	// https://stackoverflow.com/questions/36672935/why-retina-screen-coordinate-value-is-twice-the-value-of-pixel-value
-	int fb_width, fb_height;
-	glfwGetFramebufferSize(m_window, &fb_width, &fb_height);
-	m_screen_scale = static_cast<float>(fb_width) / screen.x;
-
-	// Initialize the screen texture
-	m_screen_tex.create_from_screen(m_window);
+	if (!initAssetsOpenGL(screen)) return false;
 
 	//-------------------------------------------------------------------------
 	// Loading music and sounds
-	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
-		fprintf(stderr, "Failed to initialize SDL Audio");
-		return false;
-	}
-
-	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1) {
-		fprintf(stderr, "Failed to open audio device");
-		return false;
-	}
-
-    m_background_music = Mix_LoadMUS(audio_path("capturethecastle_background.wav"));
-
-    if (m_background_music == nullptr)
-    {
-        fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
-                audio_path("music.wav"));
-        return false;
-    }
-
-    // Playing background music indefinitely
-    Mix_PlayMusic(m_background_music, -1);
+	if (!loadAudio()) return false;
 
 	//--------------------------------------------------------------------------
 	// Initializing game
@@ -127,105 +53,32 @@ bool World::init(vec2 screen)
 	registerComponents();
 
 	// Register Systems and Entities
-	registerMovementSystem(screen);
-
+	registerMovementSystem();
 	registerPlayerInputSystem();
-
 	registerSpriteRenderSystem();
-
 	registerBanditSpawnSystem();
-
 	registerCollisionSystem();
-
 	registerBoxCollisionSystem();
 
-	// CASTLE 1
-	Transform transform_castle1 = Transform {
-		{ 120.f, m_screen_size.y / 2 },
-		{ 120.f, m_screen_size.y / 2 },
-		{ 0.5f, 0.5f },
-		{ 120.f, m_screen_size.y / 2 }
-	};
-	registerCastle(transform_castle1, TeamType::PLAYER1, textures_path("castle/CaptureTheCastle_castle_red.png"));
+	// Castles
+	registerCastles();
 
-	// CASTLE 2
-	Transform transform_castle2 = Transform {
-		{ m_screen_size.x - 120.f, m_screen_size.y / 2 },
-		{ m_screen_size.x - 120.f, m_screen_size.y / 2 },
-		{ 0.5f, 0.5f },
-		{ m_screen_size.x - 120.f, m_screen_size.y / 2 }
-	};
-	registerCastle(transform_castle2, TeamType::PLAYER2, textures_path("castle/CaptureTheCastle_castle_blue.png"));
+	// Players
+	std::vector<Entity> players;
+	registerPlayers(players);
 
-	// PLAYERS
-	Motion motion_player = Motion{ { 0, 0 }, 100.f };
+    // Bandit AI System
+	if (players.size() < 2) return false;
+	registerBanditAiSystem(players[0], players[1]);
 
-	// PLAYER 1
-	Transform transform_player1 = Transform {
-		{ 120.f, m_screen_size.y / 2 + 130.f },
-		// { 120.f - castleWidth, m_screen_size.y / 2 - castleHeight},  debugging purpose
-		{ 120.f, m_screen_size.y / 2 + 130.f },
-		{ 0.09f, 0.09f },
-		{ 120.f, m_screen_size.y / 2 + 130.f }
-	};
-	Entity player1 = registerPlayer(transform_player1, motion_player, TeamType::PLAYER1, textures_path("red_king_sprite_sheet.png"));
+	// Soldiers
+	registerSoldiers();
 
-	// PLAYER 2
-	Transform transform_player2 = Transform {
-		{ m_screen_size.x - 120.f, m_screen_size.y / 2 + 130.f },
-		// { 120.f, m_screen_size.y / 2}, debugging purpose
-		{ m_screen_size.x - 120.f, m_screen_size.y / 2 + 130.f },
-		{ 0.09f, 0.09f },
-		{ 120.f, m_screen_size.y / 2 + 130.f }
-	};
-	Entity player2 = registerPlayer(transform_player2, motion_player, TeamType::PLAYER2, textures_path("blue_king_sprite_sheet.png"));
+	// Item boards
+	registerItemBoards(screen);
 
-    // Bandit AI
-	registerBanditAiSystem(player1, player2);
-
-
-	// SOLDIERS
-	Motion motion_soldier = Motion{ { 0, 0 }, 100.f };
-
-	// Team 1 Soldiers
-	vec2 pos1 = tilemap->get_random_free_tile_position(MazeRegion::PLAYER1);
-	Transform transform_soldier1 = Transform{
-		pos1,
-		pos1,
-		{ 0.08f, 0.08f },
-		pos1
-	};
-	registerSoldier(transform_soldier1, motion_soldier, TeamType::PLAYER1, textures_path("red_soldier_sprite_sheet-01.png"));
-
-	// Team 2 Soldiers
-	vec2 pos2 = tilemap->get_random_free_tile_position(MazeRegion::PLAYER2);
-	Transform transform_soldier2 = Transform{
-		pos2,
-		pos2,
-		{ 0.08f, 0.08f },
-		pos2
-	};
-	registerSoldier(transform_soldier2, motion_soldier, TeamType::PLAYER2, textures_path("blue_soldier_sprite_sheet-01.png"));
-
-    // ITEM BOARD (PLAYER 1)
-	Transform transform_itemboard1 = Transform{
-		{ 180.f, 65 },
-		{ 180.f, 65 },
-		{ 0.5f, 0.5f },
-		{ 180.f, 65 }
-	};
-	registerItemBoard(transform_itemboard1, TeamType::PLAYER1, textures_path("ui/CaptureTheCastle_player_tile_red.png"));
-
-    // ITEM BOARD (PLAYER 2)
-	Transform transform_itemboard2 = Transform{
-		{ screen.x - 180.f, 65.f },
-		{ screen.x - 180.f, 65.f },
-		{ 0.5f, 0.5f },
-		{ screen.x - 180.f, 65.f }
-	};
-	registerItemBoard(transform_itemboard2, TeamType::PLAYER2, textures_path("ui/CaptureTheCastle_player_tile_blue.png"));
-
-    //HELP BUTTON
+    // HELP BUTTON
+	movementSystem->setScreenSize(screen); // The "?" button is more responsive if putting this line here!
     help_btn.init(m_screen_size);
 
     // Help Window Initialization
@@ -238,7 +91,13 @@ bool World::init(vec2 screen)
 
 	//--------------------------------------------------------------------------
 	// Render all the tiles once to the screen texture
+	renderTilesToScreenTexture();
 
+    return true;
+}
+
+void World::renderTilesToScreenTexture()
+{
 	// Clearing error buffer
 	gl_flush_errors();
 
@@ -272,8 +131,192 @@ bool World::init(vec2 screen)
 
 	// Render each tile to our screen texture
 	tilemap->draw_all_tiles(projection_2D);
+}
 
-    return true;
+void World::registerItemBoards(vec2& screen)
+{
+	// ITEM BOARD (PLAYER 1)
+	Transform transform_itemboard1 = Transform{
+		{ 180.f, 65 },
+	{ 180.f, 65 },
+	{ 0.5f, 0.5f },
+	{ 180.f, 65 }
+	};
+	registerItemBoard(transform_itemboard1, TeamType::PLAYER1, textures_path("ui/CaptureTheCastle_player_tile_red.png"));
+
+	// ITEM BOARD (PLAYER 2)
+	Transform transform_itemboard2 = Transform{
+		{ screen.x - 180.f, 65.f },
+	{ screen.x - 180.f, 65.f },
+	{ 0.5f, 0.5f },
+	{ screen.x - 180.f, 65.f }
+	};
+	registerItemBoard(transform_itemboard2, TeamType::PLAYER2, textures_path("ui/CaptureTheCastle_player_tile_blue.png"));
+}
+
+void World::registerSoldiers()
+{
+	Motion motion_soldier = Motion{ { 0, 0 }, 100.f };
+
+	// Team 1 Soldiers
+	vec2 pos1 = tilemap->get_random_free_tile_position(MazeRegion::PLAYER1);
+	Transform transform_soldier1 = Transform{
+		pos1,
+		pos1,
+	{ 0.08f, 0.08f },
+	pos1
+	};
+	registerSoldier(transform_soldier1, motion_soldier, TeamType::PLAYER1, textures_path("red_soldier_sprite_sheet-01.png"));
+
+	// Team 2 Soldiers
+	vec2 pos2 = tilemap->get_random_free_tile_position(MazeRegion::PLAYER2);
+	Transform transform_soldier2 = Transform{
+		pos2,
+		pos2,
+	{ 0.08f, 0.08f },
+	pos2
+	};
+	registerSoldier(transform_soldier2, motion_soldier, TeamType::PLAYER2, textures_path("blue_soldier_sprite_sheet-01.png"));
+}
+
+void World::registerPlayers(std::vector<Entity>& players)
+{
+	// PLAYERS
+	Motion motion_player = Motion{ { 0, 0 }, 100.f };
+
+	// PLAYER 1
+	Transform transform_player1 = Transform{
+		{ 120.f, m_screen_size.y / 2 + 130.f },
+		// { 120.f - castleWidth, m_screen_size.y / 2 - castleHeight},  debugging purpose
+		{ 120.f, m_screen_size.y / 2 + 130.f },
+		{ 0.09f, 0.09f },
+		{ 120.f, m_screen_size.y / 2 + 130.f }
+	};
+	Entity player1 = registerPlayer(transform_player1, motion_player, TeamType::PLAYER1, textures_path("red_king_sprite_sheet.png"));
+	players.emplace_back(player1);
+
+	// PLAYER 2
+	Transform transform_player2 = Transform{
+		{ m_screen_size.x - 120.f, m_screen_size.y / 2 + 130.f },
+		// { 120.f, m_screen_size.y / 2}, debugging purpose
+		{ m_screen_size.x - 120.f, m_screen_size.y / 2 + 130.f },
+		{ 0.09f, 0.09f },
+		{ 120.f, m_screen_size.y / 2 + 130.f }
+	};
+	Entity player2 = registerPlayer(transform_player2, motion_player, TeamType::PLAYER2, textures_path("blue_king_sprite_sheet.png"));
+	players.emplace_back(player2);
+}
+
+void World::registerCastles()
+{
+	// CASTLE 1
+	Transform transform_castle1 = Transform{
+		{ 120.f, m_screen_size.y / 2 },
+	{ 120.f, m_screen_size.y / 2 },
+	{ 0.5f, 0.5f },
+	{ 120.f, m_screen_size.y / 2 }
+	};
+	registerCastle(transform_castle1, TeamType::PLAYER1, textures_path("castle/CaptureTheCastle_castle_red.png"));
+
+	// CASTLE 2
+	Transform transform_castle2 = Transform{
+		{ m_screen_size.x - 120.f, m_screen_size.y / 2 },
+	{ m_screen_size.x - 120.f, m_screen_size.y / 2 },
+	{ 0.5f, 0.5f },
+	{ m_screen_size.x - 120.f, m_screen_size.y / 2 }
+	};
+	registerCastle(transform_castle2, TeamType::PLAYER2, textures_path("castle/CaptureTheCastle_castle_blue.png"));
+}
+
+bool World::loadAudio()
+{
+	if (SDL_Init(SDL_INIT_AUDIO) < 0)
+	{
+		fprintf(stderr, "Failed to initialize SDL Audio");
+		return false;
+	}
+
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
+	{
+		fprintf(stderr, "Failed to open audio device");
+		return false;
+	}
+
+	m_background_music = Mix_LoadMUS(audio_path("capturethecastle_background.wav"));
+
+	if (m_background_music == nullptr)
+	{
+		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+			audio_path("music.wav"));
+		return false;
+	}
+
+	// Playing background music indefinitely
+	Mix_PlayMusic(m_background_music, -1);
+	return true;
+}
+
+bool World::initAssetsOpenGL(vec2& screen)
+{
+	glfwSetErrorCallback(glfw_err_cb);
+	if (!glfwInit())
+	{
+		fprintf(stderr, "Failed to initialize GLFW");
+		return false;
+	}
+
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
+#if __APPLE__
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+	glfwWindowHint(GLFW_RESIZABLE, 0);
+	m_window = glfwCreateWindow((int)screen.x, (int)screen.y, "Capture the Castle", nullptr, nullptr);
+	if (m_window == nullptr)
+		return false;
+
+	glfwMakeContextCurrent(m_window);
+	glfwSwapInterval(1); // vsync
+
+	// Load OpenGL function pointers
+	gl3w_init();
+
+	// Setting callbacks to member functions (that's why the redirect is needed)
+	// Input is handled using GLFW, for more info see
+	// http://www.glfw.org/docs/latest/input_guide.html
+	glfwSetWindowUserPointer(m_window, this);
+	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3)
+	{
+		((World*)glfwGetWindowUserPointer(wnd))->on_key(wnd, _0, _1, _2, _3);
+	};
+	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1)
+	{
+		((World*)glfwGetWindowUserPointer(wnd))->on_mouse_move(wnd, _0, _1);
+	};
+	auto cursor_click_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2)
+	{
+		((World*)glfwGetWindowUserPointer(wnd))->on_mouse_click(wnd, _0, _1, _2);
+	};
+	glfwSetKeyCallback(m_window, key_redirect);
+	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
+	glfwSetMouseButtonCallback(m_window, cursor_click_redirect);
+
+	// Create a frame buffer
+	m_frame_buffer = 0;
+	glGenFramebuffers(1, &m_frame_buffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_frame_buffer);
+
+	// For some high DPI displays (ex. Retina Display on Macbooks)
+	// https://stackoverflow.com/questions/36672935/why-retina-screen-coordinate-value-is-twice-the-value-of-pixel-value
+	int fb_width, fb_height;
+	glfwGetFramebufferSize(m_window, &fb_width, &fb_height);
+	m_screen_scale = static_cast<float>(fb_width) / screen.x;
+
+	// Initialize the screen texture
+	m_screen_tex.create_from_screen(m_window);
+	return true;
 }
 
 void World::registerItemBoard(const Transform& transform, const TeamType& team_type, const char* texture_path)
@@ -451,7 +494,7 @@ void World::registerPlayerInputSystem()
 	playerInputSystem->init();
 }
 
-void World::registerMovementSystem(vec2& screen)
+void World::registerMovementSystem()
 {
 	movementSystem = ecsManager.registerSystem<MovementSystem>();
 	{
@@ -461,7 +504,6 @@ void World::registerMovementSystem(vec2& screen)
 		ecsManager.setSystemSignature<MovementSystem>(signature);
 	}
 	movementSystem->init();
-	movementSystem->setScreenSize(screen);
 }
 
 void World::registerComponents()

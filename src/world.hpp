@@ -46,6 +46,20 @@ public:
 	// Creates a window, sets up events and begins the game
 	bool init(vec2 screen);
 
+	void renderTilesToScreenTexture();
+
+	void registerItemBoards(vec2& screen);
+
+	void registerSoldiers();
+
+	void registerPlayers(std::vector<Entity>& players);
+
+	void registerCastles();
+
+	bool loadAudio();
+
+	bool initAssetsOpenGL(vec2& screen);
+
 	void registerItemBoard(const Transform& transform, const TeamType& team_type, const char* texture_path);
 
 	void registerSoldier(const Transform& transform, const Motion& motion, const TeamType& team_type, const char* texture_path);
@@ -66,7 +80,7 @@ public:
 
 	void registerPlayerInputSystem();
 
-	void registerMovementSystem(vec2& screen);
+	void registerMovementSystem();
 
 	void registerComponents();
 
