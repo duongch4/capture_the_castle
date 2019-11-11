@@ -40,7 +40,7 @@ bool World::init(vec2 screen)
 	//-------------------------------------------------------------------------
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
-	if (!initAssetsOpenGL(screen)) return false;
+	if (!initAssetsOpenGL(screen, "Capture the Castle")) return false;
 
 	//-------------------------------------------------------------------------
 	// Loading music and sounds
@@ -71,13 +71,19 @@ bool World::init(vec2 screen)
 	// Players
 	std::vector<Entity> players;
 	registerPlayers(players);
+	if (players.size() < 2) return false;
 
 	// Bandit AI System
-	if (players.size() < 2) return false;
-	registerBanditAiSystem(players[0], players[1]);
+	registerBanditAiSystem(players);
 
-	// Soldiers
-	registerSoldiers();
+	// Soldier AI System
+	soldierAiSystem = ecsManager.registerSystem<SoldierAiSystem>();
+	{
+		Signature signature;
+		signature.set(ecsManager.getComponentType<SoldierAiComponent>());
+		ecsManager.setSystemSignature<SoldierAiSystem>(signature);
+	}
+	soldierAiSystem->init(tilemap, players);
 
 	// Item boards
 	registerItemBoards(screen);
@@ -137,7 +143,7 @@ void World::renderTilesToScreenTexture()
 	tilemap->draw_all_tiles(projection_2D);
 }
 
-void World::registerItemBoards(vec2& screen)
+void World::registerItemBoards(const vec2& screen)
 {
 	// ITEM BOARD (PLAYER 1)
 	Transform transform_itemboard1 = Transform{
@@ -156,31 +162,6 @@ void World::registerItemBoards(vec2& screen)
 		{ screen.x - 180.f, 65.f }
 	};
 	registerItemBoard(transform_itemboard2, TeamType::PLAYER2, textures_path("ui/CaptureTheCastle_player_tile_blue.png"));
-}
-
-void World::registerSoldiers()
-{
-	Motion motion_soldier = Motion{ { 0, 0 }, 100.f };
-
-	// Team 1 Soldiers
-	vec2 pos1 = tilemap->get_random_free_tile_position(MazeRegion::PLAYER1);
-	Transform transform_soldier1 = Transform{
-		pos1,
-		pos1,
-		{ 0.08f, 0.08f },
-		pos1
-	};
-	registerSoldier(transform_soldier1, motion_soldier, TeamType::PLAYER1, textures_path("red_soldier_sprite_sheet-01.png"));
-
-	// Team 2 Soldiers
-	vec2 pos2 = tilemap->get_random_free_tile_position(MazeRegion::PLAYER2);
-	Transform transform_soldier2 = Transform{
-		pos2,
-		pos2,
-		{ 0.08f, 0.08f },
-		pos2
-	};
-	registerSoldier(transform_soldier2, motion_soldier, TeamType::PLAYER2, textures_path("blue_soldier_sprite_sheet-01.png"));
 }
 
 void World::registerPlayers(std::vector<Entity>& players)
@@ -260,7 +241,7 @@ bool World::loadAudio()
 	return true;
 }
 
-bool World::initAssetsOpenGL(vec2& screen)
+bool World::initAssetsOpenGL(const vec2& screen, const char* title)
 {
 	glfwSetErrorCallback(glfw_err_cb);
 	if (!glfwInit())
@@ -277,7 +258,7 @@ bool World::initAssetsOpenGL(vec2& screen)
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 	glfwWindowHint(GLFW_RESIZABLE, 0);
-	m_window = glfwCreateWindow((int)screen.x, (int)screen.y, "Capture the Castle", nullptr, nullptr);
+	m_window = glfwCreateWindow((int)screen.x, (int)screen.y, title, nullptr, nullptr);
 	if (m_window == nullptr)
 		return false;
 
@@ -339,37 +320,6 @@ void World::registerItemBoard(const Transform& transform, const TeamType& team_t
 	ecsManager.addComponent<Mesh>(itemBoard, itemBoardMesh);
 }
 
-void World::registerSoldier(const Transform& transform, const Motion& motion, const TeamType& team_type, const char* texture_path)
-{
-	Entity soldier = ecsManager.createEntity();
-	ecsManager.addComponent<Team>(soldier, Team{ team_type });
-	ecsManager.addComponent<PlaceableComponent>(soldier, PlaceableComponent{});
-	ecsManager.addComponent<Transform>(soldier, transform);
-	ecsManager.addComponent<Motion>(soldier, motion);
-	Effect soldierEffect{};
-	soldierEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
-	ecsManager.addComponent<Effect>(soldier, soldierEffect);
-	Sprite soldierSprite = { texture_path };
-	TextureManager::instance()->load_from_file(soldierSprite);
-	soldierSprite.sprite_index = { 0 , 0 };
-	soldierSprite.sprite_size = { soldierSprite.width / 7.0f , soldierSprite.height / 5.0f };
-	ecsManager.addComponent<Sprite>(soldier, soldierSprite);
-	Mesh soldierMesh{};
-	soldierMesh.init(
-		soldierSprite.width, soldierSprite.height, soldierSprite.sprite_size.x, soldierSprite.sprite_size.y,
-		soldierSprite.sprite_index.x, soldierSprite.sprite_index.y, 0
-	);
-	ecsManager.addComponent<Mesh>(soldier, soldierMesh);
-	ecsManager.addComponent(
-		soldier,
-		C_Collision{
-			CollisionLayer::Enemy,
-			soldierSprite.width / 2 * 0.08f,
-			{ soldierSprite.width * 0.08f * 0.8f, soldierSprite.height * 0.08f * 0.8f }
-		}
-	);
-}
-
 Entity World::registerPlayer(const Transform& transform, const Motion& motion, const TeamType& team_type, const char* texture_path)
 {
 	Entity player = ecsManager.createEntity();
@@ -423,15 +373,15 @@ void World::registerCastle(const Transform& transform, const TeamType& team_type
 	);
 }
 
-void World::registerBanditAiSystem(Entity& player1, Entity& player2)
+void World::registerBanditAiSystem(const std::vector<Entity>& players)
 {
-	banditAISystem = ecsManager.registerSystem<BanditAISystem>();
+	banditAiSystem = ecsManager.registerSystem<BanditAiSystem>();
 	{
 		Signature signature;
-		signature.set(ecsManager.getComponentType<BanditAIComponent>());
-		ecsManager.setSystemSignature<BanditAISystem>(signature);
+		signature.set(ecsManager.getComponentType<BanditAiComponent>());
+		ecsManager.setSystemSignature<BanditAiSystem>(signature);
 	}
-	banditAISystem->init(tilemap, player1, player2);
+	banditAiSystem->init(tilemap, players);
 }
 
 void World::registerBoxCollisionSystem()
@@ -497,7 +447,7 @@ void World::registerPlayerInputSystem()
 		signature.set(ecsManager.getComponentType<PlayerInputControlComponent>());
 		ecsManager.setSystemSignature<PlayerInputSystem>(signature);
 	}
-	playerInputSystem->init();
+	playerInputSystem->init(tilemap);
 }
 
 void World::registerMovementSystem(const vec2& screen)
@@ -524,9 +474,10 @@ void World::registerComponents()
 	ecsManager.registerComponent<Mesh>();
 	ecsManager.registerComponent<C_Collision>();
 	ecsManager.registerComponent<BanditSpawnComponent>();
+	ecsManager.registerComponent<BanditAiComponent>();
 	ecsManager.registerComponent<PlayerInputControlComponent>();
 	ecsManager.registerComponent<PlaceableComponent>();
-	ecsManager.registerComponent<BanditAIComponent>();
+	ecsManager.registerComponent<SoldierAiComponent>();
 }
 
 // Releases all the associated resources
@@ -553,14 +504,15 @@ bool World::update(float elapsed_ms)
 
 	if (currState == WorldState::NORMAL)
 	{
-		banditSpawnSystem->update(elapsed_ms);
-		banditAISystem->update(elapsed_ms);
 		playerInputSystem->update();
+		movementSystem->update(elapsed_ms);
 		collisionSystem->checkCollision();
 		collisionSystem->update();
 		boxCollisionSystem->checkCollision();
 		boxCollisionSystem->update();
-		movementSystem->update(elapsed_ms);
+		banditSpawnSystem->update(elapsed_ms);
+		banditAiSystem->update(elapsed_ms);
+		soldierAiSystem->update(elapsed_ms);
 	}
 
 	return true;
@@ -665,6 +617,12 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 		break;
 	case GLFW_KEY_A:
 		k = InputKeys::A;
+		break;
+	case GLFW_KEY_Q:
+		k = InputKeys::Q;
+		break;
+	case GLFW_KEY_SLASH:
+		k = InputKeys::SLASH;
 		break;
 	default:
 		break;

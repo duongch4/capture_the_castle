@@ -171,7 +171,7 @@ void Tile::set_idx(std::pair<int, int> idx)
 	tile_idx = idx;
 }
 
-std::pair<int, int> Tile::get_idx()
+std::pair<int, int> Tile::get_idx() const
 {
 	return tile_idx;
 }
