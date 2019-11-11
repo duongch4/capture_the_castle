@@ -44,7 +44,7 @@ void PlayerInputSystem::update()
 						next_dir.x -= 1;
 						break;
 					case InputKeys::Q:
-						if (can_spawn(soldier_count_1, wait_1, transform, tile.get_idx(), MazeRegion::PLAYER1))
+						if (can_spawn(soldier_count_1, wait_1, transform, tile, MazeRegion::PLAYER1))
 						{
 							vec2 position = tile.get_position();
 							Transform transform_soldier = Transform{ position, position, { 0.08f, 0.08f }, position };
@@ -86,7 +86,7 @@ void PlayerInputSystem::update()
 						next_dir.x -= 1;
 						break;
 					case InputKeys::SLASH:
-						if (can_spawn(soldier_count_2, wait_2, transform, tile.get_idx(), MazeRegion::PLAYER2))
+						if (can_spawn(soldier_count_2, wait_2, transform, tile, MazeRegion::PLAYER2))
 						{
 							vec2 position = tile.get_position();
 							Transform transform_soldier = Transform{ position, position, { 0.08f, 0.08f }, position };
@@ -112,10 +112,12 @@ void PlayerInputSystem::update()
 
 bool PlayerInputSystem::can_spawn(
 	const size_t& soldier_count, const size_t& wait_time, const Transform& transform,
-	const std::pair<int,int>& tile_idx, const MazeRegion& maze_region
+	const Tile& tile, const MazeRegion& maze_region
 )
 {
+	const std::pair<int, int> tile_idx = tile.get_idx();
 	return (
+		(!tile.is_wall()) &&
 		(soldier_count < MAX_SOLDIERS) &&
 		(wait_time > RESPAWN_IDLE) &&
 		(tile_idx.first > 3 && tile_idx.first < 15) &&

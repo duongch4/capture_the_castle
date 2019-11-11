@@ -18,12 +18,14 @@ public:
 
 	// Return the tile located at postionX, positionY
 	Tile get_tile(float positionX, float positionY);
+	Tile get_tile(const std::pair<int, int>& tile_idx) const;
 
 	// Return all 9 tiles around the position in a vector
 	std::vector<Tile> get_adjacent_tiles(float positionX, float positionY);
+	std::vector<Tile> get_adjacent_tiles(const Tile& tile);
 
 	// Return 4 main tiles (west, east, south, north) around (X,Y)
-	std::vector<Tile> get_adjacent_tiles_nesw(float positionX, float positionY);
+	std::vector<Tile> get_adjacent_tiles_nesw(const Tile& tile);
 
 	// Get a random free tile in the maze region and return their position 
 	vec2 get_random_free_tile_position(MazeRegion mazeRegion);
@@ -31,6 +33,7 @@ public:
 	// Return the region based on the position 
 
 	static MazeRegion get_region(float positionX, float positionY);
+	static MazeRegion get_region(const Tile& tile);
 
 	bool spawn_tile(int sprite_id, int num_horizontal, int num_vertical, int width, int gap_width, int gridX, int gridY);
 

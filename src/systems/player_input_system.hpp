@@ -10,6 +10,7 @@
 #include <components.hpp>
 #include <texture_manager.hpp>
 #include <tilemap.hpp>
+#include <random>
 
 extern ECSManager ecsManager;
 
@@ -17,6 +18,7 @@ class PlayerInputSystem : public System {
 public:
     void init(std::shared_ptr<Tilemap> tilemap);
     void update();
+	static const size_t get_max_soldiers() { return 2 * MAX_SOLDIERS; };
 
 private:
     const std::vector<InputKeys> PLAYER1KEYS = {
@@ -49,12 +51,18 @@ private:
 private:
 	bool can_spawn(
 		const size_t& soldier_count, const size_t& wait_time, const Transform& transform,
-		const std::pair<int, int>& tile_idx, const MazeRegion& maze_region
+		const Tile& tile, const MazeRegion& maze_region
 	);
 	void spawn_soldier(
 		const Transform& transform, const Motion& motion,
 		const TeamType& team_type, const char* texture_path
 	);
+
+private:
+	// C++ rng
+	std::default_random_engine rng;
+	std::uniform_real_distribution<float> dist;
+	std::random_device rd;
 };
 
 
