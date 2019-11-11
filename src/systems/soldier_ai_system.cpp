@@ -22,8 +22,8 @@ void SoldierAiSystem::update(float& elapsed_ms)
 		Entity soldier = *it;
 
 		State& state = m_states[idx];
-		size_t& idleTime = m_idle_times[idx];
-		size_t& patrolTime = m_patrol_times[idx];
+		size_t& idle_time = m_idle_times[idx];
+		size_t& patrol_time = m_patrol_times[idx];
 		vec2& prev_dir = m_prev_dirs[idx];
 
 		float speed = BASE_SPEED * (1.f + dist(rng));
@@ -32,10 +32,10 @@ void SoldierAiSystem::update(float& elapsed_ms)
 		switch (state)
 		{
 		case State::IDLE:
-			handle_idle(state, idleTime, soldier);
+			handle_idle(state, idle_time, soldier);
 			break;
 		case State::PATROL:
-			handle_patrol(state, patrolTime, soldier, prev_dir);
+			handle_patrol(state, patrol_time, soldier, prev_dir);
 			break;
 		}
 	}
@@ -96,13 +96,10 @@ void SoldierAiSystem::handle_idle(State& state, size_t& idle_time, const Entity&
 {
 	if (idle_time > IDLE_LIMIT)
 	{
-		//std::cout << "d" << std::endl;
-
 		state = State::PATROL;
 		idle_time = 0;
 		return;
 	}
-	//std::cout << "e" << std::endl;
 
 	ecsManager.getComponent<Motion>(soldier).direction = { 0, 0 };
 	idle_time++;
