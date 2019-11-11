@@ -42,17 +42,10 @@ private:
 	std::vector<vec2> m_prev_dirs;
 
 private:
-	void handle_idle(
-		State& state, size_t& idle_time, size_t& chase_time,
-		Entity& soldier, float& speed, float& elapsed_ms
-	);
+	void handle_idle(State& state, size_t& idle_time, const Entity& soldier);
+	void handle_patrol(State& state, size_t& patrol_time, const Entity& soldier, vec2& prev_dir);
 
-	void handle_patrol(
-		State& state, size_t& idle_time, size_t& chase_time,
-		Entity& soldier, float& speed, float& elapsed_ms, vec2& prev_dir
-	);
-
-	bool can_move(Entity& soldier, Tile& tile);
+	bool can_move(const Entity& soldier, const Tile& tile);
 	bool is_within_soldier_region(const Entity& soldier, const Tile& tile);
 
 private:

@@ -7,7 +7,7 @@ bool SoldierAiSystem::init(std::shared_ptr<Tilemap> tilemap, const std::vector<E
 	{
 		m_idle_times.emplace_back(0);
 		m_patrol_times.emplace_back(0);
-		m_prev_dirs.emplace_back(vec2{1.f,0.f});
+		m_prev_dirs.emplace_back(vec2{ 1.f,0.f });
 		m_states.emplace_back(State::IDLE);
 	}
 	m_tilemap = tilemap;
@@ -20,6 +20,7 @@ void SoldierAiSystem::update(float& elapsed_ms)
 	{
 		auto idx = std::distance(entities.begin(), it);
 		Entity soldier = *it;
+
 		State& state = m_states[idx];
 		size_t& idleTime = m_idle_times[idx];
 		size_t& patrolTime = m_patrol_times[idx];
@@ -31,10 +32,10 @@ void SoldierAiSystem::update(float& elapsed_ms)
 		switch (state)
 		{
 		case State::IDLE:
-			handle_idle(state, idleTime, patrolTime, soldier, speed, elapsed_ms);
+			handle_idle(state, idleTime, soldier);
 			break;
 		case State::PATROL:
-			handle_patrol(state, idleTime, patrolTime, soldier, speed, elapsed_ms, prev_dir);
+			handle_patrol(state, patrolTime, soldier, prev_dir);
 			break;
 		}
 	}
@@ -42,10 +43,7 @@ void SoldierAiSystem::update(float& elapsed_ms)
 
 }
 
-void SoldierAiSystem::handle_patrol(
-	State& state, size_t& idle_time, size_t& patrol_time,
-	Entity& soldier, float& speed, float& elapsed_ms, vec2& prev_dir
-)
+void SoldierAiSystem::handle_patrol(State& state, size_t& patrol_time, const Entity& soldier, vec2& prev_dir)
 {
 	vec2& curr_pos = ecsManager.getComponent<Transform>(soldier).position;
 	vec2& curr_dir = ecsManager.getComponent<Motion>(soldier).direction;
@@ -54,6 +52,7 @@ void SoldierAiSystem::handle_patrol(
 	if (patrol_time > PATROL_LIMIT)
 	{
 		curr_pos = curr_tile.get_position();
+
 		state = State::IDLE;
 		patrol_time = 0;
 		return;
@@ -88,15 +87,12 @@ void SoldierAiSystem::handle_patrol(
 	patrol_time++;
 }
 
-bool SoldierAiSystem::can_move(Entity& soldier, Tile& tile)
+bool SoldierAiSystem::can_move(const Entity& soldier, const Tile& tile)
 {
 	return is_within_soldier_region(soldier, tile) && !tile.is_wall();
 }
 
-void SoldierAiSystem::handle_idle(
-	State& state, size_t& idle_time, size_t& chase_time,
-	Entity& soldier, float& speed, float& elapsed_ms
-)
+void SoldierAiSystem::handle_idle(State& state, size_t& idle_time, const Entity& soldier)
 {
 	if (idle_time > IDLE_LIMIT)
 	{
