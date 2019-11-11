@@ -7,21 +7,26 @@
 #include <sstream>
 
 // Same as static in c, local to compilation unit
-namespace {
-    namespace {
-        void glfw_err_cb(int error, const char *desc) {
-            fprintf(stderr, "%d: %s", error, desc);
-        }
-    }
+namespace
+{
+	namespace
+	{
+		void glfw_err_cb(int error, const char* desc)
+		{
+			fprintf(stderr, "%d: %s", error, desc);
+		}
+	}
 }
 
 extern ECSManager ecsManager;
 
-World::World(){
+World::World()
+{
 
 }
 
-World::~World() {
+World::~World()
+{
 
 }
 
@@ -30,7 +35,7 @@ World::~World() {
 bool World::init(vec2 screen)
 {
 	m_screen_size = screen;
-    currState = WorldState::NORMAL;
+	currState = WorldState::NORMAL;
 
 	//-------------------------------------------------------------------------
 	// GLFW / OGL Initialization
@@ -67,7 +72,7 @@ bool World::init(vec2 screen)
 	std::vector<Entity> players;
 	registerPlayers(players);
 
-    // Bandit AI System
+	// Bandit AI System
 	if (players.size() < 2) return false;
 	registerBanditAiSystem(players[0], players[1]);
 
@@ -77,22 +82,22 @@ bool World::init(vec2 screen)
 	// Item boards
 	registerItemBoards(screen);
 
-    // HELP BUTTON
-    help_btn.init(m_screen_size);
+	// HELP BUTTON
+	help_btn.init(m_screen_size);
 
-    // Help Window Initialization
-    help_window.init(m_screen_size);
+	// Help Window Initialization
+	help_window.init(m_screen_size);
 
-    // Winner's Window Initialization
-    win_window.init(m_screen_size);
+	// Winner's Window Initialization
+	win_window.init(m_screen_size);
 
-    ecsManager.subscribe(this, &World::winListener);
+	ecsManager.subscribe(this, &World::winListener);
 
 	//--------------------------------------------------------------------------
 	// Render all the tiles once to the screen texture
 	renderTilesToScreenTexture();
 
-    return true;
+	return true;
 }
 
 void World::renderTilesToScreenTexture()
@@ -137,18 +142,18 @@ void World::registerItemBoards(vec2& screen)
 	// ITEM BOARD (PLAYER 1)
 	Transform transform_itemboard1 = Transform{
 		{ 180.f, 65 },
-	{ 180.f, 65 },
-	{ 0.5f, 0.5f },
-	{ 180.f, 65 }
+		{ 180.f, 65 },
+		{ 0.5f, 0.5f },
+		{ 180.f, 65 }
 	};
 	registerItemBoard(transform_itemboard1, TeamType::PLAYER1, textures_path("ui/CaptureTheCastle_player_tile_red.png"));
 
 	// ITEM BOARD (PLAYER 2)
 	Transform transform_itemboard2 = Transform{
 		{ screen.x - 180.f, 65.f },
-	{ screen.x - 180.f, 65.f },
-	{ 0.5f, 0.5f },
-	{ screen.x - 180.f, 65.f }
+		{ screen.x - 180.f, 65.f },
+		{ 0.5f, 0.5f },
+		{ screen.x - 180.f, 65.f }
 	};
 	registerItemBoard(transform_itemboard2, TeamType::PLAYER2, textures_path("ui/CaptureTheCastle_player_tile_blue.png"));
 }
@@ -162,8 +167,8 @@ void World::registerSoldiers()
 	Transform transform_soldier1 = Transform{
 		pos1,
 		pos1,
-	{ 0.08f, 0.08f },
-	pos1
+		{ 0.08f, 0.08f },
+		pos1
 	};
 	registerSoldier(transform_soldier1, motion_soldier, TeamType::PLAYER1, textures_path("red_soldier_sprite_sheet-01.png"));
 
@@ -172,8 +177,8 @@ void World::registerSoldiers()
 	Transform transform_soldier2 = Transform{
 		pos2,
 		pos2,
-	{ 0.08f, 0.08f },
-	pos2
+		{ 0.08f, 0.08f },
+		pos2
 	};
 	registerSoldier(transform_soldier2, motion_soldier, TeamType::PLAYER2, textures_path("blue_soldier_sprite_sheet-01.png"));
 }
@@ -211,18 +216,18 @@ void World::registerCastles()
 	// CASTLE 1
 	Transform transform_castle1 = Transform{
 		{ 120.f, m_screen_size.y / 2 },
-	{ 120.f, m_screen_size.y / 2 },
-	{ 0.5f, 0.5f },
-	{ 120.f, m_screen_size.y / 2 }
+		{ 120.f, m_screen_size.y / 2 },
+		{ 0.5f, 0.5f },
+		{ 120.f, m_screen_size.y / 2 }
 	};
 	registerCastle(transform_castle1, TeamType::PLAYER1, textures_path("castle/CaptureTheCastle_castle_red.png"));
 
 	// CASTLE 2
 	Transform transform_castle2 = Transform{
 		{ m_screen_size.x - 120.f, m_screen_size.y / 2 },
-	{ m_screen_size.x - 120.f, m_screen_size.y / 2 },
-	{ 0.5f, 0.5f },
-	{ m_screen_size.x - 120.f, m_screen_size.y / 2 }
+		{ m_screen_size.x - 120.f, m_screen_size.y / 2 },
+		{ 0.5f, 0.5f },
+		{ m_screen_size.x - 120.f, m_screen_size.y / 2 }
 	};
 	registerCastle(transform_castle2, TeamType::PLAYER2, textures_path("castle/CaptureTheCastle_castle_blue.png"));
 }
@@ -384,7 +389,8 @@ Entity World::registerPlayer(const Transform& transform, const Motion& motion, c
 	playerMesh.init(playerSprite.width, playerSprite.height, playerSprite.sprite_size.x, playerSprite.sprite_size.y, playerSprite.sprite_index.x, playerSprite.sprite_index.y, 0);
 	ecsManager.addComponent<Mesh>(player, playerMesh);
 	ecsManager.addComponent(
-		player, C_Collision {
+		player,
+		C_Collision{
 			CollisionLayer::PLAYER1,
 			playerSprite.width / 2 * 0.09f,
 			{ playerSprite.width * 0.09f * 0.8f, playerSprite.height * 0.09f * 0.8f }
@@ -408,7 +414,8 @@ void World::registerCastle(const Transform& transform, const TeamType& team_type
 	castleMesh.init(castleSprite.width, castleSprite.height);
 	ecsManager.addComponent<Mesh>(castle, castleMesh);
 	ecsManager.addComponent(
-		castle, C_Collision{
+		castle,
+		C_Collision{
 			CollisionLayer::Castle,
 			0,
 			{ castleSprite.width * 0.2f, castleSprite.height * 0.2f }
@@ -503,7 +510,7 @@ void World::registerMovementSystem(const vec2& screen)
 		ecsManager.setSystemSignature<MovementSystem>(signature);
 	}
 	movementSystem->init();
-	movementSystem->setScreenSize(screen); // The "?" button is more responsive if putting this line here!
+	movementSystem->setScreenSize(screen);
 
 }
 
@@ -523,37 +530,40 @@ void World::registerComponents()
 }
 
 // Releases all the associated resources
-void World::destroy() {
-    glDeleteFramebuffers(1, &m_frame_buffer);
+void World::destroy()
+{
+	glDeleteFramebuffers(1, &m_frame_buffer);
 
-    if (m_background_music != nullptr)
-        Mix_FreeMusic(m_background_music);
-    Mix_CloseAudio();
-    tilemap->destroy();
-    help_btn.destroy();
-    help_window.destroy();
-    TextureManager::instance()->unload_all_textures();
-    glfwDestroyWindow(m_window);
+	if (m_background_music != nullptr)
+		Mix_FreeMusic(m_background_music);
+	Mix_CloseAudio();
+	tilemap->destroy();
+	help_btn.destroy();
+	help_window.destroy();
+	TextureManager::instance()->unload_all_textures();
+	glfwDestroyWindow(m_window);
 }
 
 // Update our game world
-bool World::update(float elapsed_ms) {
-    int w, h;
-    glfwGetFramebufferSize(m_window, &w, &h);
-    vec2 screen = {(float) w / m_screen_scale, (float) h / m_screen_scale};
+bool World::update(float elapsed_ms)
+{
+	int w, h;
+	glfwGetFramebufferSize(m_window, &w, &h);
+	vec2 screen = { (float)w / m_screen_scale, (float)h / m_screen_scale };
 
-    if (currState == WorldState::NORMAL) {
-        banditSpawnSystem->update(elapsed_ms);
-        banditAISystem->update(elapsed_ms);
-        playerInputSystem->update();
-        collisionSystem->checkCollision();
-        collisionSystem->update();
-        boxCollisionSystem->checkCollision();
-        boxCollisionSystem->update();
-        movementSystem->update(elapsed_ms);
-    }
+	if (currState == WorldState::NORMAL)
+	{
+		banditSpawnSystem->update(elapsed_ms);
+		banditAISystem->update(elapsed_ms);
+		playerInputSystem->update();
+		collisionSystem->checkCollision();
+		collisionSystem->update();
+		boxCollisionSystem->checkCollision();
+		boxCollisionSystem->update();
+		movementSystem->update(elapsed_ms);
+	}
 
-    return true;
+	return true;
 }
 
 // Render our game world
@@ -603,64 +613,70 @@ void World::draw()
 	tilemap->draw(projection_2D);
 
 	// Render the remaining entities on top our screen texture
-    spriteRenderSystem->draw(projection_2D);
-    help_btn.draw(projection_2D);
+	spriteRenderSystem->draw(projection_2D);
+	help_btn.draw(projection_2D);
 
-    if (currState == WorldState::HELP) {
-        help_window.draw(projection_2D);
-    }
+	if (currState == WorldState::HELP)
+	{
+		help_window.draw(projection_2D);
+	}
 
-    if (currState == WorldState::WIN) {
-        win_window.draw(projection_2D);
-    }
+	if (currState == WorldState::WIN)
+	{
+		win_window.draw(projection_2D);
+	}
 
-    // Presenting
-    glfwSwapBuffers(m_window);
+	// Presenting
+	glfwSwapBuffers(m_window);
 
 }
 
 // Should the game be over ?
-bool World::is_over() const {
-    return glfwWindowShouldClose(m_window);
+bool World::is_over() const
+{
+	return glfwWindowShouldClose(m_window);
 }
 
 void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 {
-    InputKeys k = InputKeys :: DEFAULT;
-    switch (key)
-    {
-        case GLFW_KEY_DOWN:
-            k = InputKeys::DOWN;
-            break;
-        case GLFW_KEY_UP:
-            k = InputKeys::UP;
-            break;
-        case GLFW_KEY_LEFT:
-            k = InputKeys::LEFT;
-            break;
-        case GLFW_KEY_RIGHT:
-            k = InputKeys::RIGHT;
-            break;
-        case GLFW_KEY_S:
-            k =InputKeys::S;
-            break;
-        case GLFW_KEY_W:
-            k = InputKeys::W;
-            break;
-        case GLFW_KEY_D:
-            k =InputKeys::D;
-            break;
-        case GLFW_KEY_A:
-            k = InputKeys::A;
-            break;
-        default:
-            break;
-    }
-    if (action == GLFW_PRESS && k != InputKeys::DEFAULT) {
-        ecsManager.publish(new InputKeyEvent(k));
-    } else if (action == GLFW_RELEASE && k != InputKeys::DEFAULT) {
-        ecsManager.publish(new KeyReleaseEvent(k));
-    }
+	InputKeys k = InputKeys::DEFAULT;
+	switch (key)
+	{
+	case GLFW_KEY_DOWN:
+		k = InputKeys::DOWN;
+		break;
+	case GLFW_KEY_UP:
+		k = InputKeys::UP;
+		break;
+	case GLFW_KEY_LEFT:
+		k = InputKeys::LEFT;
+		break;
+	case GLFW_KEY_RIGHT:
+		k = InputKeys::RIGHT;
+		break;
+	case GLFW_KEY_S:
+		k = InputKeys::S;
+		break;
+	case GLFW_KEY_W:
+		k = InputKeys::W;
+		break;
+	case GLFW_KEY_D:
+		k = InputKeys::D;
+		break;
+	case GLFW_KEY_A:
+		k = InputKeys::A;
+		break;
+	default:
+		break;
+	}
+	if (action == GLFW_PRESS && k != InputKeys::DEFAULT)
+	{
+		ecsManager.publish(new InputKeyEvent(k));
+	}
+	else if (action == GLFW_RELEASE && k != InputKeys::DEFAULT)
+	{
+		ecsManager.publish(new KeyReleaseEvent(k));
+	}
 
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
@@ -669,68 +685,81 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 	}
 }
 
-void World::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
-    if (currState == WorldState::NORMAL) {
-        help_btn.onHover(help_btn.mouseOnButton({ (float)xpos, (float) ypos }));
-    }
-    if (currState == WorldState::HELP) {
-        help_window.checkButtonHovers({ (float) xpos, (float) ypos });
-    }
-    if (currState == WorldState::WIN) {
-        win_window.checkButtonHovers({ (float) xpos, (float) ypos });
-    }
+void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
+{
+	if (currState == WorldState::NORMAL)
+	{
+		help_btn.onHover(help_btn.mouseOnButton({ (float)xpos, (float)ypos }));
+	}
+	if (currState == WorldState::HELP)
+	{
+		help_window.checkButtonHovers({ (float)xpos, (float)ypos });
+	}
+	if (currState == WorldState::WIN)
+	{
+		win_window.checkButtonHovers({ (float)xpos, (float)ypos });
+	}
 }
 
-void World::reset() {
-// TODO: Handle world reset
-//    int w, h;
-//    glfwGetWindowSize(m_window, &w, &h);
-//    for (auto player : players) {
-//        player->destroy();
-//        player->init();
-//    }
-//    m_background.reset_player_dead_time();
-//    m_current_speed = 1.f;
+void World::reset()
+{
+	// TODO: Handle world reset
+	//    int w, h;
+	//    glfwGetWindowSize(m_window, &w, &h);
+	//    for (auto player : players) {
+	//        player->destroy();
+	//        player->init();
+	//    }
+	//    m_background.reset_player_dead_time();
+	//    m_current_speed = 1.f;
 }
 
-void World::on_mouse_click(GLFWwindow *pWwindow, int button, int action, int mods) {
-    double xpos, ypos;
-    glfwGetCursorPos(pWwindow, &xpos, &ypos);
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        if (currState == WorldState::NORMAL && help_btn.mouseOnButton({ (float) xpos, (float) ypos })) {
-            currState = WorldState :: HELP;
-        } else if (currState == WorldState::HELP) {
-            switch (help_window.checkButtonClicks({ (float) xpos, (float) ypos }))
-            {
-                case (ButtonActions::CLOSE):
-                    currState = WorldState :: NORMAL;
-                    break;
-                case (ButtonActions::HOWTOPLAY):
-                    break;
-                default:
-                    break;
-            }
-        } else if (currState == WorldState::WIN) {
-            switch (win_window.checkButtonClicks({ (float) xpos, (float) ypos }))
-            {
-                case (ButtonActions::MAIN):
-                    break;
-                case (ButtonActions::QUIT):
-                    glfwSetWindowShouldClose(m_window, 1);
-                    break;
-                case (ButtonActions::RESTART):
-                    reset();
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
+void World::on_mouse_click(GLFWwindow* pWwindow, int button, int action, int mods)
+{
+	double xpos, ypos;
+	glfwGetCursorPos(pWwindow, &xpos, &ypos);
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+	{
+		if (currState == WorldState::NORMAL && help_btn.mouseOnButton({ (float)xpos, (float)ypos }))
+		{
+			currState = WorldState::HELP;
+		}
+		else if (currState == WorldState::HELP)
+		{
+			switch (help_window.checkButtonClicks({ (float)xpos, (float)ypos }))
+			{
+			case (ButtonActions::CLOSE):
+				currState = WorldState::NORMAL;
+				break;
+			case (ButtonActions::HOWTOPLAY):
+				break;
+			default:
+				break;
+			}
+		}
+		else if (currState == WorldState::WIN)
+		{
+			switch (win_window.checkButtonClicks({ (float)xpos, (float)ypos }))
+			{
+			case (ButtonActions::MAIN):
+				break;
+			case (ButtonActions::QUIT):
+				glfwSetWindowShouldClose(m_window, 1);
+				break;
+			case (ButtonActions::RESTART):
+				reset();
+				break;
+			default:
+				break;
+			}
+		}
+	}
 }
 
-void World::winListener(WinEvent* winEvent){
-    Team winningTeam = ecsManager.getComponent<Team>(winEvent->player);
-    win_window.setWinTeam(winningTeam.assigned);
-    currState = WorldState :: WIN;
+void World::winListener(WinEvent* winEvent)
+{
+	Team winningTeam = ecsManager.getComponent<Team>(winEvent->player);
+	win_window.setWinTeam(winningTeam.assigned);
+	currState = WorldState::WIN;
 }
 
