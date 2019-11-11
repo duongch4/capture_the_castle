@@ -91,7 +91,7 @@ set(SOURCE_FILES
         src/systems/collision_system.cpp
         src/systems/collision_system.hpp
         src/systems/box_collision_system.cpp
-        src/systems/box_collision_system.hpp)
+        src/systems/box_collision_system.hpp src/ui/menus_window.cpp src/ui/menus_window.hpp src/ui/menus_background.cpp src/ui/menus_background.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)
