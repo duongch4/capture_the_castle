@@ -44,6 +44,7 @@ enum class ButtonActions
     RESTART,
     QUIT,
     HOWTOPLAY,
+    LOAD,
     NONE
 };
 

@@ -1,41 +1,23 @@
 #include <time.h>
 #include <cmath>
+#include <iostream>
+#include <string>
+#include <random>
 #include "tilemap.hpp"
+
 
 bool Tilemap::init()
 {
-	int data[] = {
-		19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
-		19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
-		19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
-		19, 19, 19, 19, 19,  1, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11,  3, 19, 19, 19, 19, 19,
-		19, 19, 19, 19, 19,  6, 23, 23, 23, 23, 23, 19, 19, 19, 19, 19, 19, 19, 24, 24, 24, 24, 24,  6, 19, 19, 19, 19, 19,
-		19, 19, 19, 19, 19,  6, 23,  5, 23,  5, 23, 19, 19,  5, 19,  1, 11,  3, 24, 24, 24,  5, 24,  6, 19, 19, 19, 19, 19,
-		19, 19, 19, 19, 19,  7, 11, 15, 23, 13, 11, 11, 11, 15, 19,  6, 19,  6, 24, 10, 11,  9, 24,  6, 19, 19, 19, 19, 19,
-		19, 19, 19, 19, 19,  6, 23, 23, 23, 23, 23, 19, 19, 19, 19,  6, 19, 17, 24, 24, 24,  6, 24,  6, 19, 19, 19, 19, 19,
-		19, 19, 19, 19, 19,  7, 11, 11, 12, 23, 23, 10, 11,  3, 19,  6, 19, 19, 24,  5, 24,  6, 24,  6, 19, 19, 19, 19, 19,
-		19, 19, 19, 19, 19,  6, 23, 23, 23, 23, 23, 19, 19,  6, 19, 13, 11, 11, 11,  9, 24,  6, 24,  6, 19, 19, 19, 19, 19,
-		19, 19, 19, 19, 19, 17, 23,  1, 12, 23, 10, 11, 11,  9, 19, 19, 19, 19, 24,  6, 24,  6, 24, 17, 19, 19, 19, 19, 19,
-		19, 19, 19, 19, 19, 23, 23,  6, 23, 23, 23, 19, 19,  6, 19, 19, 19,  5, 24,  6, 24, 17, 24, 24, 19, 19, 19, 19, 19,
-		19, 19, 19, 19, 19,  5, 23,  6, 23, 23, 23,  5, 19,  6, 19,  1, 11,  9, 24,  6, 24, 24, 24,  5, 19, 19, 19, 19, 19,
-//		19, 19, 19, 19, 19,  5, 19,  6, 19, 10, 11,  9, 19, 19, 19, 19, 19,  6, 19,  7, 11, 11, 19,  5, 19, 19, 19, 19, 19,
-//		19, 19, 19, 19, 19,  6, 19,  6, 19, 19, 19,  6, 19, 19, 19,  5, 19,  6, 19,  6, 19, 19, 19,  6, 19, 19, 19, 19, 19,
-		19, 19, 19, 19, 19,  6, 23, 13, 11, 11, 11, 15, 19, 17, 19, 17, 19,  6, 24, 17, 24,  5, 24,  6, 19, 19, 19, 19, 19,
-		19, 19, 19, 19, 19,  6, 23, 23, 23, 23, 23, 19, 19, 19, 19, 19, 19,  6, 24, 24, 24,  6, 24,  6, 19, 19, 19, 19, 19,
-		19, 19, 19, 19, 19, 13, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 14, 11, 11, 11, 14, 11, 15, 19, 19, 19, 19, 19,
-		19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
-	};
+    std::vector<std::vector<int>> mazeData = this->load_map();
 
 	tilemap_height = 17;
 	tilemap_width = 29;
 
+	// Create all the tiles based on the data we got from the .tmx file
 	for (int j = 0; j < tilemap_height; j++) {
 		m_tiles.emplace_back(std::vector<Tile>(tilemap_width));
 		for (int i = 0; i < tilemap_width; i++) {
-			int iter = j * tilemap_width + i;
-			// First parameter is the id of the tile, second parameter is the number of tile horizontally in the sprite sheet
-			// Third parameter is the number of tile vertically in the sprite sheet.
-			if (!spawn_tile(data[iter], 6, 4, 68, 20, i, j)) {
+			if (!spawn_tile(mazeData[j][i], 6, 4, 68, 20, i, j)) {
 				return false;
 			}
 
@@ -83,7 +65,6 @@ bool Tilemap::init()
 
 	// Loading shaders
     return effect.load_from_file(shader_path("tilemap.vs.glsl"), shader_path("tilemap.fs.glsl"));
-
 }
 
 
@@ -245,3 +226,106 @@ std::pair<int,int> Tilemap::get_height_width()
 {
 	return { tilemap_height, tilemap_width }; // [row, col] style
 }
+
+std::vector<std::vector<int>> Tilemap::load_map()
+{
+    std::vector<std::vector<int>> result;
+    std::vector<std::string> stringArray;
+
+//    //********************************************************************
+//    // For gcc version 9.0 and above (it fixed a bug where file system cant be used by Window)
+//    // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=78870
+//    // This version is more robust and allow us to use any file name with .tmx format
+//    // Comment out the other version below this, then uncomment this version and #include <filesystem> at the top of this file
+//
+//    // Get all the maze's file name and store them in a vector
+//    std::vector<std::string> fileArray;
+//    std::string mazePath = data_path "/maze";
+//    std::string ext = ".tmx";
+//    for (const auto& file : std::filesystem::directory_iterator(mazePath)) {
+//        if (file.path().extension() == ext) {
+//            fileArray.emplace_back((file.path().filename().string()));
+//        }
+//    }
+//
+//    // Randomly choose one of the maze to load
+//    srand((unsigned int)(time(NULL)));
+//    int randomMazeIndex = rand() % (fileArray.size()); // [0..fileArray.size() - 1]
+//    std::string mazeName = fileArray[randomMazeIndex];
+//    //********************************************************************
+
+    //********************************************************************
+    // For gcc version below 9.0
+    // This version don't use <filesystem> and the file name is hardcoded
+
+    // Hardcoded file name for the maze located in ./data/maze
+    std::vector<std::string> fileArray = {"HelloWorld", "BanditCircus", "TwoByTwo"};
+    std::string ext = ".tmx";
+
+    // Randomly choose one of the maze to load
+    std::mt19937 rng;
+    rng.seed(time(NULL));
+    std::uniform_int_distribution<int> distribution(0,fileArray.size() - 1);
+    int randomMazeIndex = distribution(rng);
+    std::string mazeName = fileArray[randomMazeIndex] + ext;
+
+    //********************************************************************
+
+
+    try {
+        // Load the maze file
+        std::string fileToLoad = maze_path() + mazeName;
+        std::ifstream inputStream(fileToLoad);
+
+        if (!inputStream) {
+            std::cout << "Error opening file: " << fileToLoad << std::endl;
+            throw "Error opening file: " + fileToLoad;
+        }
+
+        // Loop through the file line by line and retrieve the maze data
+        bool foundData = false;
+        for (std::string line; std::getline(inputStream, line); ) {
+            // Stop storing the data when it reach the each of data
+            if (line.find("</data>") != std::string::npos) {
+                foundData = false;
+            }
+            // Store the whole line as a string
+            if (foundData) {
+                stringArray.emplace_back(line);
+            }
+            // Start storing the data (which starts at next line)
+            if (line.find("<data encoding=\"csv\">") != std::string::npos) {
+                foundData = true;
+            }
+        }
+        inputStream.close();
+
+    } catch(...) {
+       std::cout << "Exception caught while loading maze file." << std::endl;
+       throw;
+    }
+
+    // Parse each line into multiple int and store them in a 2d vector
+    int iter = 0;
+    std::string delimiter = ",";
+    std::string lastString;
+    std::string partialString;
+    for (auto& oneString : stringArray) {
+        result.emplace_back(std::vector<int>());
+
+        size_t pos = 0;
+
+        // After storing the sub string, remove it from the string
+        while ((pos = oneString.find(delimiter)) != std::string::npos) {
+            partialString = oneString.substr(0, pos);
+            result[iter].emplace_back(std::stoi(partialString));
+            oneString.erase(0, pos + delimiter.length());
+        }
+        lastString = oneString;
+        iter++;
+    }
+    // This is needed to store the last string that is not found using the delimiter
+    result[iter-1].emplace_back(std::stoi(lastString));
+
+    return result;
+};
