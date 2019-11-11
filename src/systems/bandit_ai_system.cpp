@@ -104,7 +104,7 @@ void BanditAISystem::handle_patrol(
 				vec2 next_pos = tile.get_position();
 				float dir_x = next_pos.x - curr_pos.x;
 				float dir_y = next_pos.y - curr_pos.y;
-				float distance = std::sqrtf((dir_x * dir_x) + (dir_y * dir_y)) + 1e-5f;
+				float distance = sqrtf((dir_x * dir_x) + (dir_y * dir_y)) + 1e-5f;
 				curr_dir = { (dir_x / distance), (dir_y / distance) };
 				
 				//std::pair<int, int> tile_idx = tile.get_idx();
