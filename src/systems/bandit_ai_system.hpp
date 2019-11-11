@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <random>
+#include <cmath>
 
 #include <iostream>
 
