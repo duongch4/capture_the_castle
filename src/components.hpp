@@ -106,6 +106,7 @@ struct BanditAIComponent {};
 
 struct PlayerInputControlComponent {};
 
-struct PlaceableComponent{};
+struct PlaceableComponent {};
+struct SoldierAIComponent {};
 
 #endif //CAPTURE_THE_CASTLE_COMPONENTS_HPP

@@ -1,9 +1,7 @@
 #include "bandit_ai_system.hpp"
 
 bool BanditAISystem::init(std::shared_ptr<Tilemap> tilemap, Entity& player_1, Entity& player_2)
-
 {
-
 	m_targets.emplace_back(player_1);
 	m_targets.emplace_back(player_2);
 	for (size_t i = 0; i < MAX_BANDITS; ++i)

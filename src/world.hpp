@@ -59,17 +59,15 @@ public:
 	bool is_over()const;
 
 private:
-	bool initAssetsOpenGL(vec2& screen);
+	bool initAssetsOpenGL(vec2& screen, const char* title);
 	bool loadAudio();
 	
 	void registerComponents();
 
 	void registerItemBoards(vec2& screen);
-	void registerSoldiers();
 	void registerPlayers(std::vector<Entity>& players);
 	void registerCastles();
 	void registerItemBoard(const Transform& transform, const TeamType& team_type, const char* texture_path);
-	void registerSoldier(const Transform& transform, const Motion& motion, const TeamType& team_type, const char* texture_path);
 	Entity registerPlayer(const Transform& transform, const Motion& motion, const TeamType& team_type, const char* texture_path);
 	void registerCastle(const Transform& transform, const TeamType& team_type, const char* texture_path);
 	
