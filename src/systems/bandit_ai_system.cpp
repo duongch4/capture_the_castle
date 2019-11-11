@@ -104,9 +104,9 @@ void BanditAISystem::handle_patrol(
 				vec2 next_pos = tile.get_position();
 				float dir_x = next_pos.x - curr_pos.x;
 				float dir_y = next_pos.y - curr_pos.y;
-				float distance = std::sqrtf((dir_x * dir_x) + (dir_y * dir_y)) + 1e-5f;
+				float distance = sqrtf((dir_x * dir_x) + (dir_y * dir_y)) + 1e-5f;
 				curr_dir = { (dir_x / distance), (dir_y / distance) };
-				
+
 				//std::pair<int, int> tile_idx = tile.get_idx();
 				//std::pair<int, int> curr_idx = curr_tile.get_idx();
 				//if (tile_idx.first < curr_idx.first) curr_dir = { -1,0 };
@@ -198,7 +198,7 @@ void BanditAISystem::handle_chase(
 		return;
 	}
 	//std::cout << "aaa" << std::endl;
-	
+
 	vec2& curr_pos = ecsManager.getComponent<Transform>(bandit).position;
 	Tile curr_tile = m_tilemap->get_tile(curr_pos.x, curr_pos.y);
 	if (is_within_bandit_region(curr_tile) && !curr_tile.is_wall())
@@ -375,7 +375,7 @@ void BanditAISystem::move_on_path(std::vector<Tile> path, float& speed, float& e
 	vec2 prev_pos = bandit_pos;
 	//for (auto tile : path)
 	//{
-	if (path_idx < path.size()) 
+	if (path_idx < path.size())
 	{
 		Tile tile = path[path_idx++];
 		vec2 tile_pos = tile.get_position();
@@ -513,4 +513,13 @@ std::vector<Tile> BanditAISystem::assemble_path(std::vector<std::vector<Tile>>& 
 bool BanditAISystem::is_equal(Tile a, Tile b)
 {
 	return (a.get_idx() == b.get_idx());
+}
+
+void BanditAISystem::reset() {
+    m_idle_times.clear();
+    m_chase_times.clear();
+    m_states.clear();
+    m_bandits.clear();
+    m_targets.clear();
+    m_path.clear();
 }

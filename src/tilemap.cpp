@@ -1,4 +1,5 @@
 #include <time.h>
+#include <cmath>
 #include "tilemap.hpp"
 
 bool Tilemap::init()
@@ -81,10 +82,8 @@ bool Tilemap::init()
 		return false;
 
 	// Loading shaders
-	if (!effect.load_from_file(shader_path("tilemap.vs.glsl"), shader_path("tilemap.fs.glsl")))
-		return false;
+    return effect.load_from_file(shader_path("tilemap.vs.glsl"), shader_path("tilemap.fs.glsl"));
 
-	return true;
 }
 
 

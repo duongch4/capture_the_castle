@@ -53,6 +53,12 @@ public:
         }
     }
 
+    void reset(){
+        componentTypes.clear();
+        componentArrays.clear();
+        nextComponentType = 0;
+    }
+
 private:
     std::unordered_map<const char*, ComponentType> componentTypes{};
     std::unordered_map<const char*, std::shared_ptr<IComponentArray>> componentArrays{};

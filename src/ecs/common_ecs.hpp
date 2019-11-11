@@ -23,6 +23,8 @@ struct System
 {
 public:
     std::set<Entity> entities;
+
+    virtual void reset() = 0;
 };
 
 // input

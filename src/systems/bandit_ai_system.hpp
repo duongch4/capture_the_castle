@@ -24,6 +24,7 @@ class BanditAISystem : public System
 public:
 	bool init(std::shared_ptr<Tilemap> tilemap, Entity& player_1, Entity& player_2);
 	void update(float& ms);
+	void reset() override;
 
 private:
 	enum struct State

@@ -40,6 +40,7 @@ set(SOURCE_FILES
         src/systems/bandit_spawn_system.cpp
 		src/systems/bandit_ai_system.cpp
         src/texture_manager.cpp
+        src/mesh_manager.cpp
         src/components.cpp
         src/player.cpp
         src/world.cpp
@@ -47,6 +48,9 @@ set(SOURCE_FILES
         src/tile.cpp
 		src/tilemap.cpp
         src/soldier.cpp
+        src/states/game.cpp
+        src/states/state.hpp
+        src/states/menu.cpp
 
         src/project_path.hpp
         src/common.hpp
@@ -66,6 +70,7 @@ set(SOURCE_FILES
         src/systems/bandit_spawn_system.hpp
         src/systems/bandit_ai_system.hpp
         src/texture_manager.hpp
+        src/mesh_manager.hpp
         src/player.hpp
         src/world.hpp
         src/background.hpp
@@ -91,7 +96,9 @@ set(SOURCE_FILES
         src/systems/collision_system.cpp
         src/systems/collision_system.hpp
         src/systems/box_collision_system.cpp
-        src/systems/box_collision_system.hpp)
+        src/systems/box_collision_system.hpp
+        src/states/game.hpp
+        src/states/menu.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

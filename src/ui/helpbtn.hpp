@@ -23,7 +23,7 @@ public:
     void onHover(bool isHovering);
 
 private:
-    Mesh mesh{};
+    MeshComponent mesh{};
     Effect effect{};
     Transform transform;
     Texture helpBtnSprite;

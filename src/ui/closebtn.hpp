@@ -24,7 +24,7 @@ public:
     void onHover(bool isHovering);
 
 private:
-    Mesh mesh{};
+    MeshComponent mesh{};
     Effect effect{};
     Transform transform;
     Texture closebtn_texture;

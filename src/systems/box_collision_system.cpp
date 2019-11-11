@@ -116,3 +116,7 @@ CollisionResponse BoxCollisionSystem::h_collision(Entity entity, Tile &tile, Col
 void BoxCollisionSystem::boxCollisionListener(BoxCollisionEvent* boxCollisionEvent){
     collision_queue.push(std::tuple(boxCollisionEvent->e, boxCollisionEvent->tile, boxCollisionEvent->collisionResponse));
 }
+
+void BoxCollisionSystem::reset() {
+
+}

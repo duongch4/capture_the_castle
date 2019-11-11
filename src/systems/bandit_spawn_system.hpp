@@ -19,6 +19,7 @@ public:
     bool init(std::shared_ptr<Tilemap> tilemap);
     void update(float ms);
 	static const size_t get_max_bandits() { return MAX_BANDITS; }
+	void reset() override;
 
 private:
 	static const size_t MAX_BANDITS = 3;
