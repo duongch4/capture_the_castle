@@ -71,10 +71,19 @@ bool World::init(vec2 screen)
 	// Players
 	std::vector<Entity> players;
 	registerPlayers(players);
+	if (players.size() < 2) return false;
 
 	// Bandit AI System
-	if (players.size() < 2) return false;
-	registerBanditAiSystem(players[0], players[1]);
+	registerBanditAiSystem(players);
+
+	// Soldier AI System
+	//soldierAiSystem = ecsManager.registerSystem<SoldierAiSystem>();
+	//{
+	//	Signature signature;
+	//	signature.set(ecsManager.getComponentType<SoldierAiComponent>());
+	//	ecsManager.setSystemSignature<SoldierAiSystem>(signature);
+	//}
+	//soldierAiSystem->init(tilemap, players[0], players[1]);
 
 	// Item boards
 	registerItemBoards(screen);
@@ -134,7 +143,7 @@ void World::renderTilesToScreenTexture()
 	tilemap->draw_all_tiles(projection_2D);
 }
 
-void World::registerItemBoards(vec2& screen)
+void World::registerItemBoards(const vec2& screen)
 {
 	// ITEM BOARD (PLAYER 1)
 	Transform transform_itemboard1 = Transform{
@@ -232,7 +241,7 @@ bool World::loadAudio()
 	return true;
 }
 
-bool World::initAssetsOpenGL(vec2& screen, const char* title)
+bool World::initAssetsOpenGL(const vec2& screen, const char* title)
 {
 	glfwSetErrorCallback(glfw_err_cb);
 	if (!glfwInit())
@@ -364,15 +373,15 @@ void World::registerCastle(const Transform& transform, const TeamType& team_type
 	);
 }
 
-void World::registerBanditAiSystem(Entity& player1, Entity& player2)
+void World::registerBanditAiSystem(const std::vector<Entity>& players)
 {
-	banditAISystem = ecsManager.registerSystem<BanditAISystem>();
+	banditAiSystem = ecsManager.registerSystem<BanditAiSystem>();
 	{
 		Signature signature;
-		signature.set(ecsManager.getComponentType<BanditAIComponent>());
-		ecsManager.setSystemSignature<BanditAISystem>(signature);
+		signature.set(ecsManager.getComponentType<BanditAiComponent>());
+		ecsManager.setSystemSignature<BanditAiSystem>(signature);
 	}
-	banditAISystem->init(tilemap, player1, player2);
+	banditAiSystem->init(tilemap, players);
 }
 
 void World::registerBoxCollisionSystem()
@@ -465,10 +474,10 @@ void World::registerComponents()
 	ecsManager.registerComponent<Mesh>();
 	ecsManager.registerComponent<C_Collision>();
 	ecsManager.registerComponent<BanditSpawnComponent>();
-	ecsManager.registerComponent<BanditAIComponent>();
+	ecsManager.registerComponent<BanditAiComponent>();
 	ecsManager.registerComponent<PlayerInputControlComponent>();
 	ecsManager.registerComponent<PlaceableComponent>();
-	ecsManager.registerComponent<SoldierAIComponent>();
+	ecsManager.registerComponent<SoldierAiComponent>();
 }
 
 // Releases all the associated resources
@@ -496,7 +505,7 @@ bool World::update(float elapsed_ms)
 	if (currState == WorldState::NORMAL)
 	{
 		banditSpawnSystem->update(elapsed_ms);
-		banditAISystem->update(elapsed_ms);
+		banditAiSystem->update(elapsed_ms);
 		playerInputSystem->update();
 		collisionSystem->checkCollision();
 		collisionSystem->update();

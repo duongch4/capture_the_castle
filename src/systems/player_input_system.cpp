@@ -46,8 +46,8 @@ void PlayerInputSystem::update()
 					case InputKeys::Q:
 						if (can_spawn(soldier_count_1, wait_1, transform, tile.get_idx(), MazeRegion::PLAYER1))
 						{
-							Transform transform_soldier = transform;
-							transform_soldier.scale = { 0.08f, 0.08f };
+							vec2 position = tile.get_position();
+							Transform transform_soldier = Transform{ position, position, { 0.08f, 0.08f }, position };
 							Motion motion_soldier = Motion{ { 0, 0 }, 100.f };
 							spawn_soldier(
 								transform_soldier, motion_soldier,
@@ -88,8 +88,8 @@ void PlayerInputSystem::update()
 					case InputKeys::SLASH:
 						if (can_spawn(soldier_count_2, wait_2, transform, tile.get_idx(), MazeRegion::PLAYER2))
 						{
-							Transform transform_soldier = transform;
-							transform_soldier.scale = { 0.08f, 0.08f };
+							vec2 position = tile.get_position();
+							Transform transform_soldier = Transform{ position, position, { 0.08f, 0.08f }, position };
 							Motion motion_soldier = Motion{ { 0, 0 }, 100.f };
 							spawn_soldier(
 								transform_soldier, motion_soldier,
@@ -145,7 +145,7 @@ void PlayerInputSystem::spawn_soldier(
 	ecsManager.addComponent<Transform>(soldier, transform);
 	ecsManager.addComponent<Motion>(soldier, motion);
 
-	ecsManager.addComponent<SoldierAIComponent>(soldier, SoldierAIComponent{});
+	ecsManager.addComponent<SoldierAiComponent>(soldier, SoldierAiComponent{});
 
 	Effect soldierEffect{};
 	soldierEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));

@@ -40,7 +40,7 @@ void BanditSpawnSystem::spawn_bandit() {
             100.f
     });
     ecsManager.addComponent<Team>(bandit, Team{TeamType::BANDIT});
-	ecsManager.addComponent<BanditAIComponent>(bandit, BanditAIComponent{});
+	ecsManager.addComponent<BanditAiComponent>(bandit, BanditAiComponent{});
     Effect banditEffect{};
     banditEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(bandit, banditEffect);

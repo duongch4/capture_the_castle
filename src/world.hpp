@@ -27,6 +27,7 @@
 #include <systems/bandit_ai_system.hpp>
 #include <systems/collision_system.hpp>
 #include <systems/box_collision_system.hpp>
+#include <systems/soldier_ai_system.hpp>
 
 #include "common.hpp"
 #include "components.hpp"
@@ -59,19 +60,19 @@ public:
 	bool is_over()const;
 
 private:
-	bool initAssetsOpenGL(vec2& screen, const char* title);
+	bool initAssetsOpenGL(const vec2& screen, const char* title);
 	bool loadAudio();
 	
 	void registerComponents();
 
-	void registerItemBoards(vec2& screen);
+	void registerItemBoards(const vec2& screen);
 	void registerPlayers(std::vector<Entity>& players);
 	void registerCastles();
 	void registerItemBoard(const Transform& transform, const TeamType& team_type, const char* texture_path);
 	Entity registerPlayer(const Transform& transform, const Motion& motion, const TeamType& team_type, const char* texture_path);
 	void registerCastle(const Transform& transform, const TeamType& team_type, const char* texture_path);
 	
-	void registerBanditAiSystem(Entity& player1, Entity& player2);
+	void registerBanditAiSystem(const std::vector<Entity>& players);
 	void registerBoxCollisionSystem();
 	void registerCollisionSystem();
 	void registerBanditSpawnSystem();
@@ -116,7 +117,8 @@ private:
     std::shared_ptr<PlayerInputSystem> playerInputSystem;
     std::shared_ptr<SpriteRenderSystem> spriteRenderSystem;
     std::shared_ptr<BanditSpawnSystem> banditSpawnSystem;
-	std::shared_ptr<BanditAISystem> banditAISystem;
+	std::shared_ptr<BanditAiSystem> banditAiSystem;
+	std::shared_ptr<SoldierAiSystem> soldierAiSystem;
     std::shared_ptr<CollisionSystem> collisionSystem;
     std::shared_ptr<BoxCollisionSystem> boxCollisionSystem;
 
