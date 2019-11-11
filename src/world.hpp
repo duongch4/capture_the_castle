@@ -24,6 +24,8 @@
 #include <systems/player_input_system.hpp>
 #include <systems/render_system.hpp>
 #include <systems/bandit_spawn_system.hpp>
+#include <systems/item_spawn_system.hpp>
+
 #include <systems/bandit_ai_system.hpp>
 #include <systems/collision_system.hpp>
 #include <systems/box_collision_system.hpp>
@@ -93,6 +95,7 @@ private:
     std::shared_ptr<PlayerInputSystem> playerInputSystem;
     std::shared_ptr<SpriteRenderSystem> spriteRenderSystem;
     std::shared_ptr<BanditSpawnSystem> banditSpawnSystem;
+    std::shared_ptr<ItemSpawnSystem> itemSpawnSystem;
 	std::shared_ptr<BanditAISystem> banditAISystem;
     std::shared_ptr<CollisionSystem> collisionSystem;
     std::shared_ptr<BoxCollisionSystem> boxCollisionSystem;

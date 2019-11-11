@@ -1,4 +1,5 @@
 #include <time.h>
+#include <cmath>
 #include "tilemap.hpp"
 
 bool Tilemap::init()

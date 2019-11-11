@@ -135,6 +135,7 @@ bool World::init(vec2 screen)
 	ecsManager.registerComponent<PlayerInputControlComponent>();
 	ecsManager.registerComponent<PlaceableComponent>();
 	ecsManager.registerComponent<BanditAIComponent>();
+	ecsManager.registerComponent<ItemComponent>();
 
 	// Register Systems and Entities
 	movementSystem = ecsManager.registerSystem<MovementSystem>();
@@ -175,6 +176,14 @@ bool World::init(vec2 screen)
 		ecsManager.setSystemSignature<BanditSpawnSystem>(signature);
 	}
 	banditSpawnSystem->init(tilemap);
+
+    itemSpawnSystem = ecsManager.registerSystem<ItemSpawnSystem>();
+    {
+        Signature signature;
+        signature.set(ecsManager.getComponentType<ItemComponent>());
+        ecsManager.setSystemSignature<ItemSpawnSystem>(signature);
+    }
+    itemSpawnSystem->init(tilemap);
 
     collisionSystem = ecsManager.registerSystem<CollisionSystem>();
     {

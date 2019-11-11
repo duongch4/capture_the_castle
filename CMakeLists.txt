@@ -91,7 +91,9 @@ set(SOURCE_FILES
         src/systems/collision_system.cpp
         src/systems/collision_system.hpp
         src/systems/box_collision_system.cpp
-        src/systems/box_collision_system.hpp)
+        src/systems/box_collision_system.hpp
+        src/systems/item_spawn_system.cpp
+        src/systems/item_spawn_system.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)
