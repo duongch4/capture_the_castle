@@ -98,7 +98,7 @@ set(SOURCE_FILES
         src/systems/box_collision_system.cpp
         src/systems/box_collision_system.hpp
         src/systems/item_spawn_system.cpp
-        src/systems/item_spawn_system.hpp)
+        src/systems/item_spawn_system.hpp
         src/states/game.hpp
         src/states/menu.hpp)
 

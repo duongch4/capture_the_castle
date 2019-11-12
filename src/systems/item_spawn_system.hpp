@@ -5,6 +5,7 @@
 #ifndef CAPTURE_THE_CASTLE_ITEM_SPAWN_SYSTEM_HPP
 #define CAPTURE_THE_CASTLE_ITEM_SPAWN_SYSTEM_HPP
 
+#include <memory>
 #include <common.hpp>
 #include <components.hpp>
 #include <ecs/common_ecs.hpp>
@@ -19,6 +20,7 @@ public:
     bool init(std::shared_ptr<Tilemap> tile_map);
     void update(float ms);
     static const size_t get_max_items() { return MAX_ITEMS; }
+    void reset() override ;
 
 
 private:

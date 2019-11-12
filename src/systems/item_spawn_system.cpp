@@ -66,12 +66,11 @@ void ItemSpawnSystem::spawn_item(){
     if (t == 0)
         itemSprite = {power_up_path("CaptureTheCastle_powerup_shield.png")};
     TextureManager::instance()->load_from_file(itemSprite);
-    itemSprite.sprite_index = { 0 , 0 };
     itemSprite.sprite_size = { itemSprite.width / 7.0f , itemSprite.height / 5.0f };
     ecsManager.addComponent<Sprite>(item, itemSprite);
-    Mesh itemMesh{};
-    itemMesh.init(itemSprite.width, itemSprite.height);
-    ecsManager.addComponent<Mesh>(item, itemMesh);
+    MeshComponent itemMesh{MeshManager::instance()->init_mesh(
+            itemSprite.width, itemSprite.height)};
+    ecsManager.addComponent<MeshComponent>(item, itemMesh);
     float radius = itemSprite.width/2*0.08f;
     float i_width = itemSprite.width*0.08f*0.8f;
     float i_height = itemSprite.height*0.08f*0.8f;
@@ -80,5 +79,9 @@ void ItemSpawnSystem::spawn_item(){
             radius,
             {i_width, i_height}
     });
+}
+
+void ItemSpawnSystem::reset() {
+
 }
 
