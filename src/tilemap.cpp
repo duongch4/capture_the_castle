@@ -118,16 +118,22 @@ void Tilemap::draw_all_tiles(const mat3& projection)
 Tile Tilemap::get_tile(float positionX, float positionY)
 {	
 	// Convert to the array index of the tile
-	int gridX = ((int)std::ceil(positionX) - 23) / 48;
-	int gridY = ((int)std::ceil(positionY) - 23) / 48;
+	int gridX = (int)std::round((positionX - 23) / 48);
+	int gridY = (int)std::round((positionY - 23) / 48);
+
 	return m_tiles[gridY][gridX]; 
+}
+
+Tile Tilemap::get_tile(const std::pair<int,int>& tile_idx) const
+{
+	return m_tiles[tile_idx.first][tile_idx.second];
 }
 
 std::vector<Tile> Tilemap::get_adjacent_tiles(float positionX, float positionY)
 {
 	// Convert to the array index of the tile
-	int gridX = ((int)std::ceil(positionX) - 23) / 48;
-	int gridY = ((int)std::ceil(positionY) - 23) / 48;
+	int gridX = (int)std::round((positionX - 23) / 48);
+	int gridY = (int)std::round((positionY - 23) / 48);
 
 	// Get the adjacent 9 tiles and return it
 	std::vector<Tile> adjacentTiles;
@@ -141,49 +147,72 @@ std::vector<Tile> Tilemap::get_adjacent_tiles(float positionX, float positionY)
 	return adjacentTiles;
 }
 
-std::vector<Tile> Tilemap::get_adjacent_tiles_wesn(float positionX, float positionY)
+std::vector<Tile> Tilemap::get_adjacent_tiles(const Tile& tile)
 {
-	// Convert to the array index of the tile
-	int gridX = ((int)std::ceil(positionX) - 23) / 48;
-	int gridY = ((int)std::ceil(positionY) - 23) / 48;
+	const std::pair<int, int> tile_idx = tile.get_idx();
 
-	// Get the adjacent 4 tiles and return it
+	// Get the adjacent 9 tiles and return it
 	std::vector<Tile> adjacentTiles;
-	adjacentTiles.emplace_back(m_tiles[gridY - 1][gridX + 0]); // north
-	adjacentTiles.emplace_back(m_tiles[gridY + 0][gridX - 1]); // west
-	adjacentTiles.emplace_back(m_tiles[gridY + 0][gridX + 1]); // east
-	adjacentTiles.emplace_back(m_tiles[gridY + 1][gridX + 0]); // south
+	for (int j = -1; j < 2; j++)
+	{
+		for (int i = -1; i < 2; i++)
+		{
+			int row = tile_idx.first + j;
+			int col = tile_idx.second + i;
+			adjacentTiles.emplace_back(m_tiles[row][col]);
+		}
+	}
 	return adjacentTiles;
 }
 
-vec2 Tilemap::get_random_free_tile_position(MazeRegion mazeRegion) 
+std::vector<Tile> Tilemap::get_adjacent_tiles_nesw(const Tile& tile)
+{
+	const std::pair<int, int> tile_idx = tile.get_idx();
+
+	// Get the adjacent 4 tiles and return it
+	std::vector<Tile> adjacentTiles;
+	adjacentTiles.emplace_back(m_tiles[tile_idx.first - 1][tile_idx.second + 0]); // north
+	adjacentTiles.emplace_back(m_tiles[tile_idx.first + 0][tile_idx.second + 1]); // east
+	adjacentTiles.emplace_back(m_tiles[tile_idx.first + 1][tile_idx.second + 0]); // south
+	adjacentTiles.emplace_back(m_tiles[tile_idx.first + 0][tile_idx.second - 1]); // west
+	return adjacentTiles;
+}
+
+vec2 Tilemap::get_random_free_tile_position(MazeRegion mazeRegion)
 {
 	// Intialize a random seed for rand() 
 	srand((unsigned int)(time(NULL)));
 	bool resultNotFound = true;
 
-	switch (mazeRegion) {
+	switch (mazeRegion)
+	{
 	case MazeRegion::PLAYER1:
-		while (resultNotFound) {
+		while (resultNotFound)
+		{
 			int randomX = rand() % 5 + 6; // [6..10]
 			int randomY = rand() % 11 + 4; // [4..14]
-			if (!m_tiles[randomY][randomX].is_wall()) {
+			if (!m_tiles[randomY][randomX].is_wall())
+			{
 				return m_tiles[randomY][randomX].get_position();
 			}
 		}
 	case MazeRegion::PLAYER2:
-		while (resultNotFound) {
+		while (resultNotFound)
+		{
 			int randomX = rand() % 5 + 18; // [18..22]
 			int randomY = rand() % 11 + 4; // [4..14]
-			if (!m_tiles[randomY][randomX].is_wall()) {
+			if (!m_tiles[randomY][randomX].is_wall())
+			{
 				return m_tiles[randomY][randomX].get_position();
 			}
 		}
 	case MazeRegion::BANDIT:
-		while (resultNotFound) {
+		while (resultNotFound)
+		{
 			int randomX = rand() % 7 + 11; // [11..17]
 			int randomY = rand() % 11 + 4; // [4..14]
-			if (!m_tiles[randomY][randomX].is_wall()) {
+			if (!m_tiles[randomY][randomX].is_wall())
+			{
 				return m_tiles[randomY][randomX].get_position();
 			}
 		}
@@ -193,11 +222,11 @@ vec2 Tilemap::get_random_free_tile_position(MazeRegion mazeRegion)
 }
 
 
-MazeRegion Tilemap::get_region(float positionX, float positionY) 
+MazeRegion Tilemap::get_region(float positionX, float positionY)
 {
 	// Convert to the array index of the tile
-	int gridX = ((int)std::ceil(positionX) - 23) / 48;
-	int gridY = ((int)std::ceil(positionY) - 23) / 48;
+	int gridX = (int)std::round((positionX - 23) / 48);
+	int gridY = (int)std::round((positionY - 23) / 48);
 
 	if (gridX < 11) {
 		return MazeRegion::PLAYER1;
@@ -206,6 +235,24 @@ MazeRegion Tilemap::get_region(float positionX, float positionY)
 		return MazeRegion::BANDIT;
 	}
 	else {
+		return MazeRegion::PLAYER2;
+	}
+}
+
+MazeRegion Tilemap::get_region(const Tile& tile)
+{
+	int tile_col_idx = tile.get_idx().second;
+
+	if (tile_col_idx < 11)
+	{
+		return MazeRegion::PLAYER1;
+	}
+	else if (tile_col_idx < 18)
+	{
+		return MazeRegion::BANDIT;
+	}
+	else
+	{
 		return MazeRegion::PLAYER2;
 	}
 }

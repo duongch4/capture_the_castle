@@ -209,3 +209,7 @@ void World::create_texture_from_window(Texture &tex) {
     tex.create_from_screen(m_window);
 }
 
+float World::get_screen_scale() {
+    return m_screen_scale;
+}
+

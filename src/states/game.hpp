@@ -23,6 +23,25 @@ public:
     void reset() override;
     void destroy() override;
 
+    void registerComponents();
+
+    void registerItemBoards(const vec2& screen);
+    void registerPlayers(std::vector<Entity>& players);
+    void registerCastles();
+    void registerItemBoard(const Transform& transform, const TeamType& team_type, const char* texture_path);
+    Entity registerPlayer(const Transform& transform, const Motion& motion, const TeamType& team_type, const char* texture_path);
+    void registerCastle(const Transform& transform, const TeamType& team_type, const char* texture_path);
+
+    void registerBanditAiSystem();
+    void registerBoxCollisionSystem();
+    void registerCollisionSystem();
+    void registerBanditSpawnSystem();
+    void registerSpriteRenderSystem();
+    void registerPlayerInputSystem();
+    void registerMovementSystem(const vec2& screen);
+
+    void renderTilesToScreenTexture();
+
 private:
     // Audio
     Mix_Music* m_background_music;
@@ -47,7 +66,8 @@ private:
     std::shared_ptr<PlayerInputSystem> playerInputSystem;
     std::shared_ptr<SpriteRenderSystem> spriteRenderSystem;
     std::shared_ptr<BanditSpawnSystem> banditSpawnSystem;
-    std::shared_ptr<BanditAISystem> banditAISystem;
+    std::shared_ptr<BanditAiSystem> banditAiSystem;
+    std::shared_ptr<SoldierAiSystem> soldierAiSystem;
     std::shared_ptr<CollisionSystem> collisionSystem;
     std::shared_ptr<BoxCollisionSystem> boxCollisionSystem;
 
@@ -60,6 +80,8 @@ private:
     CollisionLayer winner;
 
     World* m_world;
+
+    void registerSoldierAiSystem();
 };
 
 

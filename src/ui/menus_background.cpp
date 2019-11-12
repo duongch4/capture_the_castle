@@ -1,8 +1,6 @@
-//
-// Created by kayetan on 11/11/2019.
-//
 
 #include <cmath>
+#include <mesh_manager.hpp>
 #include "menus_background.hpp"
 
 void MenuBackground::init(vec2 screen_size) {
@@ -23,12 +21,12 @@ void MenuBackground::init(vec2 screen_size) {
         }
     }
 
-    mesh.init(menubgSprite.width, menubgSprite.height);
+    mesh.id = MeshManager::instance()->init_mesh(menubgSprite.width, menubgSprite.height);
 }
 
 void MenuBackground::destroy() {
     effect.release();
-    mesh.release();
+    MeshManager::instance()->release(mesh.id);
 }
 
 void MenuBackground::draw(const mat3 &projection) {
@@ -59,9 +57,9 @@ void MenuBackground::draw(const mat3 &projection) {
     GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
 
     // Setting vertices and indices
-    glBindVertexArray(mesh.vao);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+    MeshManager::instance()->bindVAO(mesh.id);
+    MeshManager::instance()->bindVBO(mesh.id);
+    MeshManager::instance()->bindIBO(mesh.id);
 
     // Input data location as in the vertex buffer
     GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");

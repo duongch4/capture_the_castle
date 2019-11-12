@@ -1,11 +1,8 @@
 #include "bandit_ai_system.hpp"
 
-bool BanditAISystem::init(std::shared_ptr<Tilemap> tilemap, Entity& player_1, Entity& player_2)
-
+bool BanditAiSystem::init(std::shared_ptr<Tilemap> tilemap, const std::vector<Entity>& players)
 {
-
-	m_targets.emplace_back(player_1);
-	m_targets.emplace_back(player_2);
+	m_targets = players;
 	for (size_t i = 0; i < MAX_BANDITS; ++i)
 	{
 		m_idle_times.emplace_back(0);
@@ -16,7 +13,7 @@ bool BanditAISystem::init(std::shared_ptr<Tilemap> tilemap, Entity& player_1, En
 	return true;
 }
 
-void BanditAISystem::update(float& elapsed_ms)
+void BanditAiSystem::update(float& elapsed_ms)
 {
 	for (auto it = entities.begin(); it != entities.end(); ++it)
 	{
@@ -60,7 +57,7 @@ void BanditAISystem::update(float& elapsed_ms)
 	}
 }
 
-void BanditAISystem::handle_patrol(
+void BanditAiSystem::handle_patrol(
 	State& state, size_t& idle_time, size_t& chase_time,
 	float& distance_1, float& distance_2,
 	Entity& bandit, float& speed, float& elapsed_ms
@@ -120,7 +117,7 @@ void BanditAISystem::handle_patrol(
 	chase_time++;
 }
 
-void BanditAISystem::handle_idle(
+void BanditAiSystem::handle_idle(
 	State& state, size_t& idle_time, size_t& chase_time,
 	float& distance_1, float& distance_2,
 	Entity& bandit, float& speed, float& elapsed_ms
@@ -157,7 +154,7 @@ void BanditAISystem::handle_idle(
 	idle_time++;
 }
 
-bool BanditAISystem::can_chase(float& distance_1, float& distance_2, size_t& idle_time)
+bool BanditAiSystem::can_chase(float& distance_1, float& distance_2, size_t& idle_time)
 {
 	vec2 pos_1 = ecsManager.getComponent<Transform>(m_targets[0]).position;
 	vec2 pos_2 = ecsManager.getComponent<Transform>(m_targets[1]).position;
@@ -171,7 +168,7 @@ bool BanditAISystem::can_chase(float& distance_1, float& distance_2, size_t& idl
 		);
 }
 
-bool BanditAISystem::can_search(Entity target)
+bool BanditAiSystem::can_search(Entity target)
 {
 	vec2 target_pos = ecsManager.getComponent<Transform>(target).position;
 	Tile target_tile = m_tilemap->get_tile(target_pos.x, target_pos.y);
@@ -179,7 +176,7 @@ bool BanditAISystem::can_search(Entity target)
 	return is_within_bandit_region(target_tile_idx.first, target_tile_idx.second, target_pos);
 }
 
-void BanditAISystem::handle_chase(
+void BanditAiSystem::handle_chase(
 	State& state, size_t& idle_time, size_t& chase_time,
 	float& distance_1, float& distance_2,
 	Entity& bandit, float& speed, float& elapsed_ms
@@ -210,7 +207,7 @@ void BanditAISystem::handle_chase(
 	chase_time++;
 }
 
-bool BanditAISystem::cannot_chase(float& distance_1, float& distance_2, size_t& chase_time)
+bool BanditAiSystem::cannot_chase(float& distance_1, float& distance_2, size_t& chase_time)
 {
 	vec2 pos_1 = ecsManager.getComponent<Transform>(m_targets[0]).position;
 	vec2 pos_2 = ecsManager.getComponent<Transform>(m_targets[1]).position;
@@ -224,7 +221,7 @@ bool BanditAISystem::cannot_chase(float& distance_1, float& distance_2, size_t& 
 		);
 }
 
-void BanditAISystem::chase(float& distance_1, float& distance_2, Entity& bandit, float& speed, float& elapsed_ms)
+void BanditAiSystem::chase(float& distance_1, float& distance_2, Entity& bandit, float& speed, float& elapsed_ms)
 {
 	if (distance_1 < distance_2)
 	{
@@ -236,7 +233,7 @@ void BanditAISystem::chase(float& distance_1, float& distance_2, Entity& bandit,
 	}
 }
 
-float BanditAISystem::get_distance(Entity& target, Entity& bandit)
+float BanditAiSystem::get_distance(Entity& target, Entity& bandit)
 {
 	vec2 target_transform_pos = ecsManager.getComponent<Transform>(target).position;
 	vec2 bandit_transform_pos = ecsManager.getComponent<Transform>(bandit).position;
@@ -244,7 +241,7 @@ float BanditAISystem::get_distance(Entity& target, Entity& bandit)
 	return sqrtf((difference.x * difference.x) + (difference.y * difference.y));
 }
 
-void BanditAISystem::follow_direction(Entity& target, Entity& bandit, float& speed, float& elapsed_ms)
+void BanditAiSystem::follow_direction(Entity& target, Entity& bandit, float& speed, float& elapsed_ms)
 {
 	vec2& target_transform_pos = ecsManager.getComponent<Transform>(target).position;
 	vec2& bandit_transform_pos = ecsManager.getComponent<Transform>(bandit).position;
@@ -274,7 +271,7 @@ void BanditAISystem::follow_direction(Entity& target, Entity& bandit, float& spe
 	bandit_motion_dir = { dir_x / distance, dir_y / distance };
 }
 
-bool BanditAISystem::is_target_move_toward_bandit(
+bool BanditAiSystem::is_target_move_toward_bandit(
 	vec2& bandit_transform_pos, vec2& target_transform_pos, vec2& target_motion_dir
 )
 {
@@ -286,7 +283,7 @@ bool BanditAISystem::is_target_move_toward_bandit(
 		);
 }
 
-bool BanditAISystem::is_target_move_away_bandit(
+bool BanditAiSystem::is_target_move_away_bandit(
 	vec2& bandit_transform_pos, vec2& target_transform_pos, vec2& target_motion_dir
 )
 {
@@ -298,7 +295,7 @@ bool BanditAISystem::is_target_move_away_bandit(
 		);
 }
 
-void BanditAISystem::handle_search(
+void BanditAiSystem::handle_search(
 	State& state, size_t& idle_time, size_t& chase_time,
 	float& distance_1, float& distance_2,
 	Entity& bandit, float& speed, float& elapsed_ms
@@ -369,7 +366,7 @@ void BanditAISystem::handle_search(
 }
 
 // TODO - FIXME
-void BanditAISystem::move_on_path(std::vector<Tile> path, float& speed, float& elapsed_ms, vec2& bandit_pos)
+void BanditAiSystem::move_on_path(std::vector<Tile> path, float& speed, float& elapsed_ms, vec2& bandit_pos)
 {
 	float step = speed * elapsed_ms / 1000;
 	vec2 prev_pos = bandit_pos;
@@ -403,7 +400,7 @@ void BanditAISystem::move_on_path(std::vector<Tile> path, float& speed, float& e
 
 /* PATH FINDING */
 
-std::vector<Tile> BanditAISystem::init_path_finding(std::shared_ptr<Tilemap> tilemap, Tile init_tile, Tile goal_tile)
+std::vector<Tile> BanditAiSystem::init_path_finding(std::shared_ptr<Tilemap> tilemap, Tile init_tile, Tile goal_tile)
 {
 	m_tilemap = tilemap;
 	m_init_tile = init_tile;
@@ -411,12 +408,12 @@ std::vector<Tile> BanditAISystem::init_path_finding(std::shared_ptr<Tilemap> til
 	return do_BFS();
 }
 
-void BanditAISystem::clear_path_finding()
+void BanditAiSystem::clear_path_finding()
 {
 	m_path.clear();
 }
 
-std::vector<Tile> BanditAISystem::do_BFS()
+std::vector<Tile> BanditAiSystem::do_BFS()
 {
 	std::pair<int,int> hw = m_tilemap->get_height_width();
 	int height = hw.first;
@@ -452,12 +449,12 @@ std::vector<Tile> BanditAISystem::do_BFS()
 	return assemble_path(P, m_init_tile, m_goal_tile);
 }
 
-bool BanditAISystem::is_next_good(Tile next, Tile curr, std::vector<std::vector<bool>>& visited_matrix)
+bool BanditAiSystem::is_next_good(Tile next, Tile curr, std::vector<std::vector<bool>>& visited_matrix)
 {
 	return (!is_visited(next, visited_matrix) && is_within_bandit_region(next) && !next.is_wall() && !curr.is_wall());
 }
 
-bool BanditAISystem::is_visited(Tile tile, std::vector<std::vector<bool>>& visited_matrix)
+bool BanditAiSystem::is_visited(Tile tile, std::vector<std::vector<bool>>& visited_matrix)
 {
 	std::pair<int, int> tile_idx = tile.get_idx();
 	//std::cout << "Tile idx::" << (tile_idx.first < visited_matrix.size()) << "," << (tile_idx.second < visited_matrix[0].size()) << std::endl;
@@ -465,14 +462,14 @@ bool BanditAISystem::is_visited(Tile tile, std::vector<std::vector<bool>>& visit
 	return visited_matrix[tile_idx.first][tile_idx.second];
 }
 
-bool BanditAISystem::is_within_bandit_region(Tile tile)
+bool BanditAiSystem::is_within_bandit_region(Tile tile)
 {
 	vec2 tile_pos = tile.get_position();
 	std::pair<int, int> tile_idx = tile.get_idx();
 	return is_within_bandit_region(tile_idx.first, tile_idx.second, tile_pos);
 }
 
-bool BanditAISystem::is_within_bandit_region(int idx_row, int idx_col, vec2 pos)
+bool BanditAiSystem::is_within_bandit_region(int idx_row, int idx_col, vec2 pos)
 {
 	return (
 		idx_row > 3 && idx_row < 15 &&
@@ -481,7 +478,7 @@ bool BanditAISystem::is_within_bandit_region(int idx_row, int idx_col, vec2 pos)
 		);
 }
 
-std::vector<Tile> BanditAISystem::assemble_path(std::vector<std::vector<Tile>>& parents_matrix, Tile init_tile, Tile goal_tile)
+std::vector<Tile> BanditAiSystem::assemble_path(std::vector<std::vector<Tile>>& parents_matrix, Tile init_tile, Tile goal_tile)
 {
 	std::vector<Tile> result;
 	std::vector<Tile> stack;
@@ -510,12 +507,12 @@ std::vector<Tile> BanditAISystem::assemble_path(std::vector<std::vector<Tile>>& 
 	return result;
 }
 
-bool BanditAISystem::is_equal(Tile a, Tile b)
+bool BanditAiSystem::is_equal(Tile a, Tile b)
 {
 	return (a.get_idx() == b.get_idx());
 }
 
-void BanditAISystem::reset() {
+void BanditAiSystem::reset() {
     m_idle_times.clear();
     m_chase_times.clear();
     m_states.clear();
