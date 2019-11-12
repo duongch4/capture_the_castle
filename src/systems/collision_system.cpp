@@ -62,58 +62,86 @@ void CollisionSystem::update() {
                 ecsManager.publish(new WinEvent(e1));
             } else if (e1_layer == CollisionLayer::PLAYER1 && e2_layer == CollisionLayer::PLAYER2){
                 ///player vs player event
+                auto& player1_item = ecsManager.getComponent<ItemComponent>(e1);
+                auto& player2_item = ecsManager.getComponent<ItemComponent>(e2);
                 switch(region){
                     case MazeRegion::PLAYER1:
-                        e2_transform.position = e2_transform.init_position;
-                        Mix_PlayChannel(-1, player_respawn_sound, 0);
+                        if (player2_item.itemType != ItemType::SHIELD){
+                            e2_transform.position = e2_transform.init_position;
+                            Mix_PlayChannel(-1, player_respawn_sound, 0);
+                        } else {
+                            player2_item.itemType = ItemType::None;
+                        }
                         break;
                     case MazeRegion::PLAYER2:
-                        e1_transform.position = e1_transform.init_position;
-                        Mix_PlayChannel(-1, player_respawn_sound, 0);
+                        if (player1_item.itemType != ItemType::SHIELD){
+                            e1_transform.position = e1_transform.init_position;
+                            Mix_PlayChannel(-1, player_respawn_sound, 0);
+                        } else {
+                            player1_item.itemType = ItemType::None;
+                        }
                         break;
                     case MazeRegion::BANDIT:
                         break;
                 }
             } else if (e2_layer == CollisionLayer::Enemy){
                 /// handle player enemy collision
-                switch(region){
-                    case MazeRegion::PLAYER1:
-                        if (e1_team == TeamType::PLAYER2){
+                auto& player_item = ecsManager.getComponent<ItemComponent>(e1);
+                if (player_item.itemType != ItemType::SHIELD){
+                    switch(region){
+                        case MazeRegion::PLAYER1:
+                            if (e1_team == TeamType::PLAYER2){
+                                e1_transform.position = e1_transform.init_position;
+                                Mix_PlayChannel(-1, player_respawn_sound, 0);
+                            }
+                            break;
+                        case MazeRegion::PLAYER2:
+                            if (e1_team == TeamType::PLAYER1){
+                                e1_transform.position = e1_transform.init_position;
+                                Mix_PlayChannel(-1, player_respawn_sound, 0);
+                            }
+                            break;
+                        case MazeRegion::BANDIT:
                             e1_transform.position = e1_transform.init_position;
                             Mix_PlayChannel(-1, player_respawn_sound, 0);
-                        }
-                        break;
-                    case MazeRegion::PLAYER2:
-                        if (e1_team == TeamType::PLAYER1){
-                            e1_transform.position = e1_transform.init_position;
-                            Mix_PlayChannel(-1, player_respawn_sound, 0);
-                        }
-                        break;
-                    case MazeRegion::BANDIT:
-                        e1_transform.position = e1_transform.init_position;
-                        Mix_PlayChannel(-1, player_respawn_sound, 0);
-                        break;
+                            break;
+                    }
+                } else {
+                    player_item.itemType = ItemType::None;
                 }
             } else if (e2_layer == CollisionLayer::Item){
                 /// handle item collision
                 auto& item = ecsManager.getComponent<ItemComponent>(e2);
-                /// Bomb in_use, respawn player, delete enemy, delete itself
+                /// Bomb in_use, spawn player, delete enemy, delete itself
                 if (item.in_use && item.itemType == ItemType::BOMB){
                     if (e1_layer == CollisionLayer::Enemy){
                         ecsManager.destroyEntity(e1);
                         ecsManager.destroyEntity(e2);
                     } else {
-                        // respawn player back to init location
-                        e1_transform.position = e1_transform.init_position;
-                        ecsManager.destroyEntity(e2);
+                        // spawn player back to init location
+                        auto& player_item = ecsManager.getComponent<ItemComponent>(e1);
+                        if (player_item.itemType != ItemType::SHIELD){
+                            e1_transform.position = e1_transform.init_position;
+                            ecsManager.destroyEntity(e2);
+                        } else {
+                            player_item.itemType = ItemType::None;
+                        }
                     }
                 } else {
                     if (e1_layer != CollisionLayer::Enemy){
                         //if p1 or p2
-                        if (item.itemType == ItemType::BOMB){
-                            // pickup
-                        } else {
-                            // shield use shield
+                        auto& player_item = ecsManager.getComponent<ItemComponent>(e1);
+                        if (player_item.itemType == ItemType::None){
+                            if (item.itemType == ItemType::BOMB){
+                                // pickup
+                                player_item.itemType = ItemType::BOMB;
+                                //Todo: add to player board
+                            } else {
+                                // shield use shield
+                                player_item.itemType = ItemType::SHIELD;
+                                //Todo: trigger an event
+                            }
+                            ecsManager.destroyEntity(e2);
                         }
                     }
                 }

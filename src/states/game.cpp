@@ -308,6 +308,9 @@ Entity Game::registerPlayer(const Transform& transform, const Motion& motion, co
                     { playerSprite.width * 0.09f * 0.8f, playerSprite.height * 0.09f * 0.8f }
             }
     );
+    ecsManager.addComponent<ItemComponent>(player,  ItemComponent{
+            false,
+            ItemType::None});
     return player;
 }
 

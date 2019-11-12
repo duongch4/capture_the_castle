@@ -73,7 +73,8 @@ enum class CollisionLayer
 enum class ItemType
 {
     BOMB,
-    SHIELD
+    SHIELD,
+    None
 };
 
 // Single Vertex Buffer element for non-textured meshes (coloured.vs.glsl & player.vs.glsl)
