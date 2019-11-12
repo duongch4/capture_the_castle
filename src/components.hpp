@@ -89,10 +89,10 @@ struct C_Collision{
     vec2 boundingBox;
 };
 
-struct ItemComponent{
-    bool in_use;
-    ItemType itemType;
-};
+//struct B_Collision{
+//    CollisionLayer layer;
+//    vec2 bounding_box;
+//};
 
 // Team component to specify an entity belongs to a team
 struct Team {
