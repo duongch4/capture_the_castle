@@ -61,6 +61,9 @@ private:
     HelpWindow help_window;
     WinWindow win_window;
 
+    // Particle
+    Firework firework;
+
     // ECS systems
     std::shared_ptr<MovementSystem> movementSystem;
     std::shared_ptr<PlayerInputSystem> playerInputSystem;
