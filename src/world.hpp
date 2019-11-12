@@ -73,6 +73,7 @@ private:
 	void registerCastle(const Transform& transform, const TeamType& team_type, const char* texture_path);
 	
 	void registerBanditAiSystem(const std::vector<Entity>& players);
+	void registerSoldierAiSystem(const std::vector<Entity>& players);
 	void registerBoxCollisionSystem();
 	void registerCollisionSystem();
 	void registerBanditSpawnSystem();

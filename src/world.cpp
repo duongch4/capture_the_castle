@@ -77,13 +77,7 @@ bool World::init(vec2 screen)
 	registerBanditAiSystem(players);
 
 	// Soldier AI System
-	soldierAiSystem = ecsManager.registerSystem<SoldierAiSystem>();
-	{
-		Signature signature;
-		signature.set(ecsManager.getComponentType<SoldierAiComponent>());
-		ecsManager.setSystemSignature<SoldierAiSystem>(signature);
-	}
-	soldierAiSystem->init(tilemap, players);
+	registerSoldierAiSystem(players);
 
 	// Item boards
 	registerItemBoards(screen);
@@ -104,6 +98,17 @@ bool World::init(vec2 screen)
 	renderTilesToScreenTexture();
 
 	return true;
+}
+
+void World::registerSoldierAiSystem(const std::vector<Entity>& players)
+{
+	soldierAiSystem = ecsManager.registerSystem<SoldierAiSystem>();
+	{
+		Signature signature;
+		signature.set(ecsManager.getComponentType<SoldierAiComponent>());
+		ecsManager.setSystemSignature<SoldierAiSystem>(signature);
+	}
+	soldierAiSystem->init(tilemap, players);
 }
 
 void World::renderTilesToScreenTexture()
