@@ -40,6 +40,7 @@ bool Game::init_state(World* world) {
     registerBoxCollisionSystem();
     registerBanditAiSystem();
     registerSoldierAiSystem();
+    registerItemSpawnSystem();
 
     ecsManager.subscribe(this, &Game::winListener);
 
@@ -96,6 +97,7 @@ bool Game::update(float elapsed_ms) {
         boxCollisionSystem->checkCollision();
         boxCollisionSystem->update();
         movementSystem->update(elapsed_ms);
+        itemSpawnSystem->update(elapsed_ms);
         soldierAiSystem->update(elapsed_ms);
     }
     return true;
@@ -343,6 +345,17 @@ void Game::registerBanditAiSystem()
     }
 }
 
+void Game::registerItemSpawnSystem()
+{
+    itemSpawnSystem = ecsManager.registerSystem<ItemSpawnSystem>();
+    {
+        Signature signature;
+        signature.set(ecsManager.getComponentType<ItemComponent>());
+        ecsManager.setSystemSignature<ItemSpawnSystem>(signature);
+    }
+    itemSpawnSystem->init(tilemap);
+}
+
 void Game::registerBoxCollisionSystem()
 {
     boxCollisionSystem = ecsManager.registerSystem<BoxCollisionSystem>();
@@ -437,6 +450,7 @@ void Game::registerComponents()
     ecsManager.registerComponent<PlayerInputControlComponent>();
     ecsManager.registerComponent<PlaceableComponent>();
     ecsManager.registerComponent<SoldierAiComponent>();
+    ecsManager.registerComponent<ItemComponent>();
 }
 
 void Game::registerSoldierAiSystem() {

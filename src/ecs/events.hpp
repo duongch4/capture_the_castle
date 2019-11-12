@@ -12,6 +12,7 @@ struct InputKeyEvent: public Event {
     InputKeyEvent(InputKeys key) {
         this->key = key;
     }
+    ~InputKeyEvent() = default;
     InputKeys key;
 };
 
@@ -19,6 +20,7 @@ struct KeyReleaseEvent: public Event {
     KeyReleaseEvent(InputKeys key) {
         this->keyReleased = key;
     }
+    ~KeyReleaseEvent() = default;
     InputKeys keyReleased;
 };
 
@@ -27,6 +29,7 @@ struct CollisionEvent: public Event{
         this->e1 = entity1;
         this->e2 = entity2;
     }
+    ~CollisionEvent() = default;
     Entity e1;
     Entity e2;
 };
@@ -37,7 +40,7 @@ struct BoxCollisionEvent: public Event{
         this->tile = tile;
         this-> collisionResponse = collisionResponse;
     }
-
+    ~BoxCollisionEvent() = default;
     Entity e;
     Tile tile;
     CollisionResponse collisionResponse;
@@ -48,6 +51,7 @@ struct WinEvent: public Event{
     WinEvent(Entity player){
         this->player = player;
     }
+    ~WinEvent() = default;
     Entity player;
 };
 
