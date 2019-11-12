@@ -44,18 +44,11 @@ void PlayerInputSystem::update()
 						next_dir.x -= 1;
 						break;
 					case InputKeys::Q:
-						if (can_spawn(soldier_count_1, wait_1, transform, tile, MazeRegion::PLAYER1))
-						{
-							vec2 position = tile.get_position();
-							Transform transform_soldier = Transform{ position, position, { 0.08f, 0.08f }, position };
-							Motion motion_soldier = Motion{ { 0, 0 }, 100.f };
-							spawn_soldier(
-								transform_soldier, motion_soldier,
-								TeamType::PLAYER1, textures_path("red_soldier_sprite_sheet-01.png")
-							);
-							++soldier_count_1;
-							wait_1 = 0;
-						}
+						handle_soldier_spawn(
+							soldier_count_1, wait_1, transform, tile,
+							MazeRegion::PLAYER1, TeamType::PLAYER1,
+							textures_path("red_soldier_sprite_sheet-01.png")
+						);
 						break;
 					default:
 						break;
@@ -86,18 +79,11 @@ void PlayerInputSystem::update()
 						next_dir.x -= 1;
 						break;
 					case InputKeys::SLASH:
-						if (can_spawn(soldier_count_2, wait_2, transform, tile, MazeRegion::PLAYER2))
-						{
-							vec2 position = tile.get_position();
-							Transform transform_soldier = Transform{ position, position, { 0.08f, 0.08f }, position };
-							Motion motion_soldier = Motion{ { 0, 0 }, 100.f };
-							spawn_soldier(
-								transform_soldier, motion_soldier,
-								TeamType::PLAYER2, textures_path("blue_soldier_sprite_sheet-01.png")
-							);
-							++soldier_count_2;
-							wait_2 = 0;
-						}
+						handle_soldier_spawn(
+							soldier_count_2, wait_2, transform, tile,
+							MazeRegion::PLAYER2, TeamType::PLAYER2,
+							textures_path("blue_soldier_sprite_sheet-01.png")
+						);
 						break;
 					default:
 						break;
@@ -107,6 +93,25 @@ void PlayerInputSystem::update()
 			++wait_2;
 		}
 		motion.direction = next_dir;
+	}
+}
+
+void PlayerInputSystem::handle_soldier_spawn(
+	size_t& soldier_count, size_t& wait_time, const Transform& transform, const Tile& tile,
+	const MazeRegion& maze_region, const TeamType& team_type, const char* texture_path
+)
+{
+	if (can_spawn(soldier_count, wait_time, transform, tile, maze_region))
+	{
+		vec2 position = tile.get_position();
+		Transform transform_soldier = Transform{ position, position,{ 0.08f, 0.08f }, position };
+		Motion motion_soldier = Motion{ { 0, 0 }, 100.f };
+		spawn_soldier(
+			transform_soldier, motion_soldier,
+			team_type, texture_path
+		);
+		++soldier_count;
+		wait_time = 0;
 	}
 }
 

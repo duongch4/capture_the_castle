@@ -18,6 +18,7 @@ class PlayerInputSystem : public System {
 public:
     void init(std::shared_ptr<Tilemap> tilemap);
     void update();
+
 	static const size_t get_max_soldiers() { return 2 * MAX_SOLDIERS; };
 
 private:
@@ -49,6 +50,10 @@ private:
 	static const size_t RESPAWN_IDLE = 200;
 
 private:
+	void handle_soldier_spawn(
+		size_t& soldier_count, size_t& wait_time, const Transform& transform, const Tile& tile,
+		const MazeRegion& maze_region, const TeamType& team_type, const char* texture_path
+	);
 	bool can_spawn(
 		const size_t& soldier_count, const size_t& wait_time, const Transform& transform,
 		const Tile& tile, const MazeRegion& maze_region
