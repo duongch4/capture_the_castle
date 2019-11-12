@@ -1,7 +1,7 @@
 //
 // Created by Knox on 11/11/2019.
 //
-
+#define _USE_MATH_DEFINES
 #include "firework.hpp"
 
 static const int MAX_PARTICLE = 2000;
