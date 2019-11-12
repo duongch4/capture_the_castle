@@ -4,6 +4,7 @@
 
 
 #include <iostream>
+#include <mesh_manager.hpp>
 #include "render_system.hpp"
 
 extern ECSManager ecsManager;
@@ -38,7 +39,7 @@ void SpriteRenderSystem::draw(mat3 projection) {
     for (auto const& e : entities) {
         auto const& transform = ecsManager.getComponent<Transform>(e);
         auto const& sprite = ecsManager.getComponent<Sprite>(e);
-        auto const& mesh = ecsManager.getComponent<Mesh>(e);
+        auto const& mesh = ecsManager.getComponent<MeshComponent>(e);
         auto const& effect = ecsManager.getComponent<Effect>(e);
 
         // begin transform
@@ -68,9 +69,9 @@ void SpriteRenderSystem::draw(mat3 projection) {
         GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
 
         // Setting vertices and indices
-        glBindVertexArray(mesh.vao);
-        glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+        MeshManager::instance()->bindVAO(mesh.id);
+        MeshManager::instance()->bindVBO(mesh.id);
+        MeshManager::instance()->bindIBO(mesh.id);
 
         // Input data location as in the vertex buffer
         GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
@@ -95,4 +96,8 @@ void SpriteRenderSystem::draw(mat3 projection) {
         // Drawing!
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
     }
+}
+
+void SpriteRenderSystem::reset() {
+
 }

@@ -13,7 +13,8 @@ class MovementSystem : public System
 public:
     void init();
     void update(float ms);
-	void setScreenSize(vec2 screen);
+	void setScreenSize(const vec2& screen);
+	void reset() override;
 
 private:
 	enum struct SPRITE_SHEET_DIR: int

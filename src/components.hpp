@@ -19,11 +19,9 @@ struct Sprite {
 // A Mesh is a collection of a VertexBuffer and an IndexBuffer. A VAO
 // represents a Vertex Array Object and is the container for 1 or more Vertex Buffers and
 // an Index Buffer.
-struct Mesh {
-    GLuint vao;
-    GLuint vbo;
-    GLuint ibo;
-    bool init(int width, int height);
+struct MeshComponent {
+    int id;
+    //bool init(int width, int height);
 	/**
 	* Initialize the mesh with a sprite in a sprite sheet
 	*
@@ -43,18 +41,18 @@ struct Mesh {
 	*                      Enter 0 if there is no gap in the sprite sheet
 	* @return boolean      True if the mesh is created successfully, false otherwise.
 	*/
-
-	bool init(
-		int textureWidth, int textureHeight, float spriteWidth, float spriteHeight,
-		float spriteIndexX, float spriteIndexY, int spriteGap
-	);
-
-	// Very similar to the init function, but this will only update the vertex
-	// buffer object instead of generating a new vertex buffer object.
-	bool updateSprite(int textureWidth, int textureHeight, int spriteWidth, int spriteHeight,
-		int spriteIndexX, int spriteIndexY, int spriteGap);
-
-  void release();
+//
+//	bool init(
+//		int textureWidth, int textureHeight, float spriteWidth, float spriteHeight,
+//		float spriteIndexX, float spriteIndexY, int spriteGap
+//	);
+//
+//	// Very similar to the init function, but this will only update the vertex
+//	// buffer object instead of generating a new vertex buffer object.
+//	bool updateSprite(int textureWidth, int textureHeight, int spriteWidth, int spriteHeight,
+//		int spriteIndexX, int spriteIndexY, int spriteGap);
+//
+//  void release();
 
 };
 
@@ -105,7 +103,5 @@ struct BanditSpawnComponent {};
 struct BanditAIComponent {};
 
 struct PlayerInputControlComponent {};
-
-struct PlaceableComponent{};
 
 #endif //CAPTURE_THE_CASTLE_COMPONENTS_HPP

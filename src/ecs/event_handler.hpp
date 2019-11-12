@@ -15,6 +15,8 @@ public:
     void exec(Event * evnt) {
         call(evnt);
     }
+    ~IEventHandler() = default;
+
 private:
     // Implemented by MemberFunctionHandler
     virtual void call(Event * evnt) = 0;

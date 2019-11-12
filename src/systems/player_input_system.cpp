@@ -72,3 +72,7 @@ void PlayerInputSystem::onKeyListener(InputKeyEvent* input) {
 void PlayerInputSystem::onReleaseListener(KeyReleaseEvent* input) {
     keysPressed[input->keyReleased] = false;
 }
+
+void PlayerInputSystem::reset() {
+    keysPressed.clear();
+}

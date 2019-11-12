@@ -20,6 +20,7 @@ public:
     void init();
     void checkCollision();
     void update();
+    void reset() override;
 
 private:
     void collisionListener(CollisionEvent* collisionEvent);

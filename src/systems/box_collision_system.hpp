@@ -21,6 +21,8 @@ public:
 
     void update();
 
+    void reset() override;
+
 private:
     std::shared_ptr<Tilemap> tileMap;
     std::pair<bool, CollisionResponse> collides_with_tile(Entity entity, Tile &tile);

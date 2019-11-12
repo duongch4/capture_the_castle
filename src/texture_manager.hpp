@@ -15,7 +15,7 @@ class TextureManager {
 
 public:
     static TextureManager* instance();
-    virtual ~TextureManager();
+    ~TextureManager();
 
     bool load_from_file(Sprite& sprite, bool overwrite = false);
     bool unload_texture(const std::string tex_name);
@@ -24,7 +24,6 @@ public:
 
 protected:
     TextureManager();
-    std::string generate_path(std::string texture_name);
     static TextureManager* inst;
     std::string textures_path = data_path "/textures/";
     std::map<std::string, GLuint> nameToId;

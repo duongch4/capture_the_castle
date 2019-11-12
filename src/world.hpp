@@ -36,6 +36,7 @@
 #include "tilemap.hpp"
 #include <ui/help_window.hpp>
 #include <ui/win_window.hpp>
+#include <states/state.hpp>
 
 // Container for all our entities and game logic. Individual rendering / update is
 // deferred to the relative update() methods
@@ -57,14 +58,22 @@ public:
 	// Renders our scene
 	void draw();
 
-	// Should the game be over ?
+    vec2 get_screen_size();
+
+    void get_buffer_size(int &w, int &h);
+
+    mat3 get_projection_2d();
+
+    void set_window_closed();
+
+    bool set_state(State* state);
+
+    void create_texture_from_window(Texture& tex);
+
+    // Should the game be over ?
 	bool is_over()const;
 
 private:
-
-	// Generates a new tile
-	//bool spawn_tile(int sprite_id, int num_horizontal, int num_vertical, int width, int gap_width, int gridX, int gridY);
-
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
@@ -78,35 +87,7 @@ private:
 	GLFWwindow* m_window;
 	float m_screen_scale; // Screen to pixel coordinates scale factor
 	vec2 m_screen_size;
+	mat3 projection_2D;
 
-	// Screen texture
-	GLuint m_frame_buffer;
-	Texture m_screen_tex;
-
-	// Game entities
-	std::shared_ptr<Tilemap> tilemap;
-
-	// UI
-	HelpButton help_btn;
-	HelpWindow help_window;
-	WinWindow win_window;
-
-    std::shared_ptr<MovementSystem> movementSystem;
-    std::shared_ptr<PlayerInputSystem> playerInputSystem;
-    std::shared_ptr<SpriteRenderSystem> spriteRenderSystem;
-    std::shared_ptr<BanditSpawnSystem> banditSpawnSystem;
-    std::shared_ptr<ItemSpawnSystem> itemSpawnSystem;
-	std::shared_ptr<BanditAISystem> banditAISystem;
-    std::shared_ptr<CollisionSystem> collisionSystem;
-    std::shared_ptr<BoxCollisionSystem> boxCollisionSystem;
-
-    void winListener(WinEvent* winEvent);
-
-    //World state
-	enum WorldState { HELP, WIN, NORMAL };
-	WorldState currState;
-	CollisionLayer winner;
-
-	// Audio
-    Mix_Music* m_background_music;
+  State* m_state;
 };

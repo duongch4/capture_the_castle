@@ -1,6 +1,7 @@
 #include "win_winnerDp.hpp"
 
 #include <cmath>
+#include <mesh_manager.hpp>
 
 void WinnerDp::init(vec2 pos) {
     transform = Transform {
@@ -19,13 +20,12 @@ void WinnerDp::init(vec2 pos) {
             fprintf(stderr, "Failed to load tile texture!");
         }
     }
-
-    mesh.init(winnerDpSprite.width, winnerDpSprite.height);
+    mesh.id = MeshManager::instance()->init_mesh(winnerDpSprite.width, winnerDpSprite.height);
 }
 
 void WinnerDp::destroy() {
     effect.release();
-    mesh.release();
+    MeshManager::instance()->release(mesh.id);
 }
 
 void WinnerDp::draw(const mat3 &projection) {
@@ -56,9 +56,9 @@ void WinnerDp::draw(const mat3 &projection) {
     GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
 
     // Setting vertices and indices
-    glBindVertexArray(mesh.vao);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+    MeshManager::instance()->bindVAO(mesh.id);
+    MeshManager::instance()->bindVBO(mesh.id);
+    MeshManager::instance()->bindIBO(mesh.id);
 
     // Input data location as in the vertex buffer
     GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");

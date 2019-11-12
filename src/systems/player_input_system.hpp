@@ -15,6 +15,7 @@ class PlayerInputSystem : public System {
 public:
     void init();
     void update();
+    void reset() override;
 
 private:
     const std::vector<InputKeys> PLAYER1KEYS = {InputKeys::W, InputKeys::A, InputKeys::S, InputKeys::D};

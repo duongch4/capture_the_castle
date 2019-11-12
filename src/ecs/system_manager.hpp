@@ -52,6 +52,16 @@ public:
         }
     }
 
+    void reset() {
+        signatures.clear();
+        auto it = systems.begin();
+        while(it != systems.end()) {
+            it->second->reset();
+            it++;
+        }
+        systems.clear();
+    }
+
 private:
     std::unordered_map<const char*, Signature> signatures{};
     std::unordered_map<const char*, std::shared_ptr<System>> systems{};

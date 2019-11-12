@@ -19,7 +19,7 @@ public:
     vec2 get_bounding_box();
 
 private:
-    Mesh mesh{};
+    MeshComponent mesh{};
     Effect effect{};
     Transform transform;
     Texture helpInstrSprite;

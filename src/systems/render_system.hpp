@@ -17,7 +17,8 @@ class SpriteRenderSystem : public System {
 public:
     void init();
     void draw(mat3 projection);
-
+    void reset() override;
+    
 private:
     mat3 out{};
 };
