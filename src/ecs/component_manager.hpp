@@ -27,7 +27,6 @@ public:
     template<typename T>
     ComponentType getComponentType() {
         const char* typeName = typeid(T).name();
-        printf("%s", typeName);
         assert(componentTypes.find(typeName) != componentTypes.end() && "Component not registered");
         return componentTypes[typeName];
     }
