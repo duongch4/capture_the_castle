@@ -50,7 +50,6 @@ private:
     std::shared_ptr<BanditAISystem> banditAISystem;
     std::shared_ptr<CollisionSystem> collisionSystem;
     std::shared_ptr<BoxCollisionSystem> boxCollisionSystem;
-    std::shared_ptr<ItemSpawnSystem> itemSpawnSystem;
 
     void winListener(WinEvent* winEvent);
     bool init_game();

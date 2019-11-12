@@ -42,7 +42,6 @@ bool Game::init_state(World* world) {
     ecsManager.registerComponent<BanditSpawnComponent>();
     ecsManager.registerComponent<PlayerInputControlComponent>();
     ecsManager.registerComponent<BanditAIComponent>();
-    ecsManager.registerComponent<ItemComponent>();
 
     // Register Systems and Entities
     movementSystem = ecsManager.registerSystem<MovementSystem>();
@@ -83,14 +82,6 @@ bool Game::init_state(World* world) {
         ecsManager.setSystemSignature<BanditSpawnSystem>(signature);
     }
     banditSpawnSystem->init(tilemap);
-
-    itemSpawnSystem = ecsManager.registerSystem<ItemSpawnSystem>();
-    {
-        Signature signature;
-        signature.set(ecsManager.getComponentType<ItemComponent>());
-        ecsManager.setSystemSignature<ItemSpawnSystem>(signature);
-    }
-    itemSpawnSystem->init(tilemap);
 
     collisionSystem = ecsManager.registerSystem<CollisionSystem>();
     {
@@ -396,7 +387,6 @@ bool Game::update(float elapsed_ms) {
         boxCollisionSystem->checkCollision();
         boxCollisionSystem->update();
         movementSystem->update(elapsed_ms);
-        itemSpawnSystem->update(elapsed_ms);
     }
     return true;
 }
