@@ -103,7 +103,7 @@ set(SOURCE_FILES
         src/ui/menus_window.cpp
         src/ui/menus_window.hpp
         src/ui/menus_background.cpp
-        src/ui/menus_background.hpp)
+        src/ui/menus_background.hpp src/ui/firework.cpp src/ui/firework.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

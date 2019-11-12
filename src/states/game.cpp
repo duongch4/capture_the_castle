@@ -80,6 +80,9 @@ bool Game::init_game() {
     // Winner's Window Initialization
     win_window.init(m_screen_size);
 
+    // Firework particle
+    firework.init(m_screen_size);
+
     //--------------------------------------------------------------------------
     // Render all the tiles once to the screen texture
     renderTilesToScreenTexture();
@@ -99,6 +102,8 @@ bool Game::update(float elapsed_ms) {
         movementSystem->update(elapsed_ms);
         itemSpawnSystem->update(elapsed_ms);
         soldierAiSystem->update(elapsed_ms);
+    } else if (currState == GameState::WIN) {
+        firework.update(elapsed_ms);
     }
     return true;
 }
@@ -137,6 +142,7 @@ void Game::draw() {
 
     if (currState == GameState::WIN) {
         win_window.draw(projection_2D);
+        firework.draw(projection_2D);
     }
 }
 
@@ -241,6 +247,8 @@ void Game::reset() {
     help_window.destroy();
     std::cout << "Help window destroyed" << std::endl;
     win_window.destroy();
+    std::cout << "Firework destroyed" << std::endl;
+    firework.destroy();
     std::cout << "Win window destroyed" << std::endl;
     std::cout << "Reinitializing game state" << std::endl;
     init_state(m_world);
@@ -261,6 +269,7 @@ void Game::destroy() {
     help_btn.destroy();
     help_window.destroy();
     win_window.destroy();
+    firework.destroy();
 }
 
 Game::~Game() {
