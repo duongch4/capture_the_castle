@@ -24,6 +24,8 @@
 #include <systems/player_input_system.hpp>
 #include <systems/render_system.hpp>
 #include <systems/bandit_spawn_system.hpp>
+#include <systems/item_spawn_system.hpp>
+
 #include <systems/bandit_ai_system.hpp>
 #include <systems/collision_system.hpp>
 #include <systems/box_collision_system.hpp>
@@ -87,5 +89,5 @@ private:
 	vec2 m_screen_size;
 	mat3 projection_2D;
 
-    State* m_state;
+  State* m_state;
 };
