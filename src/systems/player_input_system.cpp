@@ -17,10 +17,11 @@ void PlayerInputSystem::init(std::shared_ptr<Tilemap> tilemap)
 void PlayerInputSystem::update()
 {
 	for (auto& e : entities)
-	{
+    {
 		auto& motion = ecsManager.getComponent<Motion>(e);
 		auto& transform = ecsManager.getComponent<Transform>(e);
 		auto& team = ecsManager.getComponent<Team>(e);
+		auto& item = ecsManager.getComponent<ItemComponent>(e);
 		vec2 next_dir = { 0, 0 };
 		if (team.assigned == TeamType::PLAYER1)
 		{
@@ -43,6 +44,11 @@ void PlayerInputSystem::update()
 					case InputKeys::A:
 						next_dir.x -= 1;
 						break;
+					case InputKeys ::LEFT_SHIFT:
+                        if (item.itemType == ItemType::BOMB){
+                            place_bomb(tile, TeamType::PLAYER1);
+                        }
+					    break;
 					case InputKeys::Q:
 						handle_soldier_spawn(
 							soldier_count_1, wait_1, transform, tile,
@@ -85,6 +91,11 @@ void PlayerInputSystem::update()
 							textures_path("blue_soldier_sprite_sheet-01.png")
 						);
 						break;
+                    case InputKeys ::RIGHT_SHIFT:
+                        if (item.itemType == ItemType::BOMB){
+                            place_bomb(tile, TeamType::PLAYER2);
+                        }
+                        break;
 					default:
 						break;
 					}
@@ -143,6 +154,36 @@ void PlayerInputSystem::onReleaseListener(KeyReleaseEvent* input)
 
 void PlayerInputSystem::reset() {
     keysPressed.clear();
+}
+
+void PlayerInputSystem::place_bomb(const Tile& tile, const TeamType& team_type) {
+    Entity bomb = ecsManager.createEntity();
+    ecsManager.addComponent<Team>(bomb, Team{ team_type });
+    ecsManager.addComponent<PlaceableComponent>(bomb, PlaceableComponent{});
+    vec2 position = tile.get_position();
+    Transform transform = Transform{ position, position,{ 0.8f, 0.8f }, position };
+    ecsManager.addComponent<Transform>(bomb, transform);
+    ecsManager.addComponent<ItemComponent>(bomb, ItemComponent{
+            true,
+            ItemType::BOMB});
+    Effect itemEffect{};
+    itemEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+    ecsManager.addComponent<Effect>(bomb, itemEffect);
+    Sprite itemSprite = {power_up_path("CaptureTheCastle_powerup_bomb.png")};
+    TextureManager::instance()->load_from_file(itemSprite);
+    itemSprite.sprite_size = { itemSprite.width / 7.0f , itemSprite.height / 5.0f };
+    ecsManager.addComponent<Sprite>(bomb, itemSprite);
+    MeshComponent itemMesh{MeshManager::instance()->init_mesh(
+            itemSprite.width, itemSprite.height)};
+    ecsManager.addComponent<MeshComponent>(bomb, itemMesh);
+    float radius = itemSprite.width/2*0.8f;
+    float i_width = itemSprite.width*0.8f;
+    float i_height = itemSprite.height*0.8f;
+    ecsManager.addComponent<C_Collision>(bomb, C_Collision{
+            CollisionLayer::Item,
+            radius,
+            {i_width, i_height}
+    });
 }
 
 void PlayerInputSystem::spawn_soldier(

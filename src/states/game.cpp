@@ -174,6 +174,12 @@ void Game::on_key(int key, int action) {
 		case GLFW_KEY_SLASH:
 			k = InputKeys::SLASH;
 			break;
+        case GLFW_KEY_LEFT_SHIFT:
+            k = InputKeys::LEFT_SHIFT;
+            break;
+        case GLFW_KEY_RIGHT_SHIFT:
+            k = InputKeys::RIGHT_SHIFT;
+            break;
         default:
             break;
     }
