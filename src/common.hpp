@@ -49,7 +49,8 @@ bool gl_has_errors();
 enum class TeamType{
     PLAYER1,
     PLAYER2,
-    BANDIT
+    BANDIT,
+    ITEM
 };
 
 enum class MazeRegion {

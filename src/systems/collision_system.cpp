@@ -5,6 +5,7 @@
 #include "collision_system.hpp"
 #include "math.h"
 #include <ecs/ecs_manager.hpp>
+#include <iostream>
 
 
 extern ECSManager ecsManager;
@@ -54,13 +55,13 @@ void CollisionSystem::update() {
 
             auto& e1_transform = ecsManager.getComponent<Transform>(e1);
             auto& e2_transform = ecsManager.getComponent<Transform>(e2);
-//           auto& e1_motion = ecsManager.getComponent<Motion>(e1);
-//           auto& e2_motion = ecsManager.getComponent<Motion>(e2);
             MazeRegion region = Tilemap::get_region(e1_transform.position.x, e1_transform.position.y);
 
             if (e2_layer == CollisionLayer::Castle){
+                ///handle win event
                 ecsManager.publish(new WinEvent(e1));
             } else if (e1_layer == CollisionLayer::PLAYER1 && e2_layer == CollisionLayer::PLAYER2){
+                ///player vs player event
                 switch(region){
                     case MazeRegion::PLAYER1:
                         e2_transform.position = e2_transform.init_position;
@@ -74,6 +75,7 @@ void CollisionSystem::update() {
                         break;
                 }
             } else if (e2_layer == CollisionLayer::Enemy){
+                /// handle player enemy collision
                 switch(region){
                     case MazeRegion::PLAYER1:
                         if (e1_team == TeamType::PLAYER2){
@@ -91,6 +93,29 @@ void CollisionSystem::update() {
                         e1_transform.position = e1_transform.init_position;
                         Mix_PlayChannel(-1, player_respawn_sound, 0);
                         break;
+                }
+            } else if (e2_layer == CollisionLayer::Item){
+                /// handle item collision
+                auto& item = ecsManager.getComponent<ItemComponent>(e2);
+                /// Bomb in_use, respawn player, delete enemy, delete itself
+                if (item.in_use && item.itemType == ItemType::BOMB){
+                    if (e1_layer == CollisionLayer::Enemy){
+                        ecsManager.destroyEntity(e1);
+                        ecsManager.destroyEntity(e2);
+                    } else {
+                        // respawn player back to init location
+                        e1_transform.position = e1_transform.init_position;
+                        ecsManager.destroyEntity(e2);
+                    }
+                } else {
+                    if (e1_layer != CollisionLayer::Enemy){
+                        //if p1 or p2
+                        if (item.itemType == ItemType::BOMB){
+                            // pickup
+                        } else {
+                            // shield use shield
+                        }
+                    }
                 }
             }
             collision_queue.pop();
