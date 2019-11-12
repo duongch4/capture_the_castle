@@ -2,6 +2,7 @@
 // Created by Tianyan Zhu on 2019-11-11.
 //
 
+#include <iostream>
 #include "item_spawn_system.hpp"
 #include "texture_manager.hpp"
 
@@ -54,7 +55,7 @@ void ItemSpawnSystem::spawn_item(){
     ecsManager.addComponent<Transform>(item, Transform{
             nextPos,
             nextPos,
-            {0.08f, 0.08f},
+            {0.8f, 0.8f},
             nextPos
     });
 
@@ -69,10 +70,7 @@ void ItemSpawnSystem::spawn_item(){
     itemSprite.sprite_size = { itemSprite.width / 7.0f , itemSprite.height / 5.0f };
     ecsManager.addComponent<Sprite>(item, itemSprite);
     Mesh itemMesh{};
-    itemMesh.init(
-            itemSprite.width, itemSprite.height, itemSprite.sprite_size.x, itemSprite.sprite_size.y,
-            itemSprite.sprite_index.x, itemSprite.sprite_index.y, 0
-    );
+    itemMesh.init(itemSprite.width, itemSprite.height);
     ecsManager.addComponent<Mesh>(item, itemMesh);
     float radius = itemSprite.width/2*0.08f;
     float i_width = itemSprite.width*0.08f*0.8f;

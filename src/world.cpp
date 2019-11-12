@@ -516,6 +516,7 @@ bool World::update(float elapsed_ms) {
         boxCollisionSystem->checkCollision();
         boxCollisionSystem->update();
         movementSystem->update(elapsed_ms);
+        itemSpawnSystem->update(elapsed_ms);
     }
 
     return true;

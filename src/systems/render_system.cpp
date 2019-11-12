@@ -3,6 +3,7 @@
 //
 
 
+#include <iostream>
 #include "render_system.hpp"
 
 extern ECSManager ecsManager;
