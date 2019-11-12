@@ -47,7 +47,6 @@ public:
         auto signature = entityManager->getSignature(e);
         signature.set(componentManager->getComponentType<T>(), true);
         entityManager->setSignature(e, signature);
-
         systemManager->entitySignatureChanged(e, signature);
     };
 
@@ -93,6 +92,13 @@ public:
     void publish(EventType* e) {
         eventManager->publish<EventType>(e);
     };
+
+    void reset() {
+        entityManager->reset();
+        systemManager->reset();
+        componentManager->reset();
+        eventManager->reset();
+    }
 
 private:
     std::unique_ptr<ComponentManager> componentManager;

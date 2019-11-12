@@ -16,7 +16,7 @@ public:
     void setWinnerDp(TeamType team);
 
 private:
-    Mesh mesh{};
+    MeshComponent mesh{};
     Effect effect{};
     Transform transform;
     Texture winnerDpSprite;

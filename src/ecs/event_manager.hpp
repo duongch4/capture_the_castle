@@ -41,6 +41,18 @@ public:
 
         handlers->push_back(new EventHandler<T, EventType>(instance, memberFunction));
     }
+
+    void reset() {
+        auto it = subscribers.begin();
+        while(it != subscribers.end()) {
+            for (auto handler: *it->second) {
+                delete handler;
+            }
+            it->second->clear();
+            it++;
+        }
+        subscribers.clear();
+    }
 private:
     std::map<std::type_index, HandlerList*> subscribers;
 };

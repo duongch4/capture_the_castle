@@ -166,3 +166,12 @@ bool SoldierAiSystem::is_within_soldier_region(const Entity& soldier, const Tile
 		m_tilemap->get_region(tile) == maze_region
 	);
 }
+
+void SoldierAiSystem::reset() {
+    m_idle_times.clear();
+    m_patrol_times.clear();
+    m_states.clear();
+    m_soldiers.clear();
+    m_targets.clear();
+    m_prev_dirs.clear();
+}

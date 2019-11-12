@@ -18,7 +18,7 @@ class PlayerInputSystem : public System {
 public:
     void init(std::shared_ptr<Tilemap> tilemap);
     void update();
-
+    void reset() override;
 	static const size_t get_max_soldiers() { return 2 * MAX_SOLDIERS; };
 
 private:
@@ -31,7 +31,7 @@ private:
 		InputKeys::UP, InputKeys::DOWN, InputKeys::RIGHT, InputKeys::LEFT,
 		InputKeys::SLASH
 	};
-    
+
 	std::map<InputKeys, bool> keysPressed;
 
 	std::shared_ptr<Tilemap> m_tilemap;

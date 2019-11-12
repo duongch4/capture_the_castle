@@ -2,6 +2,7 @@
 // Created by Owner on 2019-10-16.
 //
 
+#include <mesh_manager.hpp>
 #include "bandit_spawn_system.hpp"
 
 
@@ -32,7 +33,7 @@ void BanditSpawnSystem::spawn_bandit() {
     ecsManager.addComponent<Transform>(bandit, Transform{
             nextPos,
             nextPos,
-            {0.08f, 0.08f},
+            {0.09f * 5 / 7, 0.09f},
             nextPos
     });
     ecsManager.addComponent<Motion>(bandit, Motion{
@@ -49,12 +50,11 @@ void BanditSpawnSystem::spawn_bandit() {
 	banditSprite.sprite_index = { 0 , 3 };
 	banditSprite.sprite_size = { banditSprite.width / 7.0f , banditSprite.height / 5.0f };
     ecsManager.addComponent<Sprite>(bandit, banditSprite);
-    Mesh banditMesh{};
-    banditMesh.init(
-		banditSprite.width, banditSprite.height, banditSprite.sprite_size.x, banditSprite.sprite_size.y,
-		banditSprite.sprite_index.x, banditSprite.sprite_index.y, 0
-	);
-    ecsManager.addComponent<Mesh>(bandit, banditMesh);
+    MeshComponent banditMesh{MeshManager::instance()->init_mesh(
+            banditSprite.width, banditSprite.height, banditSprite.sprite_size.x, banditSprite.sprite_size.y,
+            banditSprite.sprite_index.x, banditSprite.sprite_index.y, 0)
+    };
+    ecsManager.addComponent<MeshComponent>(bandit, banditMesh);
     float radius = banditSprite.width/2*0.08f;
     float b_width = banditSprite.width*0.08f*0.8f;
     float b_height = banditSprite.height*0.08f*0.8f;
@@ -63,4 +63,8 @@ void BanditSpawnSystem::spawn_bandit() {
             radius,
             {b_width, b_height}
     });
+}
+
+void BanditSpawnSystem::reset() {
+
 }

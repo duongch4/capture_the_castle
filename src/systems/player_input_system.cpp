@@ -141,6 +141,10 @@ void PlayerInputSystem::onReleaseListener(KeyReleaseEvent* input)
 	keysPressed[input->keyReleased] = false;
 }
 
+void PlayerInputSystem::reset() {
+    keysPressed.clear();
+}
+
 void PlayerInputSystem::spawn_soldier(
 	const Transform& transform, const Motion& motion,
 	const TeamType& team_type, const char* texture_path
@@ -162,12 +166,12 @@ void PlayerInputSystem::spawn_soldier(
 	soldierSprite.sprite_index = { 0 , 3 };
 	soldierSprite.sprite_size = { soldierSprite.width / 7.0f , soldierSprite.height / 5.0f };
 	ecsManager.addComponent<Sprite>(soldier, soldierSprite);
-	Mesh soldierMesh{};
-	soldierMesh.init(
+	MeshComponent soldierMesh{};
+	soldierMesh.id = MeshManager::instance()-> init_mesh(
 		soldierSprite.width, soldierSprite.height, soldierSprite.sprite_size.x, soldierSprite.sprite_size.y,
 		soldierSprite.sprite_index.x, soldierSprite.sprite_index.y, 0
 	);
-	ecsManager.addComponent<Mesh>(soldier, soldierMesh);
+	ecsManager.addComponent<MeshComponent>(soldier, soldierMesh);
 	ecsManager.addComponent(
 		soldier,
 		C_Collision{

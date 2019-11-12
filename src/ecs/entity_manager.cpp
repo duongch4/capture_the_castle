@@ -43,6 +43,18 @@ Signature EntityManager::getSignature(Entity e) {
     return signatures[e];
 }
 
+void EntityManager::reset() {
+    std::queue<Entity> empty;
+    std::swap(empty, availableEntities);
+    for (Entity e = 0; e < MAX_ENTITIES; ++e)
+    {
+        availableEntities.push(e);
+    }
+    activeEntityCount = 0;
+    signatures.fill(0);
+}
+
+
 
 
 

@@ -17,6 +17,7 @@ public:
     void destroyEntity(Entity e);
     void setSignature(Entity e, Signature s);
     Signature getSignature(Entity e);
+    void reset();
 
 private:
     std::queue<Entity> availableEntities{};

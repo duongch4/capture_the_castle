@@ -143,3 +143,7 @@ bool CollisionSystem::collideWithCastle(Entity player, Entity castle){
     return x_overlap && y_overlap;
 
 }
+
+void CollisionSystem::reset() {
+
+}

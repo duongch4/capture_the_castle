@@ -8,6 +8,8 @@
 
 
 #include <iostream>
+#include <mesh_manager.hpp>
+
 extern ECSManager ecsManager;
 
 void MovementSystem::init() {
@@ -19,17 +21,16 @@ void MovementSystem::update(float ms) {
         auto &motion = ecsManager.getComponent<Motion>(entity);
         auto &transform = ecsManager.getComponent<Transform>(entity);
         auto &sprite = ecsManager.getComponent<Sprite>(entity);
-        auto &mesh = ecsManager.getComponent<Mesh>(entity);
+        auto &mesh = ecsManager.getComponent<MeshComponent>(entity);
         float step = motion.speed * (ms / 1000);
         transform.old_position = transform.position;
 		set_sprite_motion(sprite, motion);
 		set_sprite_direction(motion, sprite);
-		
-		mesh.updateSprite(
-			sprite.width, sprite.height,
-			(int)sprite.sprite_size.x, (int)sprite.sprite_size.y,
-			(int)sprite.sprite_index.x, (int)sprite.sprite_index.y, 0
-		);
+
+		MeshManager::instance()->update_sprite(mesh.id,
+                                               sprite.width, sprite.height,
+                                               (int)sprite.sprite_size.x, (int)sprite.sprite_size.y,
+                                               (int)sprite.sprite_index.x, (int)sprite.sprite_index.y, 0);
 
         transform.position.x += motion.direction.x * step;
         transform.position.y += motion.direction.y * step;
@@ -98,4 +99,8 @@ void MovementSystem::set_sprite_direction(Motion& motion, Sprite& sprite)
 void MovementSystem::setScreenSize(const vec2& screen) {
     this->screenSize.x = screen.x;
     this->screenSize.y = screen.y;
+}
+
+void MovementSystem::reset() {
+
 }

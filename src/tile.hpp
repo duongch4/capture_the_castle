@@ -2,6 +2,7 @@
 
 #include "common.hpp"
 #include "components.hpp"
+#include "mesh_manager.hpp"
 
 // Tile class
 class Tile

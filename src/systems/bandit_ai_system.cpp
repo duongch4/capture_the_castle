@@ -193,7 +193,7 @@ void BanditAiSystem::handle_chase(
 		chase_time = 0;
 		return;
 	}
-	
+
 	if (can_move(curr_tile) && can_chase(distance_1, distance_2, chase_time))
 	{
 		chase(distance_1, distance_2, bandit);
@@ -298,7 +298,7 @@ bool BanditAiSystem::is_target_move_away_bandit(
 //		chase_time = 0;
 //		return;
 //	}
-//	
+//
 //	if (!can_search(m_targets[0]) && !can_search(m_targets[1]))
 //	{
 //		state = State::IDLE;
@@ -359,7 +359,7 @@ bool BanditAiSystem::is_target_move_away_bandit(
 //	vec2 prev_pos = bandit_pos;
 //	//for (auto tile : path)
 //	//{
-//	if (path_idx < path.size()) 
+//	if (path_idx < path.size())
 //	{
 //		Tile tile = path[path_idx++];
 //		vec2 tile_pos = tile.get_position();
@@ -420,7 +420,7 @@ bool BanditAiSystem::is_target_move_away_bandit(
 //
 //		std::vector<Tile> adj_list = m_tilemap->get_adjacent_tiles(curr.get_position().x, curr.get_position().y);
 //
-//		for (size_t i = 0; i < adj_list.size(); ++i) 
+//		for (size_t i = 0; i < adj_list.size(); ++i)
 //		{
 //			Tile next = adj_list[i];
 //
@@ -482,3 +482,12 @@ bool BanditAiSystem::is_target_move_away_bandit(
 //{
 //	return (a.get_idx() == b.get_idx());
 //}
+
+void BanditAiSystem::reset() {
+    m_idle_times.clear();
+    m_chase_times.clear();
+    m_states.clear();
+    m_bandits.clear();
+    m_targets.clear();
+    m_path.clear();
+}

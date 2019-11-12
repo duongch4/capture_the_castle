@@ -1,6 +1,7 @@
 #include "helpbtn.hpp"
 
 #include <cmath>
+#include <mesh_manager.hpp>
 
 void HelpButton::init(vec2 screen_size) {
     currIndex = 0;
@@ -21,12 +22,13 @@ void HelpButton::init(vec2 screen_size) {
             fprintf(stderr, "Failed to load tile texture!");
         }
     }
-    mesh.init(helpBtnSprite.width, helpBtnSprite.height, (float) helpBtnSprite.height, (float) helpBtnSprite.height, (float)currIndex, 0.f, 0);
+    mesh.id = MeshManager::instance()->init_mesh(helpBtnSprite.width, helpBtnSprite.height,
+            (float) helpBtnSprite.height, (float) helpBtnSprite.height, (float)currIndex, 0.f, 0);
 }
 
 void HelpButton::destroy() {
     effect.release();
-    mesh.release();
+    MeshManager::instance()->release(mesh.id);
 }
 
 void HelpButton::draw(const mat3 &projection) {
@@ -57,9 +59,9 @@ void HelpButton::draw(const mat3 &projection) {
     GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
 
     // Setting vertices and indices
-    glBindVertexArray(mesh.vao);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+    MeshManager::instance()->bindVAO(mesh.id);
+    MeshManager::instance()->bindVBO(mesh.id);
+    MeshManager::instance()->bindIBO(mesh.id);
 
     // Input data location as in the vertex buffer
     GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
@@ -104,9 +106,11 @@ bool HelpButton::mouseOnButton(vec2 mouseloc) {
 void HelpButton::onHover(bool isHovering) {
     if (isHovering && currIndex == 0) {
         currIndex = 1;
-        mesh.updateSprite(helpBtnSprite.width, helpBtnSprite.height, helpBtnSprite.height, helpBtnSprite.height, currIndex, 0,0);
+        MeshManager::instance()->update_sprite(mesh.id,helpBtnSprite.width, helpBtnSprite.height,
+                helpBtnSprite.height, helpBtnSprite.height, currIndex, 0,0);
     } else if (!isHovering && currIndex == 1) {
         currIndex = 0;
-        mesh.updateSprite(helpBtnSprite.width, helpBtnSprite.height, helpBtnSprite.height, helpBtnSprite.height, currIndex, 0,0);
+        MeshManager::instance()->update_sprite(mesh.id, helpBtnSprite.width, helpBtnSprite.height,
+                helpBtnSprite.height, helpBtnSprite.height, currIndex, 0,0);
     }
 }
