@@ -1,6 +1,8 @@
 
 #include <mesh_manager.hpp>
 #include "game.hpp"
+#include "menu.hpp"
+
 Game::Game() = default;
 
 bool Game::init_state(World* world) {
@@ -56,6 +58,9 @@ bool Game::init_game() {
     // Tilemap initialization
     tilemap->init();
 
+    // Castles
+    registerCastles();
+
     // Players
     std::vector<Entity> players;
     registerPlayers(players);
@@ -63,9 +68,6 @@ bool Game::init_game() {
 
     banditAiSystem->init(tilemap, players);
     soldierAiSystem->init(tilemap, players);
-
-    // Castles
-    registerCastles();
 
     // Item boards
     registerItemBoards(m_world->get_screen_size());
@@ -197,6 +199,7 @@ void Game::on_mouse_click(GLFWwindow *pWindow, int button, int action, int mods)
             switch (win_window.checkButtonClicks({ (float) xpos, (float) ypos }))
             {
                 case (ButtonActions::MAIN):
+                    m_world->set_state(new Menu());
                     break;
                 case (ButtonActions::QUIT):
                     m_world->set_window_closed();

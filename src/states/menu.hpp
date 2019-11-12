@@ -6,6 +6,7 @@
 #define CAPTURE_THE_CASTLE_MENU_HPP
 
 #include <world.hpp>
+#include <ui/menus_background.hpp>
 #include "state.hpp"
 
 class Menu : public State {
@@ -17,6 +18,16 @@ class Menu : public State {
     void draw() override;
     void reset() override;
     void destroy() override;
+
+
+private:
+    ButtonActions checkButtonClicks(vec2 mouseloc);
+
+    MenuBackground background;
+    PopUpButton quit_btn;
+    PopUpButton new_game_btn;
+    PopUpButton how_to_play_btn;
+    World* m_world;
 };
 
 

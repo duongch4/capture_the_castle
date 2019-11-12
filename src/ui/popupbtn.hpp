@@ -21,6 +21,8 @@ public:
 
     void onHover(bool isHovering);
 
+    void setScale(vec2 scale);
+
 private:
     MeshComponent mesh{};
     Effect effect{};
