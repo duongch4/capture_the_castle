@@ -39,15 +39,14 @@ set(SOURCE_FILES
         src/systems/render_system.cpp
         src/systems/bandit_spawn_system.cpp
 		src/systems/bandit_ai_system.cpp
+		src/systems/soldier_ai_system.cpp
         src/texture_manager.cpp
         src/mesh_manager.cpp
         src/components.cpp
-        src/player.cpp
         src/world.cpp
         src/background.cpp
         src/tile.cpp
 		src/tilemap.cpp
-        src/soldier.cpp
         src/states/game.cpp
         src/states/state.hpp
         src/states/menu.cpp
@@ -69,14 +68,13 @@ set(SOURCE_FILES
         src/systems/render_system.hpp
         src/systems/bandit_spawn_system.hpp
         src/systems/bandit_ai_system.hpp
+		src/systems/soldier_ai_system.hpp
         src/texture_manager.hpp
         src/mesh_manager.hpp
-        src/player.hpp
         src/world.hpp
         src/background.hpp
         src/tile.hpp
 		src/tilemap.hpp
-        src/soldier.hpp
         src/ui/helpbtn.cpp
         src/ui/helpbtn.hpp
         src/ui/help_window.cpp
@@ -100,7 +98,12 @@ set(SOURCE_FILES
         src/systems/item_spawn_system.cpp
         src/systems/item_spawn_system.hpp
         src/states/game.hpp
-        src/states/menu.hpp)
+        src/states/menu.hpp
+        src/systems/box_collision_system.hpp
+        src/ui/menus_window.cpp
+        src/ui/menus_window.hpp
+        src/ui/menus_background.cpp
+        src/ui/menus_background.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

@@ -15,6 +15,9 @@ void WinWindow::init(vec2 screen_size) {
 void WinWindow::destroy() {
     winBackground.destroy();
     winnerDp.destroy();
+    restart_btn.destroy();
+    main_btn.destroy();
+    quit_btn.destroy();
 }
 
 void WinWindow::draw(const mat3 &projection) {

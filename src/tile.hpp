@@ -39,7 +39,7 @@ public:
 	// Set tile index when making a tilemap
 	void set_idx(std::pair<int, int> idx);
 	// Get tile index
-	std::pair<int, int> get_idx();
+	std::pair<int, int> get_idx() const;
 
 	int get_id();
 

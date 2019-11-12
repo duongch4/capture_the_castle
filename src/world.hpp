@@ -29,6 +29,7 @@
 #include <systems/bandit_ai_system.hpp>
 #include <systems/collision_system.hpp>
 #include <systems/box_collision_system.hpp>
+#include <systems/soldier_ai_system.hpp>
 
 #include "common.hpp"
 #include "components.hpp"
@@ -59,6 +60,8 @@ public:
 	void draw();
 
     vec2 get_screen_size();
+
+    float get_screen_scale();
 
     void get_buffer_size(int &w, int &h);
 

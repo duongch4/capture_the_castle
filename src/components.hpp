@@ -100,8 +100,11 @@ struct Team {
 };
 
 struct BanditSpawnComponent {};
-struct BanditAIComponent {};
+struct BanditAiComponent {};
 
 struct PlayerInputControlComponent {};
+
+struct PlaceableComponent {};
+struct SoldierAiComponent {};
 
 #endif //CAPTURE_THE_CASTLE_COMPONENTS_HPP
