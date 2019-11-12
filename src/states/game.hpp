@@ -39,6 +39,8 @@ public:
     void registerSpriteRenderSystem();
     void registerPlayerInputSystem();
     void registerMovementSystem(const vec2& screen);
+    void registerItemSpawnSystem();
+
 
     void renderTilesToScreenTexture();
 
