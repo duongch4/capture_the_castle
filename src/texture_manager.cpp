@@ -7,13 +7,12 @@
 #include "common.hpp"
 #include "components.hpp"
 
-TextureManager* TextureManager::inst(0);
+//TextureManager* TextureManager::inst(0);
 
-TextureManager* TextureManager::instance()
+TextureManager& TextureManager::instance()
 {
-    if(!inst)
-        inst = new TextureManager();
-    return inst;
+	static TextureManager instance;
+	return instance;
 }
 
 TextureManager::TextureManager()
@@ -24,7 +23,7 @@ TextureManager::TextureManager()
 TextureManager::~TextureManager()
 {
     unload_all_textures();
-    inst = 0;
+    //inst = 0;
 }
 
 bool TextureManager::load_from_file(Sprite& sprite, bool overwrite)

@@ -117,7 +117,7 @@ void PlayerInputSystem::handle_soldier_spawn(
 	if (can_spawn(soldier_count, wait_time, transform, tile, maze_region))
 	{
 		vec2 position = tile.get_position();
-		Transform transform_soldier = Transform{ position, position,{ 0.08f, 0.08f }, position };
+		Transform transform_soldier = Transform{ position, position,{ 0.08f * 5 / 7, 0.08f }, position };
 		Motion motion_soldier = Motion{ { 0, 0 }, 100.f };
 		spawn_soldier(
 			transform_soldier, motion_soldier,
@@ -156,6 +156,8 @@ void PlayerInputSystem::onReleaseListener(KeyReleaseEvent* input)
 
 void PlayerInputSystem::reset() {
     keysPressed.clear();
+	this->entities.clear();
+
 }
 
 void PlayerInputSystem::place_bomb(const Tile& tile, const TeamType& team_type) {
@@ -205,12 +207,12 @@ void PlayerInputSystem::spawn_soldier(
 	soldierEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
 	ecsManager.addComponent<Effect>(soldier, soldierEffect);
 	Sprite soldierSprite = { texture_path };
-	TextureManager::instance()->load_from_file(soldierSprite);
+	TextureManager::instance().load_from_file(soldierSprite);
 	soldierSprite.sprite_index = { 0 , 3 };
 	soldierSprite.sprite_size = { soldierSprite.width / 7.0f , soldierSprite.height / 5.0f };
 	ecsManager.addComponent<Sprite>(soldier, soldierSprite);
 	MeshComponent soldierMesh{};
-	soldierMesh.id = MeshManager::instance()-> init_mesh(
+	soldierMesh.id = MeshManager::instance().init_mesh(
 		soldierSprite.width, soldierSprite.height, soldierSprite.sprite_size.x, soldierSprite.sprite_size.y,
 		soldierSprite.sprite_index.x, soldierSprite.sprite_index.y, 0
 	);

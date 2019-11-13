@@ -1,6 +1,8 @@
 
 #include <mesh_manager.hpp>
 #include "game.hpp"
+#include "menu.hpp"
+
 Game::Game() = default;
 
 bool Game::init_state(World* world) {
@@ -14,18 +16,6 @@ bool Game::init_state(World* world) {
 
     // Initialize the screen texture
     m_world->create_texture_from_window(m_screen_tex);
-
-    m_background_music = Mix_LoadMUS(audio_path("capturethecastle_background.wav"));
-
-    if (m_background_music == nullptr)
-    {
-        fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
-                audio_path("music.wav"));
-        return false;
-    }
-
-    // Playing background music indefinitely
-    Mix_PlayMusic(m_background_music, -1);
 
     // ECS initialization
     // Register ALL Components
@@ -57,6 +47,9 @@ bool Game::init_game() {
     // Tilemap initialization
     tilemap->init();
 
+    // Castles
+    registerCastles();
+
     // Players
     std::vector<Entity> players;
     registerPlayers(players);
@@ -64,9 +57,6 @@ bool Game::init_game() {
 
     banditAiSystem->init(tilemap, players);
     soldierAiSystem->init(tilemap, players);
-
-    // Castles
-    registerCastles();
 
     // Item boards
     registerItemBoards(m_world->get_screen_size());
@@ -80,9 +70,24 @@ bool Game::init_game() {
     // Winner's Window Initialization
     win_window.init(m_screen_size);
 
+    // Firework particle
+    firework.init(m_screen_size);
+
     //--------------------------------------------------------------------------
     // Render all the tiles once to the screen texture
     renderTilesToScreenTexture();
+
+    m_background_music = Mix_LoadMUS(audio_path("capturethecastle_background.wav"));
+
+    if (m_background_music == nullptr)
+    {
+        fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+                audio_path("music.wav"));
+        return false;
+    }
+
+    // Playing background music indefinitely
+    Mix_PlayMusic(m_background_music, -1);
 
     return true;
 }
@@ -99,6 +104,8 @@ bool Game::update(float elapsed_ms) {
         movementSystem->update(elapsed_ms);
         itemSpawnSystem->update(elapsed_ms);
         soldierAiSystem->update(elapsed_ms);
+    } else if (currState == GameState::WIN) {
+        firework.update(elapsed_ms);
     }
     return true;
 }
@@ -137,6 +144,7 @@ void Game::draw() {
 
     if (currState == GameState::WIN) {
         win_window.draw(projection_2D);
+        firework.draw(projection_2D);
     }
 }
 
@@ -201,8 +209,10 @@ void Game::on_mouse_click(GLFWwindow *pWindow, int button, int action, int mods)
             {
                 case (ButtonActions::CLOSE):
                     currState = GameState :: NORMAL;
+                    help_window.resetWindow();
                     break;
                 case (ButtonActions::HOWTOPLAY):
+                    help_window.showHowToPlay();
                     break;
                 default:
                     break;
@@ -211,6 +221,7 @@ void Game::on_mouse_click(GLFWwindow *pWindow, int button, int action, int mods)
             switch (win_window.checkButtonClicks({ (float) xpos, (float) ypos }))
             {
                 case (ButtonActions::MAIN):
+                    m_world->set_state(new Menu());
                     break;
                 case (ButtonActions::QUIT):
                     m_world->set_window_closed();
@@ -247,6 +258,8 @@ void Game::reset() {
     help_window.destroy();
     std::cout << "Help window destroyed" << std::endl;
     win_window.destroy();
+    std::cout << "Firework destroyed" << std::endl;
+    firework.destroy();
     std::cout << "Win window destroyed" << std::endl;
     std::cout << "Reinitializing game state" << std::endl;
     init_state(m_world);
@@ -267,6 +280,7 @@ void Game::destroy() {
     help_btn.destroy();
     help_window.destroy();
     win_window.destroy();
+    firework.destroy();
 }
 
 Game::~Game() {
@@ -281,10 +295,10 @@ void Game::registerItemBoard(const Transform& transform, const TeamType& team_ty
     itemBoardEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(itemBoard, itemBoardEffect);
     Sprite itemBoardSprite = { texture_path };
-    TextureManager::instance()->load_from_file(itemBoardSprite);
+    TextureManager::instance().load_from_file(itemBoardSprite);
     ecsManager.addComponent<Sprite>(itemBoard, itemBoardSprite);
     MeshComponent itemBoardMesh{};
-    itemBoardMesh.id = MeshManager::instance()->init_mesh(itemBoardSprite.width, itemBoardSprite.height);
+    itemBoardMesh.id = MeshManager::instance().init_mesh(itemBoardSprite.width, itemBoardSprite.height);
     ecsManager.addComponent<MeshComponent>(itemBoard, itemBoardMesh);
 }
 
@@ -299,12 +313,12 @@ Entity Game::registerPlayer(const Transform& transform, const Motion& motion, co
     playerEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(player, playerEffect);
     Sprite playerSprite = { texture_path };
-    TextureManager::instance()->load_from_file(playerSprite);
+    TextureManager::instance().load_from_file(playerSprite);
     playerSprite.sprite_index = { 0 , 0 };
     playerSprite.sprite_size = { playerSprite.width / 7.0f , playerSprite.height / 5.0f };
     ecsManager.addComponent<Sprite>(player, playerSprite);
     MeshComponent playerMesh{};
-    playerMesh.id = MeshManager::instance()->init_mesh(playerSprite.width, playerSprite.height, playerSprite.sprite_size.x, playerSprite.sprite_size.y, playerSprite.sprite_index.x, playerSprite.sprite_index.y, 0);
+    playerMesh.id = MeshManager::instance().init_mesh(playerSprite.width, playerSprite.height, playerSprite.sprite_size.x, playerSprite.sprite_size.y, playerSprite.sprite_index.x, playerSprite.sprite_index.y, 0);
     ecsManager.addComponent<MeshComponent>(player, playerMesh);
     ecsManager.addComponent(
             player,
@@ -329,10 +343,10 @@ void Game::registerCastle(const Transform& transform, const TeamType& team_type,
     castleEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(castle, castleEffect);
     Sprite castleSprite = { texture_path };
-    TextureManager::instance()->load_from_file(castleSprite);
+    TextureManager::instance().load_from_file(castleSprite);
     ecsManager.addComponent<Sprite>(castle, castleSprite);
     MeshComponent castleMesh{};
-    castleMesh.id = MeshManager::instance()->init_mesh(castleSprite.width, castleSprite.height);
+    castleMesh.id = MeshManager::instance().init_mesh(castleSprite.width, castleSprite.height);
     ecsManager.addComponent<MeshComponent>(castle, castleMesh);
     ecsManager.addComponent(
             castle,
@@ -381,14 +395,14 @@ void Game::registerBoxCollisionSystem()
 void Game::registerCollisionSystem()
 {
     collisionSystem = ecsManager.registerSystem<CollisionSystem>();
-    {
+    
         Signature signature;
         signature.set(ecsManager.getComponentType<Transform>());
         signature.set(ecsManager.getComponentType<Team>());
         signature.set(ecsManager.getComponentType<C_Collision>());
         // signature.set(ecsManager.getComponentType<Motion>());
         ecsManager.setSystemSignature<CollisionSystem>(signature);
-    }
+    
     collisionSystem->init();
 }
 
@@ -512,7 +526,7 @@ void Game::registerPlayers(std::vector<Entity>& players)
             { 120.f, m_screen_size.y / 2 + 130.f },
             // { 120.f - castleWidth, m_screen_size.y / 2 - castleHeight},  debugging purpose
             { 120.f, m_screen_size.y / 2 + 130.f },
-            { 0.09f, 0.09f },
+            { 0.09f * 5 / 7, 0.09f },
             { 120.f, m_screen_size.y / 2 + 130.f }
     };
     Entity player1 = registerPlayer(transform_player1, motion_player, TeamType::PLAYER1, textures_path("red_king_sprite_sheet.png"));
@@ -523,7 +537,7 @@ void Game::registerPlayers(std::vector<Entity>& players)
             { m_screen_size.x - 120.f, m_screen_size.y / 2 + 130.f },
             // { 120.f, m_screen_size.y / 2}, debugging purpose
             { m_screen_size.x - 120.f, m_screen_size.y / 2 + 130.f },
-            { 0.09f, 0.09f },
+            { 0.09f * 5 / 7, 0.09f },
             { 120.f, m_screen_size.y / 2 + 130.f }
     };
     Entity player2 = registerPlayer(transform_player2, motion_player, TeamType::PLAYER2, textures_path("blue_king_sprite_sheet.png"));

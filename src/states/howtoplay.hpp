@@ -1,15 +1,12 @@
-//
-// Created by Owner on 2019-11-11.
-//
-
-#ifndef CAPTURE_THE_CASTLE_MENU_HPP
-#define CAPTURE_THE_CASTLE_MENU_HPP
+#ifndef CAPTURE_THE_CASTLE_HOWTOPLAY_HPP
+#define CAPTURE_THE_CASTLE_HOWTOPLAY_HPP
 
 #include <world.hpp>
-#include <ui/menus_background.hpp>
+#include <ui/howtoplay_background.hpp>
+#include <ui/play_instructions.hpp>
 #include "state.hpp"
 
-class Menu : public State {
+class HowToPlay : public State {
     bool init_state(World* world) override;
     void on_key(int key, int action) override;
     void on_mouse_click(GLFWwindow *window, int button, int action, int mods) override;
@@ -23,12 +20,13 @@ class Menu : public State {
 private:
     ButtonActions checkButtonClicks(vec2 mouseloc);
 
-    MenuBackground background;
+    HowToPlayBackground background;
+    PlayInstructions instructions;
     PopUpButton quit_btn;
     PopUpButton new_game_btn;
-    PopUpButton how_to_play_btn;
+    PopUpButton main_menu_btn;
     World* m_world;
 };
 
 
-#endif //CAPTURE_THE_CASTLE_MENU_HPP
+#endif //CAPTURE_THE_CASTLE_HOWTOPLAY_HPP

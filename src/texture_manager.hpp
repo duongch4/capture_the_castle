@@ -14,7 +14,7 @@
 class TextureManager {
 
 public:
-    static TextureManager* instance();
+    static TextureManager& instance();
     ~TextureManager();
 
     bool load_from_file(Sprite& sprite, bool overwrite = false);
@@ -24,7 +24,7 @@ public:
 
 protected:
     TextureManager();
-    static TextureManager* inst;
+    //static TextureManager* inst;
     std::string textures_path = data_path "/textures/";
     std::map<std::string, GLuint> nameToId;
 };

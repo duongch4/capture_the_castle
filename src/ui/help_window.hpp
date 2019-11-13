@@ -3,8 +3,10 @@
 #include "common.hpp"
 #include "components.hpp"
 #include "closebtn.hpp"
-#include "help_instructions.hpp"
+#include "help_background.hpp"
 #include "ecs/events.hpp"
+#include "popupbtn.hpp"
+#include "play_instructions.hpp"
 
 class HelpWindow
 {
@@ -20,7 +22,13 @@ public:
 
     void checkButtonHovers(vec2 mouseloc);
 
+    void showHowToPlay();
+
+    void resetWindow();
+
 private:
     CloseButton close_btn;
-    HelpInstructions help_instructions;
+    HelpBackground background;
+    PopUpButton how_to_play_btn;
+    PlayInstructions instructions;
 };

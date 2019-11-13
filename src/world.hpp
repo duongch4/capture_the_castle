@@ -37,6 +37,7 @@
 #include "tilemap.hpp"
 #include <ui/help_window.hpp>
 #include <ui/win_window.hpp>
+#include <ui/firework.hpp>
 #include <states/state.hpp>
 
 // Container for all our entities and game logic. Individual rendering / update is

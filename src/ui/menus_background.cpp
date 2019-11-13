@@ -7,7 +7,7 @@ void MenuBackground::init(vec2 screen_size) {
     transform = Transform {
             { screen_size.x / 2, screen_size.y / 2 },
             { screen_size.x / 2, screen_size.y / 2 },
-            {0.8f, 0.8f },
+            {0.3f, 0.3f },
             { screen_size.x / 2, screen_size.y / 2 }
     };
     effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
@@ -21,12 +21,12 @@ void MenuBackground::init(vec2 screen_size) {
         }
     }
 
-    mesh.id = MeshManager::instance()->init_mesh(menubgSprite.width, menubgSprite.height);
+    mesh.id = MeshManager::instance().init_mesh(menubgSprite.width, menubgSprite.height);
 }
 
 void MenuBackground::destroy() {
     effect.release();
-    MeshManager::instance()->release(mesh.id);
+    MeshManager::instance().release(mesh.id);
 }
 
 void MenuBackground::draw(const mat3 &projection) {
@@ -57,9 +57,9 @@ void MenuBackground::draw(const mat3 &projection) {
     GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
 
     // Setting vertices and indices
-    MeshManager::instance()->bindVAO(mesh.id);
-    MeshManager::instance()->bindVBO(mesh.id);
-    MeshManager::instance()->bindIBO(mesh.id);
+    MeshManager::instance().bindVAO(mesh.id);
+    MeshManager::instance().bindVBO(mesh.id);
+    MeshManager::instance().bindIBO(mesh.id);
 
     // Input data location as in the vertex buffer
     GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");

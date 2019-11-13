@@ -81,14 +81,18 @@ set(SOURCE_FILES
         src/ui/help_window.hpp
         src/ui/closebtn.cpp
         src/ui/closebtn.hpp
-        src/ui/help_instructions.cpp
-        src/ui/help_instructions.hpp
+        src/ui/help_background.cpp
+        src/ui/help_background.hpp
         src/ui/win_window.cpp
         src/ui/win_window.hpp
         src/ui/win_background.cpp
         src/ui/win_background.hpp
         src/ui/win_winnerDp.cpp
         src/ui/win_winnerDp.hpp
+        src/ui/howtoplay_background.cpp
+        src/ui/howtoplay_background.hpp
+        src/ui/play_instructions.cpp
+        src/ui/play_instructions.hpp
         src/ui/popupbtn.cpp
         src/ui/popupbtn.hpp
         src/systems/collision_system.cpp
@@ -99,11 +103,14 @@ set(SOURCE_FILES
         src/systems/item_spawn_system.hpp
         src/states/game.hpp
         src/states/menu.hpp
+        src/states/howtoplay.cpp
+        src/states/howtoplay.hpp
         src/systems/box_collision_system.hpp
-        src/ui/menus_window.cpp
-        src/ui/menus_window.hpp
         src/ui/menus_background.cpp
-        src/ui/menus_background.hpp src/systems/item_board_system.cpp src/systems/item_board_system.hpp)
+        src/systems/item_board_system.cpp 
+        src/systems/item_board_system.hpp
+        src/ui/menus_background.hpp 
+        src/ui/firework.cpp src/ui/firework.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

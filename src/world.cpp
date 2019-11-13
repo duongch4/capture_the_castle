@@ -6,6 +6,7 @@
 #include <cassert>
 #include <sstream>
 #include <states/game.hpp>
+#include <states/menu.hpp>
 
 // Same as static in c, local to compilation unit
 namespace
@@ -117,7 +118,7 @@ bool World::init(vec2 screen)
 
 	//--------------------------------------------------------------------------
 	// Initializing state
-	return set_state(new Game());
+	return set_state(new Menu());
 }
 
 bool World::set_state(State* new_state) {
@@ -132,8 +133,8 @@ bool World::set_state(State* new_state) {
 void World::destroy() {
     Mix_CloseAudio();
     m_state->destroy();
-    TextureManager::instance()->unload_all_textures();
-    MeshManager::instance()->release_all();
+    TextureManager::instance().unload_all_textures();
+    MeshManager::instance().release_all();
     glfwDestroyWindow(m_window);
 }
 

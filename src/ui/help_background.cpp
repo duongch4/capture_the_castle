@@ -1,9 +1,9 @@
-#include "help_instructions.hpp"
+#include "help_background.hpp"
 
 #include <cmath>
 #include <mesh_manager.hpp>
 
-void HelpInstructions::init(vec2 screen_size) {
+void HelpBackground::init(vec2 screen_size) {
     transform = Transform {
             { screen_size.x / 2, screen_size.y / 2 },
             { screen_size.x / 2, screen_size.y / 2 },
@@ -20,15 +20,15 @@ void HelpInstructions::init(vec2 screen_size) {
             fprintf(stderr, "Failed to load tile texture!");
         }
     }
-    mesh.id = MeshManager::instance()->init_mesh(helpInstrSprite.width, helpInstrSprite.height);
+    mesh.id = MeshManager::instance().init_mesh(helpInstrSprite.width, helpInstrSprite.height);
 }
 
-void HelpInstructions::destroy() {
+void HelpBackground::destroy() {
     effect.release();
-    MeshManager::instance()->release(mesh.id);
+    MeshManager::instance().release(mesh.id);
 }
 
-void HelpInstructions::draw(const mat3 &projection) {
+void HelpBackground::draw(const mat3 &projection) {
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // begin transform
     out = { { 1.f, 0.f, 0.f }, { 0.f, 1.f, 0.f}, { 0.f, 0.f, 1.f} };
@@ -56,9 +56,9 @@ void HelpInstructions::draw(const mat3 &projection) {
     GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
 
     // Setting vertices and indices
-    MeshManager::instance()->bindVAO(mesh.id);
-    MeshManager::instance()->bindVBO(mesh.id);
-    MeshManager::instance()->bindIBO(mesh.id);
+    MeshManager::instance().bindVAO(mesh.id);
+    MeshManager::instance().bindVBO(mesh.id);
+    MeshManager::instance().bindIBO(mesh.id);
 
     // Input data location as in the vertex buffer
     GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
@@ -83,11 +83,11 @@ void HelpInstructions::draw(const mat3 &projection) {
 
 }
 
-vec2 HelpInstructions::get_position() {
+vec2 HelpBackground::get_position() {
     return vec2{transform.position.x, transform.position.y };
 }
 
-vec2 HelpInstructions::get_bounding_box() {
+vec2 HelpBackground::get_bounding_box() {
     return {(float)(fabs(transform.scale.x) * helpInstrSprite.width),
             (float)(fabs(transform.scale.y) * helpInstrSprite.height)};
 }
