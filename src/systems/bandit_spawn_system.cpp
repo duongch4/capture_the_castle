@@ -50,7 +50,7 @@ void BanditSpawnSystem::spawn_bandit() {
 	banditSprite.sprite_index = { 0 , 3 };
 	banditSprite.sprite_size = { banditSprite.width / 7.0f , banditSprite.height / 5.0f };
     ecsManager.addComponent<Sprite>(bandit, banditSprite);
-    MeshComponent banditMesh{MeshManager::instance()->init_mesh(
+    MeshComponent banditMesh{MeshManager::instance().init_mesh(
             banditSprite.width, banditSprite.height, banditSprite.sprite_size.x, banditSprite.sprite_size.y,
             banditSprite.sprite_index.x, banditSprite.sprite_index.y, 0)
     };
@@ -66,5 +66,6 @@ void BanditSpawnSystem::spawn_bandit() {
 }
 
 void BanditSpawnSystem::reset() {
-
+	tilemap->destroy();
+	this->entities.clear();
 }

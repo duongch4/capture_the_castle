@@ -174,4 +174,6 @@ void SoldierAiSystem::reset() {
     m_soldiers.clear();
     m_targets.clear();
     m_prev_dirs.clear();
+	this->entities.clear();
+
 }

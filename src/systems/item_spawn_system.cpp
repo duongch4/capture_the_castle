@@ -68,7 +68,7 @@ void ItemSpawnSystem::spawn_item(){
     TextureManager::instance()->load_from_file(itemSprite);
     itemSprite.sprite_size = { itemSprite.width / 7.0f , itemSprite.height / 5.0f };
     ecsManager.addComponent<Sprite>(item, itemSprite);
-    MeshComponent itemMesh{MeshManager::instance()->init_mesh(
+    MeshComponent itemMesh{MeshManager::instance().init_mesh(
             itemSprite.width, itemSprite.height)};
     ecsManager.addComponent<MeshComponent>(item, itemMesh);
     float radius = itemSprite.width/2*0.08f;
@@ -82,6 +82,7 @@ void ItemSpawnSystem::spawn_item(){
 }
 
 void ItemSpawnSystem::reset() {
-
+	this->entities.clear();
+	//tile_map->destroy();
 }
 

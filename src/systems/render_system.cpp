@@ -69,9 +69,9 @@ void SpriteRenderSystem::draw(mat3 projection) {
         GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
 
         // Setting vertices and indices
-        MeshManager::instance()->bindVAO(mesh.id);
-        MeshManager::instance()->bindVBO(mesh.id);
-        MeshManager::instance()->bindIBO(mesh.id);
+        MeshManager::instance().bindVAO(mesh.id);
+        MeshManager::instance().bindVBO(mesh.id);
+        MeshManager::instance().bindIBO(mesh.id);
 
         // Input data location as in the vertex buffer
         GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
@@ -99,5 +99,6 @@ void SpriteRenderSystem::draw(mat3 projection) {
 }
 
 void SpriteRenderSystem::reset() {
+	this->entities.clear();
 
 }

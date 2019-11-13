@@ -490,4 +490,5 @@ void BanditAiSystem::reset() {
     m_bandits.clear();
     m_targets.clear();
     m_path.clear();
+	this->entities.clear();
 }

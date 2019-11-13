@@ -4,17 +4,16 @@
 
 #include "mesh_manager.hpp"
 
-MeshManager* MeshManager::inst(0);
+//MeshManager* MeshManager::inst(0);
 
-MeshManager* MeshManager::instance() {
-    if(!inst)
-        inst = new MeshManager();
-    return inst;
+MeshManager& MeshManager::instance() {
+	static MeshManager instance;
+	return instance;
 }
 
 MeshManager::~MeshManager() {
     release_all();
-    inst = 0;
+    //inst = 0;
 }
 
 MeshManager::MeshManager() {

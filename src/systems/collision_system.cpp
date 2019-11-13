@@ -145,5 +145,10 @@ bool CollisionSystem::collideWithCastle(Entity player, Entity castle){
 }
 
 void CollisionSystem::reset() {
-
+	//tileMap->destroy();
+	while (!collision_queue.empty())
+	{
+		collision_queue.pop();
+	}
+	this->entities.clear();
 }

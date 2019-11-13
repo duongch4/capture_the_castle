@@ -134,7 +134,7 @@ void World::destroy() {
     Mix_CloseAudio();
     m_state->destroy();
     TextureManager::instance()->unload_all_textures();
-    MeshManager::instance()->release_all();
+    MeshManager::instance().release_all();
     glfwDestroyWindow(m_window);
 }
 
