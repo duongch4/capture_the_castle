@@ -460,6 +460,7 @@ void Game::registerComponents()
     ecsManager.registerComponent<PlaceableComponent>();
     ecsManager.registerComponent<SoldierAiComponent>();
     ecsManager.registerComponent<ItemComponent>();
+    ecsManager.registerComponent<ItemBoardComponent>();
 }
 
 void Game::registerSoldierAiSystem() {
@@ -470,6 +471,15 @@ void Game::registerSoldierAiSystem() {
         ecsManager.setSystemSignature<SoldierAiSystem>(signature);
     }
 }
+
+//void Game::registerItemBoardSystem() {
+//    itemBoardSystem = ecsManager.registerSystem<ItemBoardSystem>();
+//    {
+//        Signature  signature;
+//        signature.set(ecsManager.getComponentType<ItemBoardComponent>());
+//        ecsManager.setSystemSignature<itemBoardSystem>(signature);
+//    }
+//}
 
 void Game::registerCastles()
 {

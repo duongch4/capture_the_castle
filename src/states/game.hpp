@@ -40,6 +40,7 @@ public:
     void registerPlayerInputSystem();
     void registerMovementSystem(const vec2& screen);
     void registerItemSpawnSystem();
+    void registerItemBoardSystem();
 
 
     void renderTilesToScreenTexture();
@@ -73,6 +74,8 @@ private:
     std::shared_ptr<CollisionSystem> collisionSystem;
     std::shared_ptr<BoxCollisionSystem> boxCollisionSystem;
     std::shared_ptr<ItemSpawnSystem> itemSpawnSystem;
+//    std::shared_ptr<ItemBoardSystem> itemBoardSystem;
+
 
     void winListener(WinEvent* winEvent);
     bool init_game();

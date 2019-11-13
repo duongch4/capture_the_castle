@@ -29,7 +29,7 @@ private:
 
     const std::vector<InputKeys> PLAYER2KEYS = {
 		InputKeys::UP, InputKeys::DOWN, InputKeys::RIGHT, InputKeys::LEFT,
-		InputKeys::SLASH, InputKeys:: LEFT_SHIFT
+		InputKeys::SLASH, InputKeys:: RIGHT_SHIFT
 	};
 
 	std::map<InputKeys, bool> keysPressed;
