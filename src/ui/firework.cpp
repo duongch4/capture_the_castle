@@ -59,6 +59,8 @@ bool Firework::init(vec2 screen_size) {
     if (gl_has_errors())
         return false;
 
+    m_pop = Mix_LoadWAV(audio_path("capturethecastle_firecracker.wav"));
+
     return effect.load_from_file(shader_path("firework.vs.glsl"), shader_path("firework.fs.glsl"));
 }
 
@@ -121,6 +123,7 @@ void Firework::kaboom(vec2 position) {
             m_particles.emplace_back(particle);
         }
     }
+    Mix_PlayChannel(-1, m_pop, 0);
 }
 
 void Firework::draw(const mat3& projection) {

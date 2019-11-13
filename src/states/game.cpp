@@ -77,6 +77,7 @@ bool Game::init_game() {
     // Render all the tiles once to the screen texture
     renderTilesToScreenTexture();
 
+    m_click = Mix_LoadWAV(audio_path("capturethecastle_button_click.wav"));
     m_background_music = Mix_LoadMUS(audio_path("capturethecastle_background.wav"));
 
     if (m_background_music == nullptr)
@@ -197,6 +198,7 @@ void Game::on_mouse_click(GLFWwindow *pWindow, int button, int action, int mods)
     glfwGetCursorPos(pWindow, &xpos, &ypos);
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         if (currState == GameState::NORMAL && help_btn.mouseOnButton({(float) xpos, (float) ypos })) {
+            Mix_PlayChannel(-1, m_click, 0);
             currState = GameState :: HELP;
         } else if (currState == GameState::HELP) {
             switch (help_window.checkButtonClicks({ (float) xpos, (float) ypos }))

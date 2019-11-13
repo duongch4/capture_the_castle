@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SDL_mixer.h>
 #include "common.hpp"
 #include "components.hpp"
 #include "win_background.hpp"
@@ -29,4 +30,5 @@ private:
     PopUpButton main_btn;
     PopUpButton quit_btn;
     WinBackground winBackground;
+    Mix_Chunk* m_click;
 };

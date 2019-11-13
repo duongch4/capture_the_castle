@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SDL_mixer.h>
 #include "common.hpp"
 #include "components.hpp"
 #include "closebtn.hpp"
@@ -31,4 +32,5 @@ private:
     HelpBackground background;
     PopUpButton how_to_play_btn;
     PlayInstructions instructions;
+    Mix_Chunk* m_click;
 };

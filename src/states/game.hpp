@@ -47,6 +47,7 @@ public:
 private:
     // Audio
     Mix_Music* m_background_music;
+    Mix_Chunk* m_click;
 
     // Screen size
     vec2 m_screen_size;

@@ -14,6 +14,17 @@ bool Menu::init_state(World *world) {
     how_to_play_btn.setScale({0.8, 0.4});
     new_game_btn.init({background_pos.x + offset.x, (float) (background_pos.y + (offset.y * 1.5))}, textures_path("ui/CaptureTheCastle_new_game_btn.png"));
     new_game_btn.setScale({0.8, 0.4});
+
+    m_click = Mix_LoadWAV(audio_path("capturethecastle_button_click.wav"));
+    m_background_music = Mix_LoadMUS(audio_path("capturethecastle_main_menu.wav"));
+
+    if (m_background_music == nullptr)
+    {
+        fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+                audio_path("music.wav"));
+        return false;
+    }
+    Mix_PlayMusic(m_background_music, -1);
     return true;
 }
 
@@ -71,10 +82,13 @@ void Menu::destroy() {
 
 ButtonActions Menu::checkButtonClicks(vec2 mouseloc) {
     if (new_game_btn.mouseOnButton(mouseloc)) {
+        Mix_PlayChannel(-1, m_click, 0);
         return ButtonActions::RESTART;
     } else if (quit_btn.mouseOnButton(mouseloc)) {
+        Mix_PlayChannel(-1, m_click, 0);
         return ButtonActions::QUIT;
     } else if (how_to_play_btn.mouseOnButton(mouseloc)){
+        Mix_PlayChannel(-1, m_click, 0);
         return ButtonActions::HOWTOPLAY;
     } else {
         return ButtonActions::NONE;

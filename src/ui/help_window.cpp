@@ -11,6 +11,8 @@ void HelpWindow::init(vec2 screen_size) {
     instructions.setScale({0.275, 0.275});
     how_to_play_btn.init({currPos.x + 200, currPos.y + 220},
                           textures_path("ui/CaptureTheCastle_how_to_play_btn.png"));
+
+    m_click = Mix_LoadWAV(audio_path("capturethecastle_button_click.wav"));
 }
 
 void HelpWindow::destroy() {
