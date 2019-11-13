@@ -174,10 +174,10 @@ void PlayerInputSystem::place_bomb(const Tile& tile, const TeamType& team_type) 
     itemEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(bomb, itemEffect);
     Sprite itemSprite = {power_up_path("CaptureTheCastle_powerup_bomb.png")};
-    TextureManager::instance()->load_from_file(itemSprite);
+    TextureManager::instance().load_from_file(itemSprite);
     itemSprite.sprite_size = { itemSprite.width / 7.0f , itemSprite.height / 5.0f };
     ecsManager.addComponent<Sprite>(bomb, itemSprite);
-    MeshComponent itemMesh{MeshManager::instance()->init_mesh(
+    MeshComponent itemMesh{MeshManager::instance().init_mesh(
             itemSprite.width, itemSprite.height)};
     ecsManager.addComponent<MeshComponent>(bomb, itemMesh);
     float radius = itemSprite.width/2*0.8f;
