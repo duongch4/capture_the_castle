@@ -1,34 +1,34 @@
-#include "help_instructions.hpp"
+#include "play_instructions.hpp"
 
 #include <cmath>
 #include <mesh_manager.hpp>
 
-void HelpInstructions::init(vec2 screen_size) {
+void PlayInstructions::init(vec2 pos, const char* texturePath) {
     transform = Transform {
-            { screen_size.x / 2, screen_size.y / 2 },
-            { screen_size.x / 2, screen_size.y / 2 },
-            {0.8f, 0.8f },
-            { screen_size.x / 2, screen_size.y / 2 }
+            { pos.x, pos.y},
+            { pos.x, pos.y},
+            {0.3f, 0.3f },
+            { pos.x, pos.y}
     };
     effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
 
     // Load shared texture
     if (!helpInstrSprite.is_valid())
     {
-        if (!helpInstrSprite.load_from_file(textures_path("ui/CaptureTheCastle_help_screen.png")))
+        if (!helpInstrSprite.load_from_file(texturePath))
         {
             fprintf(stderr, "Failed to load tile texture!");
         }
     }
-    mesh.id = MeshManager::instance().init_mesh(helpInstrSprite.width, helpInstrSprite.height);
+    mesh.id = MeshManager::instance()->init_mesh(helpInstrSprite.width, helpInstrSprite.height);
 }
 
-void HelpInstructions::destroy() {
+void PlayInstructions::destroy() {
     effect.release();
-    MeshManager::instance().release(mesh.id);
+    MeshManager::instance()->release(mesh.id);
 }
 
-void HelpInstructions::draw(const mat3 &projection) {
+void PlayInstructions::draw(const mat3 &projection) {
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // begin transform
     out = { { 1.f, 0.f, 0.f }, { 0.f, 1.f, 0.f}, { 0.f, 0.f, 1.f} };
@@ -56,9 +56,9 @@ void HelpInstructions::draw(const mat3 &projection) {
     GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
 
     // Setting vertices and indices
-    MeshManager::instance().bindVAO(mesh.id);
-    MeshManager::instance().bindVBO(mesh.id);
-    MeshManager::instance().bindIBO(mesh.id);
+    MeshManager::instance()->bindVAO(mesh.id);
+    MeshManager::instance()->bindVBO(mesh.id);
+    MeshManager::instance()->bindIBO(mesh.id);
 
     // Input data location as in the vertex buffer
     GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
@@ -83,11 +83,19 @@ void HelpInstructions::draw(const mat3 &projection) {
 
 }
 
-vec2 HelpInstructions::get_position() {
+vec2 PlayInstructions::get_position() {
     return vec2{transform.position.x, transform.position.y };
 }
 
-vec2 HelpInstructions::get_bounding_box() {
+vec2 PlayInstructions::get_bounding_box() {
     return {(float)(fabs(transform.scale.x) * helpInstrSprite.width),
             (float)(fabs(transform.scale.y) * helpInstrSprite.height)};
+}
+
+void PlayInstructions::loadNewInstruction(const char* texturePath) {
+    helpInstrSprite.load_from_file(texturePath);
+}
+
+void PlayInstructions::setScale(vec2 scale) {
+    transform.scale = scale;
 }

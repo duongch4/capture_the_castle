@@ -1,37 +1,34 @@
-#include "popupbtn.hpp"
-#include <string>
+#include "help_background.hpp"
+
 #include <cmath>
 #include <mesh_manager.hpp>
 
-void PopUpButton::init(vec2 pos, const char* texturePath) {
-    currIndex = 0;
+void HelpBackground::init(vec2 screen_size) {
     transform = Transform {
-            { pos.x, pos.y },
-            { pos.x, pos.y},
-            {0.5f, 0.25f},
-            { pos.x, pos.y }
-
+            { screen_size.x / 2, screen_size.y / 2 },
+            { screen_size.x / 2, screen_size.y / 2 },
+            {0.8f, 0.8f },
+            { screen_size.x / 2, screen_size.y / 2 }
     };
     effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
 
     // Load shared texture
-    if (!popupBtnSprite.is_valid())
+    if (!helpInstrSprite.is_valid())
     {
-        if (!popupBtnSprite.load_from_file(texturePath))
+        if (!helpInstrSprite.load_from_file(textures_path("ui/CaptureTheCastle_help_screen.png")))
         {
             fprintf(stderr, "Failed to load tile texture!");
         }
     }
-    mesh.id = MeshManager::instance().init_mesh(popupBtnSprite.width, popupBtnSprite.height, popupBtnSprite.width,
-            popupBtnSprite.height / 2, 0, currIndex, 0);
+    mesh.id = MeshManager::instance().init_mesh(helpInstrSprite.width, helpInstrSprite.height);
 }
 
-void PopUpButton::destroy() {
+void HelpBackground::destroy() {
     effect.release();
     MeshManager::instance().release(mesh.id);
 }
 
-void PopUpButton::draw(const mat3 &projection) {
+void HelpBackground::draw(const mat3 &projection) {
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // begin transform
     out = { { 1.f, 0.f, 0.f }, { 0.f, 1.f, 0.f}, { 0.f, 0.f, 1.f} };
@@ -73,7 +70,7 @@ void PopUpButton::draw(const mat3 &projection) {
 
     // Enabling and binding texture to slot 0
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, popupBtnSprite.id);
+    glBindTexture(GL_TEXTURE_2D, helpInstrSprite.id);
 
     // Setting uniform values to the currently bound program
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&out);
@@ -83,38 +80,14 @@ void PopUpButton::draw(const mat3 &projection) {
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
+
 }
 
-vec2 PopUpButton::get_position() {
-    return vec2{transform.position.x, transform.position.y};
+vec2 HelpBackground::get_position() {
+    return vec2{transform.position.x, transform.position.y };
 }
 
-vec2 PopUpButton::get_bounding_box() {
-    return {static_cast<float>(fabs(transform.scale.x) * popupBtnSprite.width),
-            static_cast<float>(fabs(transform.scale.y) * popupBtnSprite.height)};
-}
-
-bool PopUpButton::mouseOnButton(vec2 mouseloc) {
-    vec2 button_pos = get_position();
-    vec2 button_box = get_bounding_box();
-    return  mouseloc.x >= button_pos.x - button_box.x/2 &&
-            mouseloc.x <= button_pos.x + button_box.x/2 &&
-            mouseloc.y >= button_pos.y - button_box.y/2 &&
-            mouseloc.y <= button_pos.y + button_box.y/2;
-}
-
-void PopUpButton::onHover(bool isHovering) {
-    if (isHovering && currIndex == 0) {
-        currIndex = 1;
-        MeshManager::instance().update_sprite(mesh.id,popupBtnSprite.width, popupBtnSprite.height, popupBtnSprite.width,
-                                               popupBtnSprite.height / 2, 0, currIndex, 0);
-    } else if (!isHovering && currIndex == 1) {
-        currIndex = 0;
-        MeshManager::instance().update_sprite(mesh.id,popupBtnSprite.width, popupBtnSprite.height, popupBtnSprite.width,
-                                               popupBtnSprite.height / 2, 0, currIndex, 0);
-    }
-}
-
-void PopUpButton::setScale(vec2 scale) {
-    transform.scale = scale;
+vec2 HelpBackground::get_bounding_box() {
+    return {(float)(fabs(transform.scale.x) * helpInstrSprite.width),
+            (float)(fabs(transform.scale.y) * helpInstrSprite.height)};
 }

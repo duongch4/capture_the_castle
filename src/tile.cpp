@@ -45,7 +45,6 @@ bool Tile::init(int sprite_id, int num_horizontal, int num_vertical, int width, 
 	// Texture mapping start from the top left (0,0) to bottom right (1,1)
 	TexturedVertex vertices[4];
 	vertices[0].position = { -wr, +hr, -0.02f };
-	// TODO: +0.01f to prevent texture bleeding for now, fix this later
 	vertices[0].texcoord = { ((sprite_id - 1) % num_horizontal) * tile_width, int((sprite_id - 1) / num_horizontal) * tile_height + tile_act_height }; // Bottom left
 	vertices[1].position = { +wr, +hr, -0.02f };
 	vertices[1].texcoord = { (((sprite_id - 1) % num_horizontal) * tile_width) + tile_act_width, int((sprite_id - 1) / num_horizontal) * tile_height + tile_act_height }; // Bottom right
@@ -171,7 +170,7 @@ void Tile::set_idx(std::pair<int, int> idx)
 	tile_idx = idx;
 }
 
-std::pair<int, int> Tile::get_idx()
+std::pair<int, int> Tile::get_idx() const
 {
 	return tile_idx;
 }

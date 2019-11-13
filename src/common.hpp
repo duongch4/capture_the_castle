@@ -19,6 +19,8 @@
 #define textures_path(name)  data_path "/textures/" name
 #define audio_path(name) data_path  "/audio/" name
 #define mesh_path(name) data_path  "/meshes/" name
+#define power_up_path(name) data_path "/textures/power_ups/" name
+#define maze_path(name) data_path  "/maze/" name
 
 // Not much math is needed and there are already way too many libraries linked (:
 // If you want to do some overloads..
@@ -61,9 +63,16 @@ enum class CollisionLayer
     PLAYER1 = 1,    // bit 0
     PLAYER2 = 2,
     Enemy = 3,// bit 1
-    Tile = 4,        // bit 2
-    Castle = 5
+    Item = 4,
+    Tile = 5,        // bit 2
+    Castle = 6
 
+};
+
+enum class ItemType
+{
+    BOMB,
+    SHIELD
 };
 
 // Single Vertex Buffer element for non-textured meshes (coloured.vs.glsl & player.vs.glsl)

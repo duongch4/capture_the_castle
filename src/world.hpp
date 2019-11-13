@@ -27,6 +27,7 @@
 #include <systems/bandit_ai_system.hpp>
 #include <systems/collision_system.hpp>
 #include <systems/box_collision_system.hpp>
+#include <systems/soldier_ai_system.hpp>
 
 #include "common.hpp"
 #include "components.hpp"
@@ -34,6 +35,7 @@
 #include "tilemap.hpp"
 #include <ui/help_window.hpp>
 #include <ui/win_window.hpp>
+#include <ui/firework.hpp>
 #include <states/state.hpp>
 
 // Container for all our entities and game logic. Individual rendering / update is
@@ -57,6 +59,8 @@ public:
 	void draw();
 
     vec2 get_screen_size();
+
+    float get_screen_scale();
 
     void get_buffer_size(int &w, int &h);
 
