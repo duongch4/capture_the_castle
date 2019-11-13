@@ -17,18 +17,6 @@ bool Game::init_state(World* world) {
     // Initialize the screen texture
     m_world->create_texture_from_window(m_screen_tex);
 
-    m_background_music = Mix_LoadMUS(audio_path("capturethecastle_background.wav"));
-
-    if (m_background_music == nullptr)
-    {
-        fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
-                audio_path("music.wav"));
-        return false;
-    }
-
-    // Playing background music indefinitely
-    Mix_PlayMusic(m_background_music, -1);
-
     // ECS initialization
     // Register ALL Components
     registerComponents();
@@ -84,6 +72,18 @@ bool Game::init_game() {
     //--------------------------------------------------------------------------
     // Render all the tiles once to the screen texture
     renderTilesToScreenTexture();
+
+    m_background_music = Mix_LoadMUS(audio_path("capturethecastle_background.wav"));
+
+    if (m_background_music == nullptr)
+    {
+        fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+                audio_path("music.wav"));
+        return false;
+    }
+
+    // Playing background music indefinitely
+    Mix_PlayMusic(m_background_music, -1);
 
     return true;
 }
@@ -189,8 +189,10 @@ void Game::on_mouse_click(GLFWwindow *pWindow, int button, int action, int mods)
             {
                 case (ButtonActions::CLOSE):
                     currState = GameState :: NORMAL;
+                    help_window.resetWindow();
                     break;
                 case (ButtonActions::HOWTOPLAY):
+                    help_window.showHowToPlay();
                     break;
                 default:
                     break;
@@ -476,7 +478,7 @@ void Game::registerPlayers(std::vector<Entity>& players)
             { 120.f, m_screen_size.y / 2 + 130.f },
             // { 120.f - castleWidth, m_screen_size.y / 2 - castleHeight},  debugging purpose
             { 120.f, m_screen_size.y / 2 + 130.f },
-            { 0.09f, 0.09f },
+            { 0.09f * 5 / 7, 0.09f },
             { 120.f, m_screen_size.y / 2 + 130.f }
     };
     Entity player1 = registerPlayer(transform_player1, motion_player, TeamType::PLAYER1, textures_path("red_king_sprite_sheet.png"));
@@ -487,7 +489,7 @@ void Game::registerPlayers(std::vector<Entity>& players)
             { m_screen_size.x - 120.f, m_screen_size.y / 2 + 130.f },
             // { 120.f, m_screen_size.y / 2}, debugging purpose
             { m_screen_size.x - 120.f, m_screen_size.y / 2 + 130.f },
-            { 0.09f, 0.09f },
+            { 0.09f * 5 / 7, 0.09f },
             { 120.f, m_screen_size.y / 2 + 130.f }
     };
     Entity player2 = registerPlayer(transform_player2, motion_player, TeamType::PLAYER2, textures_path("blue_king_sprite_sheet.png"));

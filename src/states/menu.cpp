@@ -1,6 +1,7 @@
 
 #include "menu.hpp"
 #include "game.hpp"
+#include "howtoplay.hpp"
 
 bool Menu::init_state(World *world) {
     m_world = world;
@@ -32,6 +33,7 @@ void Menu::on_mouse_click(GLFWwindow *window, int button, int action, int mods) 
                 m_world->set_window_closed();
                 break;
             case ButtonActions::HOWTOPLAY:
+                m_world->set_state(new HowToPlay);
                 break;
             case ButtonActions::NONE:
                 break;

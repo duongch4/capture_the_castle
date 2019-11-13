@@ -4,7 +4,7 @@
 #include "components.hpp"
 
 // Instructions class
-class HelpInstructions
+class HelpBackground
 {
 
 public:
