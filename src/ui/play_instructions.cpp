@@ -99,3 +99,7 @@ void PlayInstructions::loadNewInstruction(const char* texturePath) {
 void PlayInstructions::setScale(vec2 scale) {
     transform.scale = scale;
 }
+
+void PlayInstructions::setPosition(vec2 pos) {
+    transform.position = pos;
+}

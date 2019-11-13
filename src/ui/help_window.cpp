@@ -4,6 +4,7 @@
 
 void HelpWindow::init(vec2 screen_size) {
     // Initialize help button
+    curr_state = CONTROLS;
     background.init(screen_size);
     vec2 currPos = background.get_position();
     close_btn.init({currPos.x + 410, currPos.y - 280});
@@ -26,8 +27,10 @@ void HelpWindow::draw(const mat3 &projection) {
     //draw all the UI objects of window
     background.draw(projection);
     close_btn.draw(projection);
-    how_to_play_btn.draw(projection);
     instructions.draw(projection);
+    if (curr_state == CONTROLS) {
+        how_to_play_btn.draw(projection);
+    }
 }
 
 ButtonActions HelpWindow::checkButtonClicks(vec2 mouseloc) {
@@ -46,11 +49,15 @@ void HelpWindow::checkButtonHovers(vec2 mouseloc) {
 }
 
 void HelpWindow::showHowToPlay() {
+    curr_state = HOWTOPLAY;
+    instructions.setPosition({instructions.get_position().x, instructions.get_position().y - 40});
     instructions.loadNewInstruction(textures_path("ui/CaptureTheCastle_how_to_play_instructions.png"));
     instructions.setScale({0.2, 0.2});
 }
 
 void HelpWindow::resetWindow() {
+    curr_state = CONTROLS;
+    instructions.setPosition({instructions.get_position().x, instructions.get_position().y + 40});
     instructions.loadNewInstruction(textures_path("ui/CaptureTheCastle_game_control_instructions.png"));
     instructions.setScale({0.275, 0.275});
 }
