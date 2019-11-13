@@ -289,10 +289,10 @@ void Game::registerItemBoard(const Transform& transform, const TeamType& team_ty
     itemBoardEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(itemBoard, itemBoardEffect);
     Sprite itemBoardSprite = { texture_path };
-    TextureManager::instance().load_from_file(itemBoardSprite);
+    TextureManager::instance()->load_from_file(itemBoardSprite);
     ecsManager.addComponent<Sprite>(itemBoard, itemBoardSprite);
     MeshComponent itemBoardMesh{};
-    itemBoardMesh.id = MeshManager::instance().init_mesh(itemBoardSprite.width, itemBoardSprite.height);
+    itemBoardMesh.id = MeshManager::instance()->init_mesh(itemBoardSprite.width, itemBoardSprite.height);
     ecsManager.addComponent<MeshComponent>(itemBoard, itemBoardMesh);
 }
 
@@ -307,12 +307,12 @@ Entity Game::registerPlayer(const Transform& transform, const Motion& motion, co
     playerEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(player, playerEffect);
     Sprite playerSprite = { texture_path };
-    TextureManager::instance().load_from_file(playerSprite);
+    TextureManager::instance()->load_from_file(playerSprite);
     playerSprite.sprite_index = { 0 , 0 };
     playerSprite.sprite_size = { playerSprite.width / 7.0f , playerSprite.height / 5.0f };
     ecsManager.addComponent<Sprite>(player, playerSprite);
     MeshComponent playerMesh{};
-    playerMesh.id = MeshManager::instance().init_mesh(playerSprite.width, playerSprite.height, playerSprite.sprite_size.x, playerSprite.sprite_size.y, playerSprite.sprite_index.x, playerSprite.sprite_index.y, 0);
+    playerMesh.id = MeshManager::instance()->init_mesh(playerSprite.width, playerSprite.height, playerSprite.sprite_size.x, playerSprite.sprite_size.y, playerSprite.sprite_index.x, playerSprite.sprite_index.y, 0);
     ecsManager.addComponent<MeshComponent>(player, playerMesh);
     ecsManager.addComponent(
             player,
@@ -334,10 +334,10 @@ void Game::registerCastle(const Transform& transform, const TeamType& team_type,
     castleEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(castle, castleEffect);
     Sprite castleSprite = { texture_path };
-    TextureManager::instance().load_from_file(castleSprite);
+    TextureManager::instance()->load_from_file(castleSprite);
     ecsManager.addComponent<Sprite>(castle, castleSprite);
     MeshComponent castleMesh{};
-    castleMesh.id = MeshManager::instance().init_mesh(castleSprite.width, castleSprite.height);
+    castleMesh.id = MeshManager::instance()->init_mesh(castleSprite.width, castleSprite.height);
     ecsManager.addComponent<MeshComponent>(castle, castleMesh);
     ecsManager.addComponent(
             castle,

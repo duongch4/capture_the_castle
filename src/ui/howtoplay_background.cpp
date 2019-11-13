@@ -21,12 +21,12 @@ void HowToPlayBackground::init(vec2 screen_size) {
         }
     }
 
-    mesh.id = MeshManager::instance().init_mesh(howtoplaybgSprite.width, howtoplaybgSprite.height);
+    mesh.id = MeshManager::instance()->init_mesh(howtoplaybgSprite.width, howtoplaybgSprite.height);
 }
 
 void HowToPlayBackground::destroy() {
     effect.release();
-    MeshManager::instance().release(mesh.id);
+    MeshManager::instance()->release(mesh.id);
 }
 
 void HowToPlayBackground::draw(const mat3 &projection) {
@@ -57,9 +57,9 @@ void HowToPlayBackground::draw(const mat3 &projection) {
     GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
 
     // Setting vertices and indices
-    MeshManager::instance().bindVAO(mesh.id);
-    MeshManager::instance().bindVBO(mesh.id);
-    MeshManager::instance().bindIBO(mesh.id);
+    MeshManager::instance()->bindVAO(mesh.id);
+    MeshManager::instance()->bindVBO(mesh.id);
+    MeshManager::instance()->bindIBO(mesh.id);
 
     // Input data location as in the vertex buffer
     GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");

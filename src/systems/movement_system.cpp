@@ -27,7 +27,7 @@ void MovementSystem::update(float ms) {
 		set_sprite_motion(sprite, motion);
 		set_sprite_direction(motion, sprite);
 
-		MeshManager::instance().update_sprite(mesh.id,
+		MeshManager::instance()->update_sprite(mesh.id,
                                                sprite.width, sprite.height,
                                                (int)sprite.sprite_size.x, (int)sprite.sprite_size.y,
                                                (int)sprite.sprite_index.x, (int)sprite.sprite_index.y, 0);
@@ -102,6 +102,5 @@ void MovementSystem::setScreenSize(const vec2& screen) {
 }
 
 void MovementSystem::reset() {
-	this->entities.clear();
 
 }

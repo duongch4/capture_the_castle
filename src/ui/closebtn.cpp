@@ -20,13 +20,13 @@ void CloseButton::init(vec2 pos) {
             return;
         }
     }
-   mesh.id = MeshManager::instance().init_mesh(closebtn_texture.width, closebtn_texture.height,
+   mesh.id = MeshManager::instance()->init_mesh(closebtn_texture.width, closebtn_texture.height,
             (float) closebtn_texture.height, (float) closebtn_texture.height, 0.f, 0.f, 0);
 }
 
 void CloseButton::destroy() {
     effect.release();
-    MeshManager::instance().release(mesh.id);
+    MeshManager::instance()->release(mesh.id);
 }
 
 void CloseButton::draw(const mat3 &projection) {
@@ -57,9 +57,9 @@ void CloseButton::draw(const mat3 &projection) {
     GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
 
     // Setting vertices and indices
-    MeshManager::instance().bindVAO(mesh.id);
-    MeshManager::instance().bindVBO(mesh.id);
-    MeshManager::instance().bindIBO(mesh.id);
+    MeshManager::instance()->bindVAO(mesh.id);
+    MeshManager::instance()->bindVBO(mesh.id);
+    MeshManager::instance()->bindIBO(mesh.id);
 
     // Input data location as in the vertex buffer
     GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
@@ -103,11 +103,11 @@ bool CloseButton::mouseOnButton(vec2 mouseloc) {
 void CloseButton::onHover(bool isHovering) {
     if (isHovering && currIndex == 0) {
         currIndex = 1;
-        MeshManager::instance().update_sprite(mesh.id, closebtn_texture.width, closebtn_texture.height,
+        MeshManager::instance()->update_sprite(mesh.id, closebtn_texture.width, closebtn_texture.height,
                 closebtn_texture.height, closebtn_texture.height, currIndex, 0,0);
     } else if (!isHovering && currIndex == 1) {
         currIndex = 0;
-        MeshManager::instance().update_sprite(mesh.id, closebtn_texture.width, closebtn_texture.height, closebtn_texture.height, closebtn_texture.height, currIndex, 0,0);
+        MeshManager::instance()->update_sprite(mesh.id, closebtn_texture.width, closebtn_texture.height, closebtn_texture.height, closebtn_texture.height, currIndex, 0,0);
     }
 }
 

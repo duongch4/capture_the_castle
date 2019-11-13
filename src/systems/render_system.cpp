@@ -3,6 +3,7 @@
 //
 
 
+#include <iostream>
 #include <mesh_manager.hpp>
 #include "render_system.hpp"
 
@@ -68,9 +69,9 @@ void SpriteRenderSystem::draw(mat3 projection) {
         GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
 
         // Setting vertices and indices
-        MeshManager::instance().bindVAO(mesh.id);
-        MeshManager::instance().bindVBO(mesh.id);
-        MeshManager::instance().bindIBO(mesh.id);
+        MeshManager::instance()->bindVAO(mesh.id);
+        MeshManager::instance()->bindVBO(mesh.id);
+        MeshManager::instance()->bindIBO(mesh.id);
 
         // Input data location as in the vertex buffer
         GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
@@ -82,7 +83,7 @@ void SpriteRenderSystem::draw(mat3 projection) {
 
         // Enabling and binding texture to slot 0
         glActiveTexture(GL_TEXTURE0);
-        TextureManager::instance().bind_texture(sprite.texture_name);
+        TextureManager::instance()->bind_texture(sprite.texture_name);
 
         // Setting uniform values to the currently bound program
         glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *) &out);
@@ -98,6 +99,5 @@ void SpriteRenderSystem::draw(mat3 projection) {
 }
 
 void SpriteRenderSystem::reset() {
-	this->entities.clear();
 
 }
