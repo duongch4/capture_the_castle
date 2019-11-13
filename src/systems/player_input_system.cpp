@@ -47,6 +47,7 @@ void PlayerInputSystem::update()
 					case InputKeys ::LEFT_SHIFT:
                         if (item.itemType == ItemType::BOMB){
                             place_bomb(tile, TeamType::PLAYER1);
+                            item.itemType = ItemType::None;
                         }
 					    break;
 					case InputKeys::Q:
@@ -94,6 +95,7 @@ void PlayerInputSystem::update()
                     case InputKeys ::RIGHT_SHIFT:
                         if (item.itemType == ItemType::BOMB){
                             place_bomb(tile, TeamType::PLAYER2);
+                            item.itemType = ItemType::None;
                         }
                         break;
 					default:

@@ -107,6 +107,7 @@ void CollisionSystem::update() {
                             break;
                     }
                 } else {
+                    ecsManager.destroyEntity(e2);
                     player_item.itemType = ItemType::None;
                 }
             } else if (e2_layer == CollisionLayer::Item){
