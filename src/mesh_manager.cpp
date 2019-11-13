@@ -3,18 +3,13 @@
 //
 
 #include "mesh_manager.hpp"
+#include <iostream>
+//MeshManager* MeshManager::inst(0);
 
-MeshManager* MeshManager::inst(0);
-
-MeshManager* MeshManager::instance() {
-    if(!inst)
-        inst = new MeshManager();
-    return inst;
-}
 
 MeshManager::~MeshManager() {
     release_all();
-    inst = 0;
+    //inst = 0;
 }
 
 MeshManager::MeshManager() {

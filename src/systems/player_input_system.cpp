@@ -75,4 +75,5 @@ void PlayerInputSystem::onReleaseListener(KeyReleaseEvent* input) {
 
 void PlayerInputSystem::reset() {
     keysPressed.clear();
+	this->entities.clear();
 }

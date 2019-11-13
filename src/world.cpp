@@ -117,7 +117,8 @@ bool World::init(vec2 screen)
 
 	//--------------------------------------------------------------------------
 	// Initializing state
-	return set_state(new Game());
+	Game* gamestate = new Game();
+	return set_state(gamestate);
 }
 
 bool World::set_state(State* new_state) {
@@ -132,9 +133,10 @@ bool World::set_state(State* new_state) {
 void World::destroy() {
     Mix_CloseAudio();
     m_state->destroy();
-    TextureManager::instance()->unload_all_textures();
-    MeshManager::instance()->release_all();
+    TextureManager::instance().unload_all_textures();
+    MeshManager::instance().release_all();
     glfwDestroyWindow(m_window);
+
 }
 
 // Update our game world

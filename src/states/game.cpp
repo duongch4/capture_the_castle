@@ -139,11 +139,11 @@ bool Game::init_game() {
     soldier1Team1Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(soldier1Team1, soldier1Team1Effect);
     Sprite soldier1Team1Sprite = { textures_path("red_soldier_sprite_sheet-01.png") };
-    TextureManager::instance()->load_from_file(soldier1Team1Sprite);
+    TextureManager::instance().load_from_file(soldier1Team1Sprite);
     soldier1Team1Sprite.sprite_index = { 0 , 0 };
     soldier1Team1Sprite.sprite_size = { soldier1Team1Sprite.width / 7.0f , soldier1Team1Sprite.height / 5.0f };
     ecsManager.addComponent<Sprite>(soldier1Team1, soldier1Team1Sprite);
-    MeshComponent soldier1Team1Mesh{MeshManager::instance()->init_mesh(soldier1Team1Sprite.width, soldier1Team1Sprite.height, soldier1Team1Sprite.sprite_size.x, soldier1Team1Sprite.sprite_size.y,
+    MeshComponent soldier1Team1Mesh{MeshManager::instance().init_mesh(soldier1Team1Sprite.width, soldier1Team1Sprite.height, soldier1Team1Sprite.sprite_size.x, soldier1Team1Sprite.sprite_size.y,
                                                                        soldier1Team1Sprite.sprite_index.x,  soldier1Team1Sprite.sprite_index.y, 0)
     };
     ecsManager.addComponent<MeshComponent>(soldier1Team1, soldier1Team1Mesh);
@@ -171,11 +171,11 @@ bool Game::init_game() {
     soldier1Team2Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(soldier1Team2, soldier1Team2Effect);
     Sprite soldier1Team2Sprite = { textures_path("blue_soldier_sprite_sheet-01.png") };
-    TextureManager::instance()->load_from_file(soldier1Team2Sprite);
+    TextureManager::instance().load_from_file(soldier1Team2Sprite);
     soldier1Team2Sprite.sprite_index = { 0 , 0 };
     soldier1Team2Sprite.sprite_size = { soldier1Team2Sprite.width / 7.0f , soldier1Team2Sprite.height / 5.0f };
     ecsManager.addComponent<Sprite>(soldier1Team2, soldier1Team2Sprite);
-    MeshComponent soldier1Team2Mesh{MeshManager::instance()->init_mesh(soldier1Team2Sprite.width, soldier1Team2Sprite.height, soldier1Team2Sprite.sprite_size.x, soldier1Team2Sprite.sprite_size.y,
+    MeshComponent soldier1Team2Mesh{MeshManager::instance().init_mesh(soldier1Team2Sprite.width, soldier1Team2Sprite.height, soldier1Team2Sprite.sprite_size.x, soldier1Team2Sprite.sprite_size.y,
                                                                        soldier1Team2Sprite.sprite_index.x, soldier1Team2Sprite.sprite_index.y, 0)};
     ecsManager.addComponent<MeshComponent>(soldier1Team2, soldier1Team2Mesh);
 
@@ -198,9 +198,9 @@ bool Game::init_game() {
     castle1Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(castle1, castle1Effect);
     Sprite castle1Sprite = { textures_path("castle/CaptureTheCastle_castle_red.png") };
-    TextureManager::instance()->load_from_file(castle1Sprite);
+    TextureManager::instance().load_from_file(castle1Sprite);
     ecsManager.addComponent<Sprite>(castle1, castle1Sprite);
-    MeshComponent castle1Mesh{MeshManager::instance()->init_mesh(castle1Sprite.width, castle1Sprite.height)};
+    MeshComponent castle1Mesh{MeshManager::instance().init_mesh(castle1Sprite.width, castle1Sprite.height)};
     ecsManager.addComponent<MeshComponent>(castle1, castle1Mesh);
     float castleWidth = castle1Sprite.width * 0.2f;
     float castleHeight = castle1Sprite.height * 0.2f;
@@ -223,9 +223,9 @@ bool Game::init_game() {
     castle2Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(castle2, castle2Effect);
     Sprite castle2Sprite = { textures_path("castle/CaptureTheCastle_castle_blue.png") };
-    TextureManager::instance()->load_from_file(castle2Sprite);
+    TextureManager::instance().load_from_file(castle2Sprite);
     ecsManager.addComponent<Sprite>(castle2, castle2Sprite);
-    MeshComponent castle2Mesh{MeshManager::instance()->init_mesh(castle2Sprite.width, castle2Sprite.height)};
+    MeshComponent castle2Mesh{MeshManager::instance().init_mesh(castle2Sprite.width, castle2Sprite.height)};
     ecsManager.addComponent<MeshComponent>(castle2, castle2Mesh);
     ecsManager.addComponent(castle2, C_Collision{
             CollisionLayer::Castle,
@@ -252,11 +252,11 @@ bool Game::init_game() {
     player1Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(player1, player1Effect);
     Sprite player1Sprite = { textures_path("red_king_sprite_sheet.png") };
-    TextureManager::instance()->load_from_file(player1Sprite);
+    TextureManager::instance().load_from_file(player1Sprite);
     player1Sprite.sprite_index = { 0 , 0 };
     player1Sprite.sprite_size = { player1Sprite.width / 7.0f , player1Sprite.height / 5.0f };
     ecsManager.addComponent<Sprite>(player1, player1Sprite);
-    MeshComponent player1Mesh{MeshManager::instance()->init_mesh(player1Sprite.width, player1Sprite.height,
+    MeshComponent player1Mesh{MeshManager::instance().init_mesh(player1Sprite.width, player1Sprite.height,
                                                                  player1Sprite.sprite_size.x, player1Sprite.sprite_size.y, player1Sprite.sprite_index.x, player1Sprite.sprite_index.y, 0)
     };
     ecsManager.addComponent<MeshComponent>(player1, player1Mesh);
@@ -288,11 +288,11 @@ bool Game::init_game() {
     player2Effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(player2, player2Effect);
     Sprite player2Sprite = { textures_path("blue_king_sprite_sheet.png") };
-    TextureManager::instance()->load_from_file(player2Sprite);
+    TextureManager::instance().load_from_file(player2Sprite);
     player2Sprite.sprite_size = { player2Sprite.width / 7.0f , player2Sprite.height / 5.0f };
     player2Sprite.sprite_index = { 0 , 0 };
     ecsManager.addComponent<Sprite>(player2, player2Sprite);
-    MeshComponent player2Mesh{MeshManager::instance()->init_mesh(player2Sprite.width, player2Sprite.height,
+    MeshComponent player2Mesh{MeshManager::instance().init_mesh(player2Sprite.width, player2Sprite.height,
                                                                  player2Sprite.sprite_size.x, player2Sprite.sprite_size.y, player2Sprite.sprite_index.x, player2Sprite.sprite_index.y, 0)
     };
     ecsManager.addComponent<MeshComponent>(player2, player2Mesh);
@@ -317,9 +317,9 @@ bool Game::init_game() {
     player1BoardEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(player1_board, player1BoardEffect);
     Sprite player1BoardSprite = {textures_path("ui/CaptureTheCastle_player_tile_red.png")};
-    TextureManager::instance()->load_from_file(player1BoardSprite);
+    TextureManager::instance().load_from_file(player1BoardSprite);
     ecsManager.addComponent<Sprite>(player1_board, player1BoardSprite);
-    MeshComponent player1BoardMesh{MeshManager::instance()->init_mesh(player1BoardSprite.width, player1BoardSprite.height)};
+    MeshComponent player1BoardMesh{MeshManager::instance().init_mesh(player1BoardSprite.width, player1BoardSprite.height)};
     ecsManager.addComponent<MeshComponent>(player1_board, player1BoardMesh);
 
     // ITEM BOARD (PLAYER 2)
@@ -335,9 +335,9 @@ bool Game::init_game() {
     player2BoardEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(player2_board, player2BoardEffect);
     Sprite player2BoardSprite = {textures_path("ui/CaptureTheCastle_player_tile_blue.png")};
-    TextureManager::instance()->load_from_file(player2BoardSprite);
+    TextureManager::instance().load_from_file(player2BoardSprite);
     ecsManager.addComponent<Sprite>(player2_board, player2BoardSprite);
-    MeshComponent player2BoardMesh{MeshManager::instance()->init_mesh(player2BoardSprite.width, player2BoardSprite.height)};
+    MeshComponent player2BoardMesh{MeshManager::instance().init_mesh(player2BoardSprite.width, player2BoardSprite.height)};
     ecsManager.addComponent<MeshComponent>(player2_board, player2BoardMesh);
 
     movementSystem->setScreenSize(m_screen_size);

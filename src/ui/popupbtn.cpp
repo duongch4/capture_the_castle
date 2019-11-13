@@ -22,13 +22,13 @@ void PopUpButton::init(vec2 pos, const char* texturePath) {
             fprintf(stderr, "Failed to load tile texture!");
         }
     }
-    mesh.id = MeshManager::instance()->init_mesh(popupBtnSprite.width, popupBtnSprite.height, popupBtnSprite.width,
+    mesh.id = MeshManager::instance().init_mesh(popupBtnSprite.width, popupBtnSprite.height, popupBtnSprite.width,
             popupBtnSprite.height / 2, 0, currIndex, 0);
 }
 
 void PopUpButton::destroy() {
     effect.release();
-    MeshManager::instance()->release(mesh.id);
+    MeshManager::instance().release(mesh.id);
 }
 
 void PopUpButton::draw(const mat3 &projection) {
@@ -59,9 +59,9 @@ void PopUpButton::draw(const mat3 &projection) {
     GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
 
     // Setting vertices and indices
-    MeshManager::instance()->bindVAO(mesh.id);
-    MeshManager::instance()->bindVBO(mesh.id);
-    MeshManager::instance()->bindIBO(mesh.id);
+    MeshManager::instance().bindVAO(mesh.id);
+    MeshManager::instance().bindVBO(mesh.id);
+    MeshManager::instance().bindIBO(mesh.id);
 
     // Input data location as in the vertex buffer
     GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
@@ -106,11 +106,11 @@ bool PopUpButton::mouseOnButton(vec2 mouseloc) {
 void PopUpButton::onHover(bool isHovering) {
     if (isHovering && currIndex == 0) {
         currIndex = 1;
-        MeshManager::instance()->update_sprite(mesh.id,popupBtnSprite.width, popupBtnSprite.height, popupBtnSprite.width,
+        MeshManager::instance().update_sprite(mesh.id,popupBtnSprite.width, popupBtnSprite.height, popupBtnSprite.width,
                                                popupBtnSprite.height / 2, 0, currIndex, 0);
     } else if (!isHovering && currIndex == 1) {
         currIndex = 0;
-        MeshManager::instance()->update_sprite(mesh.id,popupBtnSprite.width, popupBtnSprite.height, popupBtnSprite.width,
+        MeshManager::instance().update_sprite(mesh.id,popupBtnSprite.width, popupBtnSprite.height, popupBtnSprite.width,
                                                popupBtnSprite.height / 2, 0, currIndex, 0);
     }
 }

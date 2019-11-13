@@ -20,12 +20,12 @@ void HelpInstructions::init(vec2 screen_size) {
             fprintf(stderr, "Failed to load tile texture!");
         }
     }
-    mesh.id = MeshManager::instance()->init_mesh(helpInstrSprite.width, helpInstrSprite.height);
+    mesh.id = MeshManager::instance().init_mesh(helpInstrSprite.width, helpInstrSprite.height);
 }
 
 void HelpInstructions::destroy() {
     effect.release();
-    MeshManager::instance()->release(mesh.id);
+    MeshManager::instance().release(mesh.id);
 }
 
 void HelpInstructions::draw(const mat3 &projection) {
@@ -56,9 +56,9 @@ void HelpInstructions::draw(const mat3 &projection) {
     GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
 
     // Setting vertices and indices
-    MeshManager::instance()->bindVAO(mesh.id);
-    MeshManager::instance()->bindVBO(mesh.id);
-    MeshManager::instance()->bindIBO(mesh.id);
+    MeshManager::instance().bindVAO(mesh.id);
+    MeshManager::instance().bindVBO(mesh.id);
+    MeshManager::instance().bindIBO(mesh.id);
 
     // Input data location as in the vertex buffer
     GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");

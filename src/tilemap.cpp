@@ -1,5 +1,6 @@
 #include <time.h>
 #include <cmath>
+#include <iostream>
 #include "tilemap.hpp"
 
 bool Tilemap::init()
@@ -99,7 +100,7 @@ void Tilemap::destroy()
         vector.clear();
     }
 
-    m_tiles.clear();
+	m_tiles.clear();
 
 	glDeleteVertexArrays(1, &mesh.vao);
 	glDeleteBuffers(1, &mesh.vbo);

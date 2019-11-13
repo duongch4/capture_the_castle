@@ -19,7 +19,11 @@ const int MAX_MESH = 2000;
 
 class MeshManager {
 public:
-    static MeshManager* instance();
+	static MeshManager& instance()
+	{
+		static MeshManager instance;
+		return instance;
+	}
     ~MeshManager();
     int init_mesh(int width, int height);
     int init_mesh(int textureWidth, int textureHeight, float spriteWidth,
@@ -34,7 +38,7 @@ public:
 
 protected:
     MeshManager();
-    static MeshManager* inst;
+    //static MeshManager* inst;
     std::queue<int> availableIds{};
     std::map<int, Mesh> idToMesh;
     uint32_t activeMeshCount{};
