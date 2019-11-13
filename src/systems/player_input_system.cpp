@@ -104,7 +104,7 @@ void PlayerInputSystem::handle_soldier_spawn(
 	if (can_spawn(soldier_count, wait_time, transform, tile, maze_region))
 	{
 		vec2 position = tile.get_position();
-		Transform transform_soldier = Transform{ position, position,{ 0.08f, 0.08f }, position };
+		Transform transform_soldier = Transform{ position, position,{ 0.08f * 5 / 7, 0.08f }, position };
 		Motion motion_soldier = Motion{ { 0, 0 }, 100.f };
 		spawn_soldier(
 			transform_soldier, motion_soldier,

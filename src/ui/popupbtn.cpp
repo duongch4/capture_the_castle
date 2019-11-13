@@ -114,3 +114,7 @@ void PopUpButton::onHover(bool isHovering) {
                                                popupBtnSprite.height / 2, 0, currIndex, 0);
     }
 }
+
+void PopUpButton::setScale(vec2 scale) {
+    transform.scale = scale;
+}

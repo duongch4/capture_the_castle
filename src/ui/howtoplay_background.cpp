@@ -1,35 +1,35 @@
 
 #include <cmath>
 #include <mesh_manager.hpp>
-#include "menus_background.hpp"
+#include "howtoplay_background.hpp"
 
-void MenuBackground::init(vec2 screen_size) {
+void HowToPlayBackground::init(vec2 screen_size) {
     transform = Transform {
             { screen_size.x / 2, screen_size.y / 2 },
             { screen_size.x / 2, screen_size.y / 2 },
-            {0.3f, 0.3f },
+            {0.65f, 0.65f },
             { screen_size.x / 2, screen_size.y / 2 }
     };
     effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
 
     // Load shared texture
-    if (!menubgSprite.is_valid())
+    if (!howtoplaybgSprite.is_valid())
     {
-        if (!menubgSprite.load_from_file(textures_path("ui/CaptureTheCastle_splash_page.png")))
+        if (!howtoplaybgSprite.load_from_file(textures_path("ui/CaptureTheCastle_how_to_play_page.png")))
         {
             fprintf(stderr, "Failed to load tile texture!");
         }
     }
 
-    mesh.id = MeshManager::instance()->init_mesh(menubgSprite.width, menubgSprite.height);
+    mesh.id = MeshManager::instance()->init_mesh(howtoplaybgSprite.width, howtoplaybgSprite.height);
 }
 
-void MenuBackground::destroy() {
+void HowToPlayBackground::destroy() {
     effect.release();
     MeshManager::instance()->release(mesh.id);
 }
 
-void MenuBackground::draw(const mat3 &projection) {
+void HowToPlayBackground::draw(const mat3 &projection) {
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // begin transform
     out = { { 1.f, 0.f, 0.f }, { 0.f, 1.f, 0.f}, { 0.f, 0.f, 1.f} };
@@ -71,7 +71,7 @@ void MenuBackground::draw(const mat3 &projection) {
 
     // Enabling and binding texture to slot 0
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, menubgSprite.id);
+    glBindTexture(GL_TEXTURE_2D, howtoplaybgSprite.id);
 
     // Setting uniform values to the currently bound program
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&out);
@@ -83,11 +83,11 @@ void MenuBackground::draw(const mat3 &projection) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-vec2 MenuBackground::get_position() {
+vec2 HowToPlayBackground::get_position() {
     return transform.position;
 }
 
-vec2 MenuBackground::get_bounding_box() {
-    return {(float)(fabs(transform.scale.x) * menubgSprite.width),
-            (float)(fabs(transform.scale.y) * menubgSprite.height)};
+vec2 HowToPlayBackground::get_bounding_box() {
+    return {(float)(fabs(transform.scale.x) * howtoplaybgSprite.width),
+            (float)(fabs(transform.scale.y) * howtoplaybgSprite.height)};
 }

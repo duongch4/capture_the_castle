@@ -3,7 +3,8 @@
 #include "common.hpp"
 #include "components.hpp"
 
-class PopUpButton
+// Instructions class
+class PlayInstructions
 {
 
 public:
@@ -17,9 +18,7 @@ public:
 
     vec2 get_bounding_box();
 
-    bool mouseOnButton(vec2 mouseloc);
-
-    void onHover(bool isHovering);
+    void loadNewInstruction(const char* texturePath);
 
     void setScale(vec2 scale);
 
@@ -27,7 +26,6 @@ private:
     MeshComponent mesh{};
     Effect effect{};
     Transform transform;
-    Texture popupBtnSprite;
+    Texture helpInstrSprite;
     mat3 out;
-    int currIndex;
 };
