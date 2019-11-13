@@ -164,7 +164,7 @@ void PlayerInputSystem::spawn_soldier(
 	soldierEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
 	ecsManager.addComponent<Effect>(soldier, soldierEffect);
 	Sprite soldierSprite = { texture_path };
-	TextureManager::instance()->load_from_file(soldierSprite);
+	TextureManager::instance().load_from_file(soldierSprite);
 	soldierSprite.sprite_index = { 0 , 3 };
 	soldierSprite.sprite_size = { soldierSprite.width / 7.0f , soldierSprite.height / 5.0f };
 	ecsManager.addComponent<Sprite>(soldier, soldierSprite);

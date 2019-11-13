@@ -83,7 +83,7 @@ void SpriteRenderSystem::draw(mat3 projection) {
 
         // Enabling and binding texture to slot 0
         glActiveTexture(GL_TEXTURE0);
-        TextureManager::instance()->bind_texture(sprite.texture_name);
+        TextureManager::instance().bind_texture(sprite.texture_name);
 
         // Setting uniform values to the currently bound program
         glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float *) &out);

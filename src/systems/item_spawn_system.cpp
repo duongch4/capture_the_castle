@@ -65,7 +65,7 @@ void ItemSpawnSystem::spawn_item(){
     Sprite itemSprite = {power_up_path("CaptureTheCastle_powerup_bomb.png")};
     if (t == 0)
         itemSprite = {power_up_path("CaptureTheCastle_powerup_shield.png")};
-    TextureManager::instance()->load_from_file(itemSprite);
+    TextureManager::instance().load_from_file(itemSprite);
     itemSprite.sprite_size = { itemSprite.width / 7.0f , itemSprite.height / 5.0f };
     ecsManager.addComponent<Sprite>(item, itemSprite);
     MeshComponent itemMesh{MeshManager::instance().init_mesh(

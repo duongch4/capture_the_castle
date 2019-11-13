@@ -46,7 +46,7 @@ void BanditSpawnSystem::spawn_bandit() {
     banditEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(bandit, banditEffect);
     Sprite banditSprite = {textures_path("bandit_sprite_sheet-01.png")};
-    TextureManager::instance()->load_from_file(banditSprite);
+    TextureManager::instance().load_from_file(banditSprite);
 	banditSprite.sprite_index = { 0 , 3 };
 	banditSprite.sprite_size = { banditSprite.width / 7.0f , banditSprite.height / 5.0f };
     ecsManager.addComponent<Sprite>(bandit, banditSprite);

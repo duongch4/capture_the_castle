@@ -289,7 +289,7 @@ void Game::registerItemBoard(const Transform& transform, const TeamType& team_ty
     itemBoardEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(itemBoard, itemBoardEffect);
     Sprite itemBoardSprite = { texture_path };
-    TextureManager::instance()->load_from_file(itemBoardSprite);
+    TextureManager::instance().load_from_file(itemBoardSprite);
     ecsManager.addComponent<Sprite>(itemBoard, itemBoardSprite);
     MeshComponent itemBoardMesh{};
     itemBoardMesh.id = MeshManager::instance().init_mesh(itemBoardSprite.width, itemBoardSprite.height);
@@ -307,7 +307,7 @@ Entity Game::registerPlayer(const Transform& transform, const Motion& motion, co
     playerEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(player, playerEffect);
     Sprite playerSprite = { texture_path };
-    TextureManager::instance()->load_from_file(playerSprite);
+    TextureManager::instance().load_from_file(playerSprite);
     playerSprite.sprite_index = { 0 , 0 };
     playerSprite.sprite_size = { playerSprite.width / 7.0f , playerSprite.height / 5.0f };
     ecsManager.addComponent<Sprite>(player, playerSprite);
@@ -334,7 +334,7 @@ void Game::registerCastle(const Transform& transform, const TeamType& team_type,
     castleEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(castle, castleEffect);
     Sprite castleSprite = { texture_path };
-    TextureManager::instance()->load_from_file(castleSprite);
+    TextureManager::instance().load_from_file(castleSprite);
     ecsManager.addComponent<Sprite>(castle, castleSprite);
     MeshComponent castleMesh{};
     castleMesh.id = MeshManager::instance().init_mesh(castleSprite.width, castleSprite.height);
@@ -386,14 +386,14 @@ void Game::registerBoxCollisionSystem()
 void Game::registerCollisionSystem()
 {
     collisionSystem = ecsManager.registerSystem<CollisionSystem>();
-    {
+    
         Signature signature;
         signature.set(ecsManager.getComponentType<Transform>());
         signature.set(ecsManager.getComponentType<Team>());
         signature.set(ecsManager.getComponentType<C_Collision>());
         // signature.set(ecsManager.getComponentType<Motion>());
         ecsManager.setSystemSignature<CollisionSystem>(signature);
-    }
+    
     collisionSystem->init();
 }
 
