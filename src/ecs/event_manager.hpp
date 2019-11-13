@@ -27,6 +27,7 @@ public:
                 handler->exec(e);
             }
         }
+        delete e;
     }
 
     template<class T, class EventType>

@@ -30,6 +30,7 @@ bool Game::init_state(World* world) {
     registerBoxCollisionSystem();
     registerBanditAiSystem();
     registerSoldierAiSystem();
+    registerItemSpawnSystem();
 
     ecsManager.subscribe(this, &Game::winListener);
 
@@ -69,6 +70,9 @@ bool Game::init_game() {
     // Winner's Window Initialization
     win_window.init(m_screen_size);
 
+    // Firework particle
+    firework.init(m_screen_size);
+
     //--------------------------------------------------------------------------
     // Render all the tiles once to the screen texture
     renderTilesToScreenTexture();
@@ -98,7 +102,10 @@ bool Game::update(float elapsed_ms) {
         boxCollisionSystem->checkCollision();
         boxCollisionSystem->update();
         movementSystem->update(elapsed_ms);
+        itemSpawnSystem->update(elapsed_ms);
         soldierAiSystem->update(elapsed_ms);
+    } else if (currState == GameState::WIN) {
+        firework.update(elapsed_ms);
     }
     return true;
 }
@@ -137,6 +144,7 @@ void Game::draw() {
 
     if (currState == GameState::WIN) {
         win_window.draw(projection_2D);
+        firework.draw(projection_2D);
     }
 }
 
@@ -168,6 +176,12 @@ void Game::on_key(int key, int action) {
         case GLFW_KEY_A:
             k = InputKeys::A;
             break;
+		case GLFW_KEY_Q:
+			k = InputKeys::Q;
+			break;
+		case GLFW_KEY_SLASH:
+			k = InputKeys::SLASH;
+			break;
         default:
             break;
     }
@@ -238,6 +252,8 @@ void Game::reset() {
     help_window.destroy();
     std::cout << "Help window destroyed" << std::endl;
     win_window.destroy();
+    std::cout << "Firework destroyed" << std::endl;
+    firework.destroy();
     std::cout << "Win window destroyed" << std::endl;
     std::cout << "Reinitializing game state" << std::endl;
     init_state(m_world);
@@ -258,6 +274,7 @@ void Game::destroy() {
     help_btn.destroy();
     help_window.destroy();
     win_window.destroy();
+    firework.destroy();
 }
 
 Game::~Game() {
@@ -340,6 +357,17 @@ void Game::registerBanditAiSystem()
         signature.set(ecsManager.getComponentType<BanditAiComponent>());
         ecsManager.setSystemSignature<BanditAiSystem>(signature);
     }
+}
+
+void Game::registerItemSpawnSystem()
+{
+    itemSpawnSystem = ecsManager.registerSystem<ItemSpawnSystem>();
+    {
+        Signature signature;
+        signature.set(ecsManager.getComponentType<ItemComponent>());
+        ecsManager.setSystemSignature<ItemSpawnSystem>(signature);
+    }
+    itemSpawnSystem->init(tilemap);
 }
 
 void Game::registerBoxCollisionSystem()
@@ -436,6 +464,7 @@ void Game::registerComponents()
     ecsManager.registerComponent<PlayerInputControlComponent>();
     ecsManager.registerComponent<PlaceableComponent>();
     ecsManager.registerComponent<SoldierAiComponent>();
+    ecsManager.registerComponent<ItemComponent>();
 }
 
 void Game::registerSoldierAiSystem() {

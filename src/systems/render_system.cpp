@@ -3,6 +3,7 @@
 //
 
 
+#include <iostream>
 #include <mesh_manager.hpp>
 #include "render_system.hpp"
 

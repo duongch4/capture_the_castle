@@ -39,6 +39,8 @@ public:
     void registerSpriteRenderSystem();
     void registerPlayerInputSystem();
     void registerMovementSystem(const vec2& screen);
+    void registerItemSpawnSystem();
+
 
     void renderTilesToScreenTexture();
 
@@ -61,6 +63,9 @@ private:
     HelpWindow help_window;
     WinWindow win_window;
 
+    // Particle
+    Firework firework;
+
     // ECS systems
     std::shared_ptr<MovementSystem> movementSystem;
     std::shared_ptr<PlayerInputSystem> playerInputSystem;
@@ -70,6 +75,7 @@ private:
     std::shared_ptr<SoldierAiSystem> soldierAiSystem;
     std::shared_ptr<CollisionSystem> collisionSystem;
     std::shared_ptr<BoxCollisionSystem> boxCollisionSystem;
+    std::shared_ptr<ItemSpawnSystem> itemSpawnSystem;
 
     void winListener(WinEvent* winEvent);
     bool init_game();

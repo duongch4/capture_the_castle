@@ -99,13 +99,15 @@ set(SOURCE_FILES
         src/systems/collision_system.hpp
         src/systems/box_collision_system.cpp
         src/systems/box_collision_system.hpp
+        src/systems/item_spawn_system.cpp
+        src/systems/item_spawn_system.hpp
         src/states/game.hpp
         src/states/menu.hpp
         src/states/howtoplay.cpp
         src/states/howtoplay.hpp
         src/systems/box_collision_system.hpp
         src/ui/menus_background.cpp
-        src/ui/menus_background.hpp)
+        src/ui/menus_background.hpp src/ui/firework.cpp src/ui/firework.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)
