@@ -118,10 +118,5 @@ void BoxCollisionSystem::boxCollisionListener(BoxCollisionEvent* boxCollisionEve
 }
 
 void BoxCollisionSystem::reset() {
-	tileMap->destroy();
-	while (!collision_queue.empty())
-	{
-		collision_queue.pop();
-	}
-	this->entities.clear();
+
 }

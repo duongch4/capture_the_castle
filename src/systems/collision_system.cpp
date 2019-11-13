@@ -145,11 +145,5 @@ bool CollisionSystem::collideWithCastle(Entity player, Entity castle){
 }
 
 void CollisionSystem::reset() {
-	//delete player_respawn_sound;
-	while (!collision_queue.empty())
-	{
-		collision_queue.pop();
-	}
-	this->entities.clear();
 
 }
