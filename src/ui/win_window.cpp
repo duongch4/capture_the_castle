@@ -10,6 +10,7 @@ void WinWindow::init(vec2 screen_size) {
     restart_btn.init({currPos.x, currPos.y + 75}, textures_path("ui/CaptureTheCastle_new_game_btn.png"));
     main_btn.init({currPos.x, currPos.y + 150}, textures_path("ui/CaptureTheCastle_main_menu_btn.png"));
     quit_btn.init({currPos.x, currPos.y + 225}, textures_path("ui/CaptureTheCastle_quit_btn.png"));
+    m_click = Mix_LoadWAV(audio_path("capturethecastle_button_click.wav"));
 }
 
 void WinWindow::destroy() {
@@ -31,10 +32,13 @@ void WinWindow::draw(const mat3 &projection) {
 
 ButtonActions WinWindow::checkButtonClicks(vec2 mouseloc) {
     if (restart_btn.mouseOnButton(mouseloc)) {
+        Mix_PlayChannel(-1, m_click, 0);
         return ButtonActions::RESTART;
     } else if (main_btn.mouseOnButton(mouseloc)) {
+        Mix_PlayChannel(-1, m_click, 0);
         return ButtonActions::MAIN;
     } else if (quit_btn.mouseOnButton(mouseloc)) {
+        Mix_PlayChannel(-1, m_click, 0);
         return ButtonActions::QUIT;
     } else {
         return ButtonActions::NONE;

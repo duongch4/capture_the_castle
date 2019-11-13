@@ -5,6 +5,7 @@
 #include <random>
 #include <components.hpp>
 #include <mesh_manager.hpp>
+#include <SDL_mixer.h>
 
 #ifndef CAPTURE_THE_CASTLE_FIREWORK_HPP
 #define CAPTURE_THE_CASTLE_FIREWORK_HPP
@@ -43,6 +44,8 @@ private:
 
     Mesh mesh{};
     Effect effect{};
+
+    Mix_Chunk* m_pop;
 };
 
 #endif //CAPTURE_THE_CASTLE_FIREWORK_HPP
