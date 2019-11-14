@@ -28,13 +28,13 @@ void HowToPlay::on_mouse_click(GLFWwindow *window, int button, int action, int m
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         switch (checkButtonClicks({ (float) xpos, (float) ypos })) {
             case ButtonActions::RESTART:
-                m_world->set_state(new Game);
+                m_world->set_state(std::make_unique<Game>());
                 break;
             case ButtonActions::QUIT:
                 m_world->set_window_closed();
                 break;
             case ButtonActions::MAIN:
-                m_world->set_state(new Menu);
+                m_world->set_state(std::make_unique<Menu>());
                 break;
             case ButtonActions::NONE:
                 break;

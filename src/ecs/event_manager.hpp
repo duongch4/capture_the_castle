@@ -50,6 +50,7 @@ public:
                 delete handler;
             }
             it->second->clear();
+			it->second->shrink_to_fit();
             it++;
         }
         subscribers.clear();

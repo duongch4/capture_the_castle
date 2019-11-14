@@ -169,11 +169,17 @@ bool SoldierAiSystem::is_within_soldier_region(const Entity& soldier, const Tile
 
 void SoldierAiSystem::reset() {
     m_idle_times.clear();
+	m_idle_times.shrink_to_fit();
     m_patrol_times.clear();
+	m_patrol_times.shrink_to_fit();
     m_states.clear();
+	m_states.shrink_to_fit();
     m_soldiers.clear();
+	m_soldiers.shrink_to_fit();
     m_targets.clear();
+	m_targets.shrink_to_fit();
     m_prev_dirs.clear();
+	m_prev_dirs.shrink_to_fit();
 	this->entities.clear();
 
 }

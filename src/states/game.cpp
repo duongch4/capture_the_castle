@@ -215,7 +215,7 @@ void Game::on_mouse_click(GLFWwindow *pWindow, int button, int action, int mods)
             switch (win_window.checkButtonClicks({ (float) xpos, (float) ypos }))
             {
                 case (ButtonActions::MAIN):
-                    m_world->set_state(new Menu());
+                    m_world->set_state(std::make_unique<Menu>());
                     break;
                 case (ButtonActions::QUIT):
                     m_world->set_window_closed();

@@ -78,10 +78,11 @@ void Tilemap::destroy()
 
     for (auto &vector : m_tiles) {
         vector.clear();
+		vector.shrink_to_fit();
     }
 
     m_tiles.clear();
-
+	m_tiles.shrink_to_fit();
 	glDeleteVertexArrays(1, &mesh.vao);
 	glDeleteBuffers(1, &mesh.vbo);
 

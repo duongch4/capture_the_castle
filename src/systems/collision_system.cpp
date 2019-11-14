@@ -150,5 +150,6 @@ void CollisionSystem::reset() {
 	{
 		collision_queue.pop();
 	}
+	collision_queue = {};
 	this->entities.clear();
 }

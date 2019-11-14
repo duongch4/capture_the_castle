@@ -1,5 +1,5 @@
 #include "bandit_ai_system.hpp"
-
+#include <iostream>
 bool BanditAiSystem::init(std::shared_ptr<Tilemap> tilemap, const std::vector<Entity>& players)
 {
 	m_targets = players;
@@ -485,12 +485,25 @@ bool BanditAiSystem::is_target_move_away_bandit(
 
 void BanditAiSystem::reset() {
     m_idle_times.clear();
+	m_idle_times.shrink_to_fit();
     m_chase_times.clear();
+	m_chase_times.shrink_to_fit();
+	m_patrol_times.clear();
+	m_patrol_times.shrink_to_fit();
     m_states.clear();
+	m_states.shrink_to_fit();
+
     m_bandits.clear();
+	m_bandits.shrink_to_fit();
     m_targets.clear();
+	m_targets.shrink_to_fit();
     m_path.clear();
-	m_bandits.clear();
+	m_path.shrink_to_fit();
 	m_targets.clear();
+	m_targets.shrink_to_fit();
 	this->entities.clear();
+	//this->entities.shrink_to_fit();
+	m_prev_dirs.clear();
+	m_prev_dirs.shrink_to_fit();
+	//this->entities = {};
 }

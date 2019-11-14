@@ -118,14 +118,17 @@ bool World::init(vec2 screen)
 
 	//--------------------------------------------------------------------------
 	// Initializing state
-	return set_state(new Menu());
+	//State* menu = std::make_unique<Menu>();
+	bool ret = set_state(std::make_unique<Menu>());
+	//delete menu;
+	return ret;
 }
 
-bool World::set_state(State* new_state) {
+bool World::set_state(std::unique_ptr<State> new_state) {
     if (m_state != nullptr) {
         m_state->destroy();
     }
-    m_state = new_state;
+    m_state = std::move(new_state);
     return m_state->init_state(this);
 }
 
@@ -133,6 +136,7 @@ bool World::set_state(State* new_state) {
 void World::destroy() {
     Mix_CloseAudio();
     m_state->destroy();
+	//delete m_state;
     TextureManager::instance().unload_all_textures();
     MeshManager::instance().release_all();
     glfwDestroyWindow(m_window);
