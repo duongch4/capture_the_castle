@@ -1,0 +1,18 @@
+In Milestone 2, our goals and completed goals were:
+- Added 2 new mazes which are picked at random at the start of each new game
+- Implemented different game states: Game, Help, Menu. Each state has working buttons that either take you to the next
+state or activates some functionality (e.g. showing different game instructions, etc)
+- Implemented spawning of power ups (bomb and shield). Functionality of each power up was also implemented.
+- Inventory items are now shown on the UI
+- Setting soldiers within respective player regions. Soldiers are able to move randomly around the player region
+- Started fixing the memory leaks. We've made at least a 50% decrease in the memory leaks found.
+- Fixed collision problems with the maze walls
+- Firework particle system in the win screen to celebrate victory. Particle system travels along a path defined by
+a cubic bezier curve
+- Bandit AI movement improvements
+- Sound effects for buttons and fireworks, as well as new bgm for Help and Menu states.
+
+Discrepancy in Week 5 ~ 6 from project proposal
+- Instead of reloadability, we decided to implement complex prescribed motion. When we thought about it the concept
+of our game didn't really need saving since there is no true of sense of progress. We don't really have a story line
+in our game.
