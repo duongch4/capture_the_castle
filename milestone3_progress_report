@@ -6,7 +6,7 @@ state or activates some functionality (e.g. showing different game instructions,
 - Implemented spawning of power ups (bomb and shield). Functionality of each power up was also implemented.
 - Inventory items are now shown on the UI
 - Setting soldiers within respective player regions. Soldiers are able to move randomly around the player region
-- Started fixing the memory leaks. We've made at least a 50% decrease in the memory leaks found.
+- Started fixing the memory leaks. We fixed more than 99% of memory leaks found.
 - Fixed collision problems with the maze walls
 - Firework particle system in the win screen to celebrate victory. Particle system travels along a path defined by
 a cubic bezier curve
