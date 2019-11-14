@@ -105,7 +105,6 @@ private:
     std::unique_ptr<EntityManager> entityManager;
     std::unique_ptr<SystemManager> systemManager;
     std::unique_ptr<EventManager> eventManager;
-
 };
 
 

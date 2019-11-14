@@ -47,6 +47,7 @@ void PlayerInputSystem::update()
 					case InputKeys ::LEFT_SHIFT:
                         if (item.itemType == ItemType::BOMB){
                             place_bomb(tile, TeamType::PLAYER1);
+                            ecsManager.publish(new ItemEvent(e, ItemType::BOMB, false));
                             item.itemType = ItemType::None;
                         }
 					    break;
@@ -95,6 +96,7 @@ void PlayerInputSystem::update()
                     case InputKeys ::RIGHT_SHIFT:
                         if (item.itemType == ItemType::BOMB){
                             place_bomb(tile, TeamType::PLAYER2);
+                            ecsManager.publish(new ItemEvent(e, ItemType::BOMB, false));
                             item.itemType = ItemType::None;
                         }
                         break;

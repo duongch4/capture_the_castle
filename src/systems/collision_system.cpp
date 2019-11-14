@@ -70,7 +70,7 @@ void CollisionSystem::update() {
                             e2_transform.position = e2_transform.init_position;
                             Mix_PlayChannel(-1, player_respawn_sound, 0);
                         } else {
-//                            ecsManager.publish(new ItemEvent(e2, ItemType::SHIELD, false));
+                            ecsManager.publish(new ItemEvent(e2, ItemType::SHIELD, false));
                             player2_item.itemType = ItemType::None;
                         }
                         break;
@@ -79,7 +79,7 @@ void CollisionSystem::update() {
                             e1_transform.position = e1_transform.init_position;
                             Mix_PlayChannel(-1, player_respawn_sound, 0);
                         } else {
-//                            ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
+                            ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
                             player1_item.itemType = ItemType::None;
                         }
                         break;
@@ -110,7 +110,7 @@ void CollisionSystem::update() {
                     }
                 } else {
                     ecsManager.destroyEntity(e2);
-//                    ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
+                    ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
                     player_item.itemType = ItemType::None;
                 }
             } else if (e2_layer == CollisionLayer::Item){
@@ -129,7 +129,7 @@ void CollisionSystem::update() {
                             ecsManager.destroyEntity(e2);
                         } else {
                             player_item.itemType = ItemType::None;
-//                            ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
+                            ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
                         }
                     }
                 } else {
@@ -140,11 +140,11 @@ void CollisionSystem::update() {
                             if (item.itemType == ItemType::BOMB){
                                 // pickup bomb
                                 player_item.itemType = ItemType::BOMB;
-//                                ecsManager.publish(new ItemEvent(e1, ItemType::BOMB, true));
+                                ecsManager.publish(new ItemEvent(e1, ItemType::BOMB, true));
                             } else {
                                 // pick up shield and use shield
                                 player_item.itemType = ItemType::SHIELD;
-//                                ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, true));
+                                ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, true));
                             }
                             ecsManager.destroyEntity(e2);
                         }

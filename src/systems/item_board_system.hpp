@@ -20,7 +20,7 @@ public:
 
 private:
     void itemEventListener(ItemEvent* itemEvent);
-
+    std::queue<std::tuple<Entity, bool, ItemType >> pick_up_queue;
 };
 
 

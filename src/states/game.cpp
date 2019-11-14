@@ -105,6 +105,7 @@ bool Game::update(float elapsed_ms) {
         movementSystem->update(elapsed_ms);
         itemSpawnSystem->update(elapsed_ms);
         soldierAiSystem->update(elapsed_ms);
+        itemBoardSystem->update();
     } else if (currState == GameState::WIN) {
         firework.update(elapsed_ms);
     }
@@ -524,6 +525,7 @@ void Game::registerItemBoardSystem() {
         signature.set(ecsManager.getComponentType<ItemBoardComponent>());
         ecsManager.setSystemSignature<ItemBoardSystem>(signature);
     }
+    itemBoardSystem->init();
 }
 
 void Game::registerCastles()

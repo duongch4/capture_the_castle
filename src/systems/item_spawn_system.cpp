@@ -29,7 +29,6 @@ void ItemSpawnSystem::update(float elapsed_ms) {
 void ItemSpawnSystem::spawn_item(){
 
     int r = rand() % 3;
-//    int r = 2;
     vec2 nextPos;
     switch (r) {
         case 0:

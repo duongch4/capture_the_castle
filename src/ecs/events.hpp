@@ -61,7 +61,7 @@ struct ItemEvent: public Event{
         this->item = item;
         this->pick_up = pick_up;
     }
-    ~ItemEvent();
+    ~ItemEvent() = default;
     ItemType item;
     Entity player;
     bool pick_up; //true if it's a pick up, false if dropped
