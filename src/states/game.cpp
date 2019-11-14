@@ -541,16 +541,10 @@ void Game::registerComponents()
     ecsManager.registerComponent<ItemComponent>();
     ecsManager.registerComponent<CurveMotionComponent>();
     ecsManager.registerComponent<ItemBoardComponent>();
+    ecsManager.registerComponent<PlaceableComponent>();
+
 }
 
-void Game::registerSoldierAiSystem() {
-    soldierAiSystem = ecsManager.registerSystem<SoldierAiSystem>();
-    {
-        Signature signature;
-        signature.set(ecsManager.getComponentType<SoldierAiComponent>());
-        ecsManager.setSystemSignature<SoldierAiSystem>(signature);
-    }
-}
 
 void Game::registerItemBoardSystem() {
     itemBoardSystem = ecsManager.registerSystem<ItemBoardSystem>();
