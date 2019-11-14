@@ -7,7 +7,24 @@
 
 
 #include <world.hpp>
+#include <mesh_manager.hpp>
 #include "state.hpp"
+#include "menu.hpp"
+#include "components.hpp"
+#include <ecs/common_ecs.hpp>
+#include <ecs/ecs_manager.hpp>
+
+#include <systems/movement_system.hpp>
+#include <systems/player_input_system.hpp>
+#include <systems/render_system.hpp>
+#include <systems/bandit_spawn_system.hpp>
+#include <systems/item_spawn_system.hpp>
+
+#include <systems/bandit_ai_system.hpp>
+#include <systems/collision_system.hpp>
+#include <systems/box_collision_system.hpp>
+#include <systems/soldier_ai_system.hpp>
+#include <systems/curve_movement_system.hpp>
 
 class Game : public State {
 public:
@@ -39,6 +56,7 @@ public:
     void registerSpriteRenderSystem();
     void registerPlayerInputSystem();
     void registerMovementSystem(const vec2& screen);
+    void registerCurveMovementSystem();
     void registerItemSpawnSystem();
 
 
@@ -76,6 +94,7 @@ private:
     std::shared_ptr<SoldierAiSystem> soldierAiSystem;
     std::shared_ptr<CollisionSystem> collisionSystem;
     std::shared_ptr<BoxCollisionSystem> boxCollisionSystem;
+    std::shared_ptr<CurveMovementSystem> curveMovementSystem;
     std::shared_ptr<ItemSpawnSystem> itemSpawnSystem;
 
     void winListener(WinEvent* winEvent);

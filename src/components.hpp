@@ -104,7 +104,13 @@ struct BanditAiComponent {};
 
 struct PlayerInputControlComponent {};
 
-struct PlaceableComponent {};
 struct SoldierAiComponent {};
+
+struct CurveMotionComponent{
+    vec2 p0;
+    vec2 p1;
+    vec2 p2;
+    vec2 p3;
+};
 
 #endif //CAPTURE_THE_CASTLE_COMPONENTS_HPP

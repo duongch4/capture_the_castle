@@ -10,6 +10,7 @@ constexpr int NUM_SEGMENTS = 8;
 static const float GRAVITY = 500.f;
 static const int PARTICLE_SIZE = 4;
 static const int PARTICLE_LIFE = 4;
+static const float SPAWN_DELAY = 0.5f;
 
 bool Firework::init(vec2 screen_size) {
     m_rng = std::default_random_engine(std::random_device()());
@@ -26,7 +27,11 @@ bool Firework::init(vec2 screen_size) {
     m_dist_Velocity = distVelocity;
     m_dist_SpawnTimer = distSpawnTimer;
 
-    m_spawn_timer = 0.5f;
+    m_spawn_timer = SPAWN_DELAY;
+
+    m_curve.set_control_points({
+        vec2{300.f, 350.f}, vec2{420.f, 30.f}, vec2{1000.f, 30.f}, vec2{1200.f, 350.f}
+    });
 
     std::vector<GLfloat> screen_vertex_buffer_data;
     constexpr float z = -0.01f;
@@ -80,8 +85,10 @@ void Firework::update(float ms) {
     m_spawn_timer -= seconds;
 
     if (m_spawn_timer <= 0) {
-        kaboom(vec2 {m_dist_PositionX(m_rng), m_dist_PositionY(m_rng)});
-        m_spawn_timer = m_dist_SpawnTimer(m_rng);
+        // using the points on curve for position
+        kaboom(m_curve.get_curve_points(time));
+        next_time();
+        m_spawn_timer = SPAWN_DELAY;
     }
 
     // Remove the particle if life is smaller than zero
@@ -177,4 +184,13 @@ void Firework::draw(const mat3& projection) {
     glVertexAttribDivisor(1, 0);
     glVertexAttribDivisor(2, 0);
     glVertexAttribDivisor(3, 0);
+}
+
+void Firework::next_time() {
+    if (time + time_step <= 1.0f && time + time_step >= 0.f) {
+        time += time_step;
+    } else {
+        time_step = -time_step;
+        time += time_step;
+    }
 }

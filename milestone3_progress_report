@@ -1,5 +1,6 @@
-In Milestone 2, our goals and completed goals were:
+In Milestone 3, our goals and completed goals were:
 - Added 2 new mazes which are picked at random at the start of each new game
+- Implemented map loading from external XML files
 - Implemented different game states: Game, Help, Menu. Each state has working buttons that either take you to the next
 state or activates some functionality (e.g. showing different game instructions, etc)
 - Implemented spawning of power ups (bomb and shield). Functionality of each power up was also implemented.

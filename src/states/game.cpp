@@ -1,7 +1,5 @@
 
-#include <mesh_manager.hpp>
 #include "game.hpp"
-#include "menu.hpp"
 
 Game::Game() = default;
 
@@ -31,6 +29,7 @@ bool Game::init_state(World* world) {
     registerBanditAiSystem();
     registerSoldierAiSystem();
     registerItemSpawnSystem();
+    registerCurveMovementSystem();
 
     ecsManager.subscribe(this, &Game::winListener);
 
@@ -105,6 +104,7 @@ bool Game::update(float elapsed_ms) {
         movementSystem->update(elapsed_ms);
         itemSpawnSystem->update(elapsed_ms);
         soldierAiSystem->update(elapsed_ms);
+        curveMovementSystem->update(elapsed_ms);
     } else if (currState == GameState::WIN) {
         firework.update(elapsed_ms);
     }
@@ -388,14 +388,14 @@ void Game::registerBoxCollisionSystem()
 void Game::registerCollisionSystem()
 {
     collisionSystem = ecsManager.registerSystem<CollisionSystem>();
-    
+
         Signature signature;
         signature.set(ecsManager.getComponentType<Transform>());
         signature.set(ecsManager.getComponentType<Team>());
         signature.set(ecsManager.getComponentType<C_Collision>());
         // signature.set(ecsManager.getComponentType<Motion>());
         ecsManager.setSystemSignature<CollisionSystem>(signature);
-    
+
     collisionSystem->init();
 }
 
@@ -449,7 +449,27 @@ void Game::registerMovementSystem(const vec2& screen)
     }
     movementSystem->init();
     movementSystem->setScreenSize(screen);
+}
 
+void Game::registerSoldierAiSystem() {
+    soldierAiSystem = ecsManager.registerSystem<SoldierAiSystem>();
+    {
+        Signature signature;
+        signature.set(ecsManager.getComponentType<SoldierAiComponent>());
+        ecsManager.setSystemSignature<SoldierAiSystem>(signature);
+    }
+}
+
+void Game::registerCurveMovementSystem()
+{
+    curveMovementSystem = ecsManager.registerSystem<CurveMovementSystem>();
+    {
+        Signature signature;
+        signature.set(ecsManager.getComponentType<CurveMotionComponent>());
+        signature.set(ecsManager.getComponentType<Transform>());
+        ecsManager.setSystemSignature<CurveMovementSystem>(signature);
+    }
+    curveMovementSystem->init();
 }
 
 void Game::registerComponents()
@@ -464,18 +484,9 @@ void Game::registerComponents()
     ecsManager.registerComponent<BanditSpawnComponent>();
     ecsManager.registerComponent<BanditAiComponent>();
     ecsManager.registerComponent<PlayerInputControlComponent>();
-    ecsManager.registerComponent<PlaceableComponent>();
     ecsManager.registerComponent<SoldierAiComponent>();
     ecsManager.registerComponent<ItemComponent>();
-}
-
-void Game::registerSoldierAiSystem() {
-    soldierAiSystem = ecsManager.registerSystem<SoldierAiSystem>();
-    {
-        Signature signature;
-        signature.set(ecsManager.getComponentType<SoldierAiComponent>());
-        ecsManager.setSystemSignature<SoldierAiSystem>(signature);
-    }
+    ecsManager.registerComponent<CurveMotionComponent>();
 }
 
 void Game::registerCastles()
