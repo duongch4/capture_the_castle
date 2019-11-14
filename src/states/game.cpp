@@ -29,6 +29,7 @@ bool Game::init_state(World* world) {
     registerBanditAiSystem();
     registerSoldierAiSystem();
     registerItemSpawnSystem();
+    registerItemBoardSystem();
     registerCurveMovementSystem();
 
     ecsManager.subscribe(this, &Game::winListener);
@@ -104,6 +105,7 @@ bool Game::update(float elapsed_ms) {
         movementSystem->update(elapsed_ms);
         itemSpawnSystem->update(elapsed_ms);
         soldierAiSystem->update(elapsed_ms);
+        itemBoardSystem->update();
         curveMovementSystem->update(elapsed_ms);
     } else if (currState == GameState::WIN) {
         firework.update(elapsed_ms);
@@ -183,6 +185,12 @@ void Game::on_key(int key, int action) {
 		case GLFW_KEY_SLASH:
 			k = InputKeys::SLASH;
 			break;
+        case GLFW_KEY_LEFT_SHIFT:
+            k = InputKeys::LEFT_SHIFT;
+            break;
+        case GLFW_KEY_RIGHT_SHIFT:
+            k = InputKeys::RIGHT_SHIFT;
+            break;
         default:
             break;
     }
@@ -308,6 +316,36 @@ void Game::registerItemBoard(const Transform& transform, const TeamType& team_ty
     MeshComponent itemBoardMesh{};
     itemBoardMesh.id = MeshManager::instance().init_mesh(itemBoardSprite.width, itemBoardSprite.height);
     ecsManager.addComponent<MeshComponent>(itemBoard, itemBoardMesh);
+
+    // Create Item on the Board
+    Entity picked_up_item = ecsManager.createEntity();
+
+    vec2 position = transform.position;
+    if (team_type == TeamType::PLAYER1){
+        position.x += 112;
+    } else {
+        position.x -= 115;
+    }
+    Transform item_transform = Transform{
+            position,
+            position,
+            { 1.f, 1.f },
+            position};
+    ecsManager.addComponent<Transform>(picked_up_item, item_transform);
+    ecsManager.addComponent<ItemBoardComponent>(picked_up_item, ItemBoardComponent{});
+    ecsManager.addComponent<Team>(picked_up_item, Team{ team_type });
+    Effect itemEffect{};
+    itemEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+    ecsManager.addComponent<Effect>(picked_up_item, itemEffect);
+    Sprite itemSprite = {power_up_path("CaptureTheCastle_no_item.png")};
+    TextureManager::instance().load_from_file(itemSprite);
+    itemSprite.sprite_index = { 0 , 0 };
+    itemSprite.sprite_size = { itemSprite.width / 7.0f , itemSprite.height / 5.0f };
+    ecsManager.addComponent<Sprite>(picked_up_item, itemSprite);
+
+    MeshComponent itemMesh{MeshManager::instance().init_mesh(itemSprite.width, itemSprite.height)};
+
+    ecsManager.addComponent<MeshComponent>(picked_up_item, itemMesh);
 }
 
 Entity Game::registerPlayer(const Transform& transform, const Motion& motion, const TeamType& team_type, const char* texture_path)
@@ -336,6 +374,9 @@ Entity Game::registerPlayer(const Transform& transform, const Motion& motion, co
                     { playerSprite.width * 0.09f * 0.8f, playerSprite.height * 0.09f * 0.8f }
             }
     );
+    ecsManager.addComponent<ItemComponent>(player,  ItemComponent{
+            false,
+            ItemType::None});
     return player;
 }
 
@@ -499,6 +540,20 @@ void Game::registerComponents()
     ecsManager.registerComponent<SoldierAiComponent>();
     ecsManager.registerComponent<ItemComponent>();
     ecsManager.registerComponent<CurveMotionComponent>();
+    ecsManager.registerComponent<ItemBoardComponent>();
+    ecsManager.registerComponent<PlaceableComponent>();
+
+}
+
+
+void Game::registerItemBoardSystem() {
+    itemBoardSystem = ecsManager.registerSystem<ItemBoardSystem>();
+    {
+        Signature  signature;
+        signature.set(ecsManager.getComponentType<ItemBoardComponent>());
+        ecsManager.setSystemSignature<ItemBoardSystem>(signature);
+    }
+    itemBoardSystem->init();
 }
 
 void Game::registerCastles()

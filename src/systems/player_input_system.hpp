@@ -24,12 +24,12 @@ public:
 private:
     const std::vector<InputKeys> PLAYER1KEYS = {
 		InputKeys::W, InputKeys::A, InputKeys::S, InputKeys::D,
-		InputKeys::Q
+		InputKeys::Q, InputKeys:: LEFT_SHIFT
 	};
 
     const std::vector<InputKeys> PLAYER2KEYS = {
 		InputKeys::UP, InputKeys::DOWN, InputKeys::RIGHT, InputKeys::LEFT,
-		InputKeys::SLASH
+		InputKeys::SLASH, InputKeys:: RIGHT_SHIFT
 	};
 
 	std::map<InputKeys, bool> keysPressed;
@@ -62,6 +62,8 @@ private:
 		const Transform& transform, const Motion& motion,
 		const TeamType& team_type, const char* texture_path
 	);
+
+	void place_bomb(const Tile& tile, const TeamType& team_type);
 
 private:
 	// C++ rng

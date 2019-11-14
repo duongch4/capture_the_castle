@@ -17,6 +17,22 @@
 #include <SDL_mixer.h>
 
 // internal
+#include <ecs/common_ecs.hpp>
+#include <ecs/ecs_manager.hpp>
+
+#include <systems/movement_system.hpp>
+#include <systems/player_input_system.hpp>
+#include <systems/render_system.hpp>
+#include <systems/bandit_spawn_system.hpp>
+#include <systems/item_spawn_system.hpp>
+
+#include <systems/bandit_ai_system.hpp>
+#include <systems/collision_system.hpp>
+#include <systems/box_collision_system.hpp>
+#include <systems/soldier_ai_system.hpp>
+#include <systems/item_board_system.hpp>
+
+
 #include "common.hpp"
 #include "texture_manager.hpp"
 #include "tilemap.hpp"

@@ -71,9 +71,10 @@ void ItemSpawnSystem::spawn_item(){
     MeshComponent itemMesh{MeshManager::instance().init_mesh(
             itemSprite.width, itemSprite.height)};
     ecsManager.addComponent<MeshComponent>(item, itemMesh);
-    float radius = itemSprite.width/2*0.08f;
-    float i_width = itemSprite.width*0.08f*0.8f;
-    float i_height = itemSprite.height*0.08f*0.8f;
+    float radius = itemSprite.width/2*0.8f;
+    float i_width = itemSprite.width*0.8f;
+    float i_height = itemSprite.height*0.8f;
+    ecsManager.addComponent<Team>(item, Team{ TeamType ::ITEM}); //No use here
     ecsManager.addComponent<C_Collision>(item, C_Collision{
             CollisionLayer::Item,
             radius,

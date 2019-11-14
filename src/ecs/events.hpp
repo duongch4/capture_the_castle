@@ -55,4 +55,16 @@ struct WinEvent: public Event{
     Entity player;
 };
 
+struct ItemEvent: public Event{
+    ItemEvent(Entity player, ItemType item, bool pick_up){
+        this->player = player;
+        this->item = item;
+        this->pick_up = pick_up;
+    }
+    ~ItemEvent() = default;
+    ItemType item;
+    Entity player;
+    bool pick_up; //true if it's a pick up, false if dropped
+};
+
 #endif //CAPTURE_THE_CASTLE_EVENTS_HPP

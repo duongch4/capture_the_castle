@@ -107,6 +107,8 @@ set(SOURCE_FILES
         src/states/howtoplay.hpp
         src/systems/box_collision_system.hpp
         src/ui/menus_background.cpp
+        src/systems/item_board_system.cpp 
+        src/systems/item_board_system.hpp
         src/ui/menus_background.hpp
         src/ui/firework.cpp
         src/ui/firework.hpp

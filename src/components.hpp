@@ -101,6 +101,8 @@ struct Team {
 
 struct BanditSpawnComponent {};
 struct BanditAiComponent {};
+struct ItemBoardComponent {};
+struct PlaceableComponent{};
 
 struct PlayerInputControlComponent {};
 

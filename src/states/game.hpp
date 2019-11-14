@@ -58,6 +58,7 @@ public:
     void registerMovementSystem(const vec2& screen);
     void registerCurveMovementSystem();
     void registerItemSpawnSystem();
+    void registerItemBoardSystem();
 
     void renderTilesToScreenTexture();
 
@@ -95,6 +96,8 @@ private:
     std::shared_ptr<BoxCollisionSystem> boxCollisionSystem;
     std::shared_ptr<CurveMovementSystem> curveMovementSystem;
     std::shared_ptr<ItemSpawnSystem> itemSpawnSystem;
+    std::shared_ptr<ItemBoardSystem> itemBoardSystem;
+
 
     void winListener(WinEvent* winEvent);
     bool init_game();

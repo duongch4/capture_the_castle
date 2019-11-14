@@ -27,6 +27,7 @@ private:
     bool collideWithCastle(Entity player, Entity castle);
     float distance(vec2 e1, vec2 e2);
     std::queue<std::pair<Entity, Entity>> collision_queue;
+    std::set<Entity> entities_to_be_destroyed;
 
     Mix_Chunk* player_respawn_sound;
 };
