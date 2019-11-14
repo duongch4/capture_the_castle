@@ -136,7 +136,6 @@ bool World::set_state(std::unique_ptr<State> new_state) {
 void World::destroy() {
     Mix_CloseAudio();
     m_state->destroy();
-	//delete m_state;
     TextureManager::instance().unload_all_textures();
     MeshManager::instance().release_all();
     glfwDestroyWindow(m_window);

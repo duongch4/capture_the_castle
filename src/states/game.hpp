@@ -41,7 +41,6 @@ public:
     void registerMovementSystem(const vec2& screen);
     void registerItemSpawnSystem();
 
-
     void renderTilesToScreenTexture();
 
 private:

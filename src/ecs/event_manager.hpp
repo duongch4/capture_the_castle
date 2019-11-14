@@ -49,8 +49,7 @@ public:
             for (auto handler: *it->second) {
                 delete handler;
             }
-            it->second->clear();
-			it->second->shrink_to_fit();
+			delete it->second;
             it++;
         }
         subscribers.clear();

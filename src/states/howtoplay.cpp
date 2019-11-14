@@ -76,6 +76,8 @@ void HowToPlay::reset() {
 }
 
 void HowToPlay::destroy() {
+	if (m_background_music != nullptr)
+		Mix_FreeMusic(m_background_music);
     background.destroy();
     instructions.destroy();
     quit_btn.destroy();

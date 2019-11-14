@@ -65,6 +65,8 @@ bool Firework::init(vec2 screen_size) {
 }
 
 void Firework::destroy() {
+	if (m_pop != nullptr)
+		Mix_FreeChunk(m_pop);
     glDeleteBuffers(1, &mesh.vbo);
     glDeleteBuffers(1, &m_instance_vbo);
 
@@ -73,6 +75,7 @@ void Firework::destroy() {
     glDeleteShader(effect.program);
 
     m_particles.clear();
+	m_particles.shrink_to_fit();
 }
 
 void Firework::update(float ms) {

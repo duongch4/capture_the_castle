@@ -74,10 +74,7 @@ void Tilemap::destroy()
         for (auto &tile : vector) {
             tile.destroy();
         }
-    }
-
-    for (auto &vector : m_tiles) {
-        vector.clear();
+		vector.clear();
 		vector.shrink_to_fit();
     }
 

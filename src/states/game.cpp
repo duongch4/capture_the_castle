@@ -248,6 +248,7 @@ void Game::reset() {
     ecsManager.reset();
     std::cout << "ECS reset" << std::endl;
     tilemap->destroy();
+	tilemap.reset();
     std::cout << "TileMap reset" << std::endl;
     help_btn.destroy();
     std::cout << "Help button destroyed" << std::endl;
@@ -273,10 +274,20 @@ void Game::destroy() {
         Mix_FreeMusic(m_background_music);
     ecsManager.reset();
     tilemap->destroy();
+	tilemap.reset();
     help_btn.destroy();
     help_window.destroy();
     win_window.destroy();
     firework.destroy();
+	itemSpawnSystem.reset();
+	movementSystem.reset();
+	playerInputSystem.reset();
+	spriteRenderSystem.reset();
+	banditSpawnSystem.reset();
+	banditAiSystem.reset();
+	soldierAiSystem.reset();
+	collisionSystem.reset();
+	boxCollisionSystem.reset();
 }
 
 Game::~Game() {
