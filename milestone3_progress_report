@@ -12,8 +12,9 @@ state or activates some functionality (e.g. showing different game instructions,
 a cubic bezier curve
 - Bandit AI movement improvements
 - Sound effects for buttons and fireworks, as well as new bgm for Help and Menu states.
+- Implemented Bomb Bouncing animation using bezier curve when a bomb is placed by a player.
 
 Discrepancy in Week 5 ~ 6 from project proposal
 - Instead of reloadability, we decided to implement complex prescribed motion. When we thought about it the concept
-of our game didn't really need saving since there is no true of sense of progress. We don't really have a story line
+of our game didn't really need saving since there is no true sense of progress. We don't really have a story line
 in our game.
