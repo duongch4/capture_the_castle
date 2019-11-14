@@ -172,6 +172,9 @@ void PlayerInputSystem::place_bomb(const Tile& tile, const TeamType& team_type) 
     ecsManager.addComponent<ItemComponent>(bomb, ItemComponent{
             true,
             ItemType::BOMB});
+    ecsManager.addComponent<CurveMotionComponent>(bomb, CurveMotionComponent{
+        vec2{0.f, 0.f}, vec2{6.f, 20.f}, vec2{25.f, 20.f}, vec2{30.f, 0.f}
+    });
     Effect itemEffect{};
     itemEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(bomb, itemEffect);
