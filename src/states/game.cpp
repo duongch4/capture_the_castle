@@ -297,6 +297,7 @@ void Game::destroy() {
 	collisionSystem.reset();
 	boxCollisionSystem.reset();
 	curveMovementSystem.reset();
+	itemBoardSystem.reset();
 }
 
 Game::~Game() {

@@ -43,4 +43,9 @@ void ItemBoardSystem::itemEventListener(ItemEvent *itemEvent) {
 }
 
 void ItemBoardSystem::reset() {
+	while (!pick_up_queue.empty())
+	{
+		pick_up_queue.pop();
+	}
+	pick_up_queue = {};
 }
