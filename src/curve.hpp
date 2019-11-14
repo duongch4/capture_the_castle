@@ -34,6 +34,12 @@ public:
         m_points = points;
     }
 
+	void clear_points()
+	{
+		m_points.clear();
+		m_points.shrink_to_fit();
+	}
+
 private:
     std::vector<vec2> m_points;
 };

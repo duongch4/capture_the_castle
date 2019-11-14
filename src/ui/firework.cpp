@@ -78,7 +78,7 @@ void Firework::destroy() {
     glDeleteShader(effect.vertex);
     glDeleteShader(effect.fragment);
     glDeleteShader(effect.program);
-
+	m_curve.clear_points();
     m_particles.clear();
 	m_particles.shrink_to_fit();
 }

@@ -288,6 +288,7 @@ void Game::destroy() {
 	soldierAiSystem.reset();
 	collisionSystem.reset();
 	boxCollisionSystem.reset();
+	curveMovementSystem.reset();
 }
 
 Game::~Game() {
