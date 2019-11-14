@@ -49,7 +49,7 @@ public:
             for (auto handler: *it->second) {
                 delete handler;
             }
-            it->second->clear();
+			delete it->second;
             it++;
         }
         subscribers.clear();

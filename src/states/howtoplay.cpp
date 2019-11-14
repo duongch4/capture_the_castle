@@ -15,6 +15,17 @@ bool HowToPlay::init_state(World *world) {
     new_game_btn.setScale({0.8, 0.4});
     quit_btn.init({(float)(background_pos.x + offset.x * 1.5), (float) (background_pos.y + offset.y)}, textures_path("ui/CaptureTheCastle_quit_btn.png"));
     quit_btn.setScale({0.8, 0.4});
+
+    m_click = Mix_LoadWAV(audio_path("capturethecastle_button_click.wav"));
+    m_background_music = Mix_LoadMUS(audio_path("capturethecastle_main_menu.wav"));
+
+    if (m_background_music == nullptr)
+    {
+        fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+                audio_path("music.wav"));
+        return false;
+    }
+    Mix_PlayMusic(m_background_music, -1);
     return true;
 }
 
@@ -28,13 +39,13 @@ void HowToPlay::on_mouse_click(GLFWwindow *window, int button, int action, int m
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         switch (checkButtonClicks({ (float) xpos, (float) ypos })) {
             case ButtonActions::RESTART:
-                m_world->set_state(new Game);
+                m_world->set_state(std::make_unique<Game>());
                 break;
             case ButtonActions::QUIT:
                 m_world->set_window_closed();
                 break;
             case ButtonActions::MAIN:
-                m_world->set_state(new Menu);
+                m_world->set_state(std::make_unique<Menu>());
                 break;
             case ButtonActions::NONE:
                 break;
@@ -65,6 +76,8 @@ void HowToPlay::reset() {
 }
 
 void HowToPlay::destroy() {
+	if (m_background_music != nullptr)
+		Mix_FreeMusic(m_background_music);
     background.destroy();
     instructions.destroy();
     quit_btn.destroy();
@@ -74,10 +87,13 @@ void HowToPlay::destroy() {
 
 ButtonActions HowToPlay::checkButtonClicks(vec2 mouseloc) {
     if (new_game_btn.mouseOnButton(mouseloc)) {
+        Mix_PlayChannel(-1, m_click, 0);
         return ButtonActions::RESTART;
     } else if (quit_btn.mouseOnButton(mouseloc)) {
+        Mix_PlayChannel(-1, m_click, 0);
         return ButtonActions::QUIT;
     } else if (main_menu_btn.mouseOnButton(mouseloc)){
+        Mix_PlayChannel(-1, m_click, 0);
         return ButtonActions::MAIN;
     } else {
         return ButtonActions::NONE;

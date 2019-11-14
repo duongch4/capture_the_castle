@@ -109,8 +109,11 @@ set(SOURCE_FILES
         src/ui/menus_background.cpp
         src/systems/item_board_system.cpp 
         src/systems/item_board_system.hpp
-        src/ui/menus_background.hpp 
-        src/ui/firework.cpp src/ui/firework.hpp)
+        src/ui/menus_background.hpp
+        src/ui/firework.cpp
+        src/ui/firework.hpp
+        src/curve.hpp
+        src/systems/curve_movement_system.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

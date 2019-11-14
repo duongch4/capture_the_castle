@@ -9,6 +9,7 @@
 #include <chrono>
 #include <iostream>
 #include <ecs/ecs_manager.hpp>
+
 using Clock = std::chrono::high_resolution_clock;
 
 // Global

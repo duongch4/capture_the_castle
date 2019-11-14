@@ -32,8 +32,8 @@
 #include <systems/soldier_ai_system.hpp>
 #include <systems/item_board_system.hpp>
 
+
 #include "common.hpp"
-#include "components.hpp"
 #include "texture_manager.hpp"
 #include "tilemap.hpp"
 #include <ui/help_window.hpp>
@@ -71,7 +71,7 @@ public:
 
     void set_window_closed();
 
-    bool set_state(State* state);
+    bool set_state(std::unique_ptr<State> state);
 
     void create_texture_from_window(Texture& tex);
 
@@ -93,6 +93,6 @@ private:
 	float m_screen_scale; // Screen to pixel coordinates scale factor
 	vec2 m_screen_size;
 	mat3 projection_2D;
-
-  State* m_state;
+	std::unique_ptr<State> m_state;
+  //State* m_state;
 };

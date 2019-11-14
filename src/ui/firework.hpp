@@ -5,6 +5,8 @@
 #include <random>
 #include <components.hpp>
 #include <mesh_manager.hpp>
+#include <SDL_mixer.h>
+#include <curve.hpp>
 
 #ifndef CAPTURE_THE_CASTLE_FIREWORK_HPP
 #define CAPTURE_THE_CASTLE_FIREWORK_HPP
@@ -29,6 +31,7 @@ public:
 
     void kaboom(vec2 position);
 private:
+    void next_time();
     GLuint m_instance_vbo;
     std::vector<Particle> m_particles;
 
@@ -41,8 +44,16 @@ private:
     std::uniform_real_distribution<float> m_dist_Velocity;
     std::uniform_real_distribution<float> m_dist_SpawnTimer;
 
+    Curve m_curve;
+
     Mesh mesh{};
     Effect effect{};
+
+    float time;
+    float step = 0.1f;
+    float time_step = step;
+
+    Mix_Chunk* m_pop;
 };
 
 #endif //CAPTURE_THE_CASTLE_FIREWORK_HPP

@@ -57,15 +57,17 @@ std::pair<bool, CollisionResponse> BoxCollisionSystem::collides_with_tile(Entity
     auto &position = ecsManager.getComponent<Transform>(entity).position;
     auto &boundingBox = ecsManager.getComponent<C_Collision>(entity).boundingBox;
 
-    float pl = position.x;
+    float pl = position.x - (boundingBox.x / 2);
     float pr = pl + boundingBox.x;
-    float pt = position.y;
+    float pt = position.y - (boundingBox.y / 2);
     float pb = pt + boundingBox.y;
 
-    float tt = tile.get_position().y;
-    float tb = tt + tile.get_bounding_box().y;
-    float tl = tile.get_position().x;
-    float tr = tl + tile.get_bounding_box().x;
+    vec2  tile_pos = tile.get_position();
+    vec2  tile_box = tile.get_bounding_box();
+    float tt = tile_pos.y - (tile_box.y / 2);
+    float tb = tt + tile_box.y;
+    float tl = tile_pos.x - (tile_box.x / 2);
+    float tr = tl + tile_box.x;
     CollisionResponse col_res = {false, false, false, false};
 
     col_res = v_collision(entity, tile, col_res);
@@ -87,9 +89,9 @@ CollisionResponse BoxCollisionSystem::v_collision(Entity entity, Tile &tile, Col
     auto &position = ecsManager.getComponent<Transform>(entity).position;
     auto &boundingBox = ecsManager.getComponent<C_Collision>(entity).boundingBox;
 
-    float pt = position.y;
+    float pt = position.y - (boundingBox.y / 2);
     float pb = pt + boundingBox.y;
-    float tt = tile.get_position().y;
+    float tt = tile.get_position().y - (tile.get_bounding_box().y / 2);
     float tb = tt + tile.get_bounding_box().y;
 
     col_res.down = (pt >= tt && pt <= tb); // approach from bottom
@@ -102,9 +104,9 @@ CollisionResponse BoxCollisionSystem::h_collision(Entity entity, Tile &tile, Col
     auto &position = ecsManager.getComponent<Transform>(entity).position;
     auto &boundingBox = ecsManager.getComponent<C_Collision>(entity).boundingBox;
 
-    float pl = position.x;
+    float pl = position.x - (boundingBox.x / 2);
     float pr = pl + boundingBox.x;
-    float tl = tile.get_position().x;
+    float tl = tile.get_position().x - (tile.get_bounding_box().x / 2);
     float tr = tl + tile.get_bounding_box().x;
 
     col_res.left = (pr >= tl && pr <= tr); //approach from left
@@ -123,5 +125,6 @@ void BoxCollisionSystem::reset() {
 	{
 		collision_queue.pop();
 	}
+	collision_queue = {};
 	this->entities.clear();
 }

@@ -22,6 +22,8 @@ public:
 
     void setScale(vec2 scale);
 
+    void setPosition(vec2 pos);
+
 private:
     MeshComponent mesh{};
     Effect effect{};

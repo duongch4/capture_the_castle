@@ -199,7 +199,6 @@ void PlayerInputSystem::spawn_soldier(
 {
 	Entity soldier = ecsManager.createEntity();
 	ecsManager.addComponent<Team>(soldier, Team{ team_type });
-	ecsManager.addComponent<PlaceableComponent>(soldier, PlaceableComponent{});
 	ecsManager.addComponent<Transform>(soldier, transform);
 	ecsManager.addComponent<Motion>(soldier, motion);
 

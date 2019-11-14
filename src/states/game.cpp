@@ -1,7 +1,5 @@
 
-#include <mesh_manager.hpp>
 #include "game.hpp"
-#include "menu.hpp"
 
 Game::Game() = default;
 
@@ -32,6 +30,7 @@ bool Game::init_state(World* world) {
     registerSoldierAiSystem();
     registerItemSpawnSystem();
     registerItemBoardSystem();
+    registerCurveMovementSystem();
 
     ecsManager.subscribe(this, &Game::winListener);
 
@@ -78,6 +77,7 @@ bool Game::init_game() {
     // Render all the tiles once to the screen texture
     renderTilesToScreenTexture();
 
+    m_click = Mix_LoadWAV(audio_path("capturethecastle_button_click.wav"));
     m_background_music = Mix_LoadMUS(audio_path("capturethecastle_background.wav"));
 
     if (m_background_music == nullptr)
@@ -106,6 +106,7 @@ bool Game::update(float elapsed_ms) {
         itemSpawnSystem->update(elapsed_ms);
         soldierAiSystem->update(elapsed_ms);
         itemBoardSystem->update();
+        curveMovementSystem->update(elapsed_ms);
     } else if (currState == GameState::WIN) {
         firework.update(elapsed_ms);
     }
@@ -205,6 +206,7 @@ void Game::on_mouse_click(GLFWwindow *pWindow, int button, int action, int mods)
     glfwGetCursorPos(pWindow, &xpos, &ypos);
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         if (currState == GameState::NORMAL && help_btn.mouseOnButton({(float) xpos, (float) ypos })) {
+            Mix_PlayChannel(-1, m_click, 0);
             currState = GameState :: HELP;
         } else if (currState == GameState::HELP) {
             switch (help_window.checkButtonClicks({ (float) xpos, (float) ypos }))
@@ -223,7 +225,7 @@ void Game::on_mouse_click(GLFWwindow *pWindow, int button, int action, int mods)
             switch (win_window.checkButtonClicks({ (float) xpos, (float) ypos }))
             {
                 case (ButtonActions::MAIN):
-                    m_world->set_state(new Menu());
+                    m_world->set_state(std::make_unique<Menu>());
                     break;
                 case (ButtonActions::QUIT):
                     m_world->set_window_closed();
@@ -254,6 +256,7 @@ void Game::reset() {
     ecsManager.reset();
     std::cout << "ECS reset" << std::endl;
     tilemap->destroy();
+	tilemap.reset();
     std::cout << "TileMap reset" << std::endl;
     help_btn.destroy();
     std::cout << "Help button destroyed" << std::endl;
@@ -279,10 +282,21 @@ void Game::destroy() {
         Mix_FreeMusic(m_background_music);
     ecsManager.reset();
     tilemap->destroy();
+	tilemap.reset();
     help_btn.destroy();
     help_window.destroy();
     win_window.destroy();
     firework.destroy();
+	itemSpawnSystem.reset();
+	movementSystem.reset();
+	playerInputSystem.reset();
+	spriteRenderSystem.reset();
+	banditSpawnSystem.reset();
+	banditAiSystem.reset();
+	soldierAiSystem.reset();
+	collisionSystem.reset();
+	boxCollisionSystem.reset();
+	curveMovementSystem.reset();
 }
 
 Game::~Game() {
@@ -427,14 +441,14 @@ void Game::registerBoxCollisionSystem()
 void Game::registerCollisionSystem()
 {
     collisionSystem = ecsManager.registerSystem<CollisionSystem>();
-    
+
         Signature signature;
         signature.set(ecsManager.getComponentType<Transform>());
         signature.set(ecsManager.getComponentType<Team>());
         signature.set(ecsManager.getComponentType<C_Collision>());
         // signature.set(ecsManager.getComponentType<Motion>());
         ecsManager.setSystemSignature<CollisionSystem>(signature);
-    
+
     collisionSystem->init();
 }
 
@@ -488,7 +502,27 @@ void Game::registerMovementSystem(const vec2& screen)
     }
     movementSystem->init();
     movementSystem->setScreenSize(screen);
+}
 
+void Game::registerSoldierAiSystem() {
+    soldierAiSystem = ecsManager.registerSystem<SoldierAiSystem>();
+    {
+        Signature signature;
+        signature.set(ecsManager.getComponentType<SoldierAiComponent>());
+        ecsManager.setSystemSignature<SoldierAiSystem>(signature);
+    }
+}
+
+void Game::registerCurveMovementSystem()
+{
+    curveMovementSystem = ecsManager.registerSystem<CurveMovementSystem>();
+    {
+        Signature signature;
+        signature.set(ecsManager.getComponentType<CurveMotionComponent>());
+        signature.set(ecsManager.getComponentType<Transform>());
+        ecsManager.setSystemSignature<CurveMovementSystem>(signature);
+    }
+    curveMovementSystem->init();
 }
 
 void Game::registerComponents()
@@ -503,9 +537,9 @@ void Game::registerComponents()
     ecsManager.registerComponent<BanditSpawnComponent>();
     ecsManager.registerComponent<BanditAiComponent>();
     ecsManager.registerComponent<PlayerInputControlComponent>();
-    ecsManager.registerComponent<PlaceableComponent>();
     ecsManager.registerComponent<SoldierAiComponent>();
     ecsManager.registerComponent<ItemComponent>();
+    ecsManager.registerComponent<CurveMotionComponent>();
     ecsManager.registerComponent<ItemBoardComponent>();
 }
 

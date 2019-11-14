@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SDL_mixer.h>
 #include "common.hpp"
 #include "components.hpp"
 #include "closebtn.hpp"
@@ -10,7 +11,7 @@
 
 class HelpWindow
 {
-
+    enum State { CONTROLS, HOWTOPLAY };
 public:
     void init(vec2 screen_size);
 
@@ -31,4 +32,6 @@ private:
     HelpBackground background;
     PopUpButton how_to_play_btn;
     PlayInstructions instructions;
+    Mix_Chunk* m_click;
+    State curr_state;
 };

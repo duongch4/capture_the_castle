@@ -237,4 +237,5 @@ void CollisionSystem::reset() {
         collision_queue.pop();
     }
     this->entities.clear();
+	//tileMap->destroy();
 }
