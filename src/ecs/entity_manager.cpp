@@ -3,6 +3,7 @@
 //
 
 #include <assert.h>
+#include <iostream>
 #include "entity_manager.hpp"
 
 EntityManager::EntityManager()
@@ -15,6 +16,7 @@ EntityManager::EntityManager()
 
 Entity EntityManager::createEntity()
 {
+    std::cout<<activeEntityCount<<std::endl;
     assert(activeEntityCount < MAX_ENTITIES && "Too many entities");
 
     Entity id = availableEntities.front();

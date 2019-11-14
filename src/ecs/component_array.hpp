@@ -46,8 +46,8 @@ public:
     }
     T& getEC(Entity e)
     {
-        assert(entityToIndexMap.find(e) != entityToIndexMap.end() && "Component not found");
-
+//        assert(entityToIndexMap.find(e) != entityToIndexMap.end() && "Component not found");
+//        Todo::FIX THIS
         return componentArray[entityToIndexMap[e]];
     }
     void entityDestroyed(Entity e)
