@@ -13,5 +13,8 @@ void ItemBoardSystem::init(){
 void ItemBoardSystem::update(){}
 
 void ItemBoardSystem::itemEventListener(ItemEvent *itemEvent) {
+}
+
+void ItemBoardSystem::reset() {
 
 }

@@ -16,10 +16,10 @@ class ItemBoardSystem : public System{
 public:
     void init();
     void update();
+    void reset() override ;
 
 private:
     void itemEventListener(ItemEvent* itemEvent);
-    //gi
 
 };
 

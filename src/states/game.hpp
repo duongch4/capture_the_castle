@@ -77,7 +77,7 @@ private:
     std::shared_ptr<CollisionSystem> collisionSystem;
     std::shared_ptr<BoxCollisionSystem> boxCollisionSystem;
     std::shared_ptr<ItemSpawnSystem> itemSpawnSystem;
-//    std::shared_ptr<ItemBoardSystem> itemBoardSystem;
+    std::shared_ptr<ItemBoardSystem> itemBoardSystem;
 
 
     void winListener(WinEvent* winEvent);

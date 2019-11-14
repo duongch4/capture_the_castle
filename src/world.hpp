@@ -30,6 +30,7 @@
 #include <systems/collision_system.hpp>
 #include <systems/box_collision_system.hpp>
 #include <systems/soldier_ai_system.hpp>
+#include <systems/item_board_system.hpp>
 
 #include "common.hpp"
 #include "components.hpp"

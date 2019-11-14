@@ -31,6 +31,7 @@ bool Game::init_state(World* world) {
     registerBanditAiSystem();
     registerSoldierAiSystem();
     registerItemSpawnSystem();
+    registerItemBoardSystem();
 
     ecsManager.subscribe(this, &Game::winListener);
 
@@ -300,6 +301,36 @@ void Game::registerItemBoard(const Transform& transform, const TeamType& team_ty
     MeshComponent itemBoardMesh{};
     itemBoardMesh.id = MeshManager::instance().init_mesh(itemBoardSprite.width, itemBoardSprite.height);
     ecsManager.addComponent<MeshComponent>(itemBoard, itemBoardMesh);
+
+    // Create Item on the Board
+    Entity picked_up_item = ecsManager.createEntity();
+
+    vec2 position = transform.position;
+    if (team_type == TeamType::PLAYER1){
+        position.x += 112;
+    } else {
+        position.x -= 115;
+    }
+    Transform item_transform = Transform{
+            position,
+            position,
+            { 1.f, 1.f },
+            position};
+    ecsManager.addComponent<Transform>(picked_up_item, item_transform);
+    ecsManager.addComponent<ItemBoardComponent>(picked_up_item, ItemBoardComponent{});
+    ecsManager.addComponent<Team>(picked_up_item, Team{ team_type });
+    Effect itemEffect{};
+    itemEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+    ecsManager.addComponent<Effect>(picked_up_item, itemEffect);
+    Sprite itemSprite = {power_up_path("CaptureTheCastle_no_item.png")};
+    TextureManager::instance().load_from_file(itemSprite);
+    itemSprite.sprite_index = { 0 , 0 };
+    itemSprite.sprite_size = { itemSprite.width / 7.0f , itemSprite.height / 5.0f };
+    ecsManager.addComponent<Sprite>(picked_up_item, itemSprite);
+
+    MeshComponent itemMesh{MeshManager::instance().init_mesh(itemSprite.width, itemSprite.height)};
+
+    ecsManager.addComponent<MeshComponent>(picked_up_item, itemMesh);
 }
 
 Entity Game::registerPlayer(const Transform& transform, const Motion& motion, const TeamType& team_type, const char* texture_path)
@@ -486,14 +517,14 @@ void Game::registerSoldierAiSystem() {
     }
 }
 
-//void Game::registerItemBoardSystem() {
-//    itemBoardSystem = ecsManager.registerSystem<ItemBoardSystem>();
-//    {
-//        Signature  signature;
-//        signature.set(ecsManager.getComponentType<ItemBoardComponent>());
-//        ecsManager.setSystemSignature<itemBoardSystem>(signature);
-//    }
-//}
+void Game::registerItemBoardSystem() {
+    itemBoardSystem = ecsManager.registerSystem<ItemBoardSystem>();
+    {
+        Signature  signature;
+        signature.set(ecsManager.getComponentType<ItemBoardComponent>());
+        ecsManager.setSystemSignature<ItemBoardSystem>(signature);
+    }
+}
 
 void Game::registerCastles()
 {
