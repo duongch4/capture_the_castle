@@ -50,14 +50,12 @@ void HelpWindow::checkButtonHovers(vec2 mouseloc) {
 
 void HelpWindow::showHowToPlay() {
     curr_state = HOWTOPLAY;
-    instructions.setPosition({instructions.get_position().x, instructions.get_position().y - 40});
     instructions.loadNewInstruction(textures_path("ui/CaptureTheCastle_how_to_play_instructions.png"));
     instructions.setScale({0.2, 0.2});
 }
 
 void HelpWindow::resetWindow() {
     curr_state = CONTROLS;
-    instructions.setPosition({instructions.get_position().x, instructions.get_position().y + 40});
     instructions.loadNewInstruction(textures_path("ui/CaptureTheCastle_game_control_instructions.png"));
     instructions.setScale({0.275, 0.275});
 }
