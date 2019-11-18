@@ -166,7 +166,7 @@ void CollisionSystem::update() {
 
 
     std::set<Entity>::iterator it = entities_to_be_destroyed.begin();
-    std::cout<<"Things in the set:"<<std::endl;
+    //std::cout<<"Things in the set:"<<std::endl;
     while (it != entities_to_be_destroyed.end()) {
         std::cout<<*it<<std::endl;
         it++;

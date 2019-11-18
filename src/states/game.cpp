@@ -145,7 +145,7 @@ void Game::draw() {
         help_window.draw(projection_2D);
     }
 
-    if (currState == GameState::WIN) {
+    else if (currState == GameState::WIN) {
         win_window.draw(projection_2D);
         firework.draw(projection_2D);
     }
@@ -244,10 +244,10 @@ void Game::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
     if (currState == GameState::NORMAL) {
         help_btn.onHover(help_btn.mouseOnButton({ (float)xpos, (float) ypos }));
     }
-    if (currState == GameState::HELP) {
+    else if (currState == GameState::HELP) {
         help_window.checkButtonHovers({ (float) xpos, (float) ypos });
     }
-    if (currState == GameState::WIN) {
+    else if (currState == GameState::WIN) {
         win_window.checkButtonHovers({ (float) xpos, (float) ypos });
     }
 }
