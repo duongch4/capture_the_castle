@@ -36,6 +36,7 @@ private:
     std::vector<Particle> m_particles;
 
     float m_spawn_timer;
+    int m_spawn_count;
     std::default_random_engine m_rng;
     std::uniform_real_distribution<float> m_dist_PositionX;
     std::uniform_real_distribution<float> m_dist_PositionY;

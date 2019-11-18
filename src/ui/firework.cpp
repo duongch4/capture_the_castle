@@ -10,7 +10,8 @@ constexpr int NUM_SEGMENTS = 8;
 static const float GRAVITY = 500.f;
 static const int PARTICLE_SIZE = 4;
 static const int PARTICLE_LIFE = 4;
-static const float SPAWN_DELAY = 0.5f;
+static const float SPAWN_DELAY = 0.1f;
+static const float SPAWN_GROUP_DELAY = 0.6f;
 
 bool Firework::init(vec2 screen_size) {
     m_rng = std::default_random_engine(std::random_device()());
@@ -28,6 +29,7 @@ bool Firework::init(vec2 screen_size) {
     m_dist_SpawnTimer = distSpawnTimer;
 
     m_spawn_timer = SPAWN_DELAY;
+    m_spawn_count = 0;
 
     m_curve.set_control_points({
         vec2{300.f, 350.f}, vec2{420.f, 30.f}, vec2{1000.f, 30.f}, vec2{1200.f, 350.f}
@@ -91,7 +93,13 @@ void Firework::update(float ms) {
         // using the points on curve for position
         kaboom(m_curve.get_curve_points(time));
         next_time();
-        m_spawn_timer = SPAWN_DELAY;
+        m_spawn_count++;
+        if (m_spawn_count == 3) {
+            m_spawn_count = 0;
+            m_spawn_timer = SPAWN_GROUP_DELAY;
+        } else {
+            m_spawn_timer = SPAWN_DELAY;
+        }
     }
 
     // Remove the particle if life is smaller than zero
