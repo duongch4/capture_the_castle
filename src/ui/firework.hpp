@@ -49,7 +49,7 @@ private:
     Mesh mesh{};
     Effect effect{};
 
-    float time;
+    float time = 0.f;
     float step = 0.1f;
     float time_step = step;
 
