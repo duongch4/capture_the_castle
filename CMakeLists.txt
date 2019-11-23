@@ -113,7 +113,8 @@ set(SOURCE_FILES
         src/ui/firework.cpp
         src/ui/firework.hpp
         src/curve.hpp
-        src/systems/curve_movement_system.hpp)
+        src/systems/curve_movement_system.hpp
+        src/systems/item_effect_system.hpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

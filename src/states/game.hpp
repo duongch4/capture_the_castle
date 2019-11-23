@@ -25,6 +25,7 @@
 #include <systems/box_collision_system.hpp>
 #include <systems/soldier_ai_system.hpp>
 #include <systems/curve_movement_system.hpp>
+#include <systems/item_effect_system.hpp>
 
 class Game : public State {
 public:
@@ -59,6 +60,7 @@ public:
     void registerCurveMovementSystem();
     void registerItemSpawnSystem();
     void registerItemBoardSystem();
+    void registerItemEffectSystem();
 
     void renderTilesToScreenTexture();
 
@@ -97,6 +99,7 @@ private:
     std::shared_ptr<CurveMovementSystem> curveMovementSystem;
     std::shared_ptr<ItemSpawnSystem> itemSpawnSystem;
     std::shared_ptr<ItemBoardSystem> itemBoardSystem;
+    std::shared_ptr<ItemEffectSystem> itemEffectSystem;
 
 
     void winListener(WinEvent* winEvent);

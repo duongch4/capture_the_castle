@@ -119,7 +119,7 @@ void CollisionSystem::update() {
             } else if (e2_layer == CollisionLayer::Item) {
                 /// handle item collision
                 auto &item = ecsManager.getComponent<ItemComponent>(e2);
-                /// Bomb in_use, spawn player, delete enemy, delete itself
+                /// Bomb in_use, respawn player, delete enemy, delete itself
                 if (item.in_use && item.itemType == ItemType::BOMB) {
                     if (e1_layer == CollisionLayer::Enemy) {
                         entities_to_be_destroyed.insert(e1);
