@@ -31,6 +31,7 @@ bool Game::init_state(World* world) {
     registerItemSpawnSystem();
     registerItemBoardSystem();
     registerCurveMovementSystem();
+    registerItemEffectSystem();
 
     ecsManager.subscribe(this, &Game::winListener);
 
@@ -107,6 +108,7 @@ bool Game::update(float elapsed_ms) {
         soldierAiSystem->update(elapsed_ms);
         itemBoardSystem->update();
         curveMovementSystem->update(elapsed_ms);
+        itemEffectSystem->update();
     } else if (currState == GameState::WIN) {
         firework.update(elapsed_ms);
     }
@@ -298,6 +300,7 @@ void Game::destroy() {
 	boxCollisionSystem.reset();
 	curveMovementSystem.reset();
 	itemBoardSystem.reset();
+	itemEffectSystem.reset();
 }
 
 Game::~Game() {
@@ -525,6 +528,26 @@ void Game::registerCurveMovementSystem()
     }
     curveMovementSystem->init();
 }
+void Game::registerItemBoardSystem() {
+    itemBoardSystem = ecsManager.registerSystem<ItemBoardSystem>();
+    {
+        Signature  signature;
+        signature.set(ecsManager.getComponentType<ItemBoardComponent>());
+        ecsManager.setSystemSignature<ItemBoardSystem>(signature);
+    }
+    itemBoardSystem->init();
+}
+
+void Game::registerItemEffectSystem() {
+    itemEffectSystem = ecsManager.registerSystem<ItemEffectSystem>();
+    {
+        Signature signature;
+        signature.set(ecsManager.getComponentType<ItemComponent>());
+        signature.set(ecsManager.getComponentType<Transform>());
+        ecsManager.setSystemSignature<ItemEffectSystem>(signature);
+    }
+    itemEffectSystem->init();
+}
 
 void Game::registerComponents()
 {
@@ -544,17 +567,6 @@ void Game::registerComponents()
     ecsManager.registerComponent<ItemBoardComponent>();
     ecsManager.registerComponent<PlaceableComponent>();
 
-}
-
-
-void Game::registerItemBoardSystem() {
-    itemBoardSystem = ecsManager.registerSystem<ItemBoardSystem>();
-    {
-        Signature  signature;
-        signature.set(ecsManager.getComponentType<ItemBoardComponent>());
-        ecsManager.setSystemSignature<ItemBoardSystem>(signature);
-    }
-    itemBoardSystem->init();
 }
 
 void Game::registerCastles()

@@ -45,7 +45,7 @@ private:
         }
     }
     float time;
-    float step = 0.01f;
+    float step = 0.03f;
     float time_step = step;
 };
 #endif //CAPTURE_THE_CASTLE_CURVE_MOVEMENT_SYSTEM_HPP
