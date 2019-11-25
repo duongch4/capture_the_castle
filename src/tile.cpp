@@ -4,24 +4,12 @@
 #include <cmath>
 
 Texture Tile::tile_texture;
+Effect Tile::effect;
 
 // This function take in an sprite_id (position of the sprite in a sprite sheet), number of horizontal tile, 
 // number of vertical tiles, width and height of a single tile. Create a tile with the correct sprite (texture coordinate)
 bool Tile::init(int sprite_id, int num_horizontal, int num_vertical, int width, int gap_width)
 {
-	tile_id = sprite_id;
-
-	// Load shared texture
-	if (!tile_texture.is_valid())
-	{
-		if (!tile_texture.load_from_file(textures_path("maze_sprite_sheet.png")))
-		{
-			fprintf(stderr, "Failed to load tile texture!");
-			return false;
-		}
-	}
-
-	tile_color = {1.f, 1.f, 1.f};
 	// The position corresponds to the center of the texture
 	float wr = tile_texture.width * 0.5f;
 	float hr = tile_texture.height * 0.5f;
@@ -34,14 +22,13 @@ bool Tile::init(int sprite_id, int num_horizontal, int num_vertical, int width, 
 	float tile_act_width = (float)width / (float)((num_horizontal * width) + ((num_horizontal - 1) * gap_width));
 	float tile_act_height = (float)width / (float)((num_vertical * width) + ((num_vertical - 1) * gap_width));
 
-    set_wall(true);
-	const int floor[3] = { 19, 23, 24 };
     if (sprite_id == 19 || sprite_id == 23 || sprite_id == 24){
         set_wall(false);
+    } else {
+        set_wall(true);
     }
 
 	// Calculate the texture coordinate based on the id, width, and height of the sprite
-
 	// Texture mapping start from the top left (0,0) to bottom right (1,1)
 	TexturedVertex vertices[4];
 	vertices[0].position = { -wr, +hr, -0.02f };
@@ -74,16 +61,30 @@ bool Tile::init(int sprite_id, int num_horizontal, int num_vertical, int width, 
 	if (gl_has_errors())
 		return false;
 
-	// Loading shaders
-	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
-		return false;
-
 	// Setting initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture.
 	// To make a square, scale the x and y based on the width:height ratio of the sprite sheet
 	transform.scale = { 0.096f, 0.144f };
 
 	return true;
+}
+
+bool Tile::init_once()
+{
+    // Load shared texture
+    if (!tile_texture.is_valid()) {
+        if (!tile_texture.load_from_file(textures_path("maze_sprite_sheet.png"))) {
+            fprintf(stderr, "Failed to load tile texture!");
+            return false;
+        }
+    }
+
+    // Loading shaders
+    if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"))) {
+        return false;
+    }
+
+    return true;
 }
 
 // Releases all graphics resources
@@ -145,9 +146,8 @@ void Tile::draw(const mat3& projection)
 
 	// Setting uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&out);
-//	float color[] = { 1.f, 1.f, 1.f };
-    float color[] = { tile_color.x, tile_color.y, tile_color.z}; //For collision debugging purposes
-	glUniform3fv(color_uloc, 1, color);
+	float color[] = { 1.f, 1.f, 1.f };
+    glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 
 	// Drawing!
@@ -175,11 +175,6 @@ std::pair<int, int> Tile::get_idx() const
 	return tile_idx;
 }
 
-int Tile::get_id()
-{
-	return tile_id;
-}
-
 vec2 Tile::get_bounding_box() const
 {
 	// Returns the local bounding coordinates scaled by the current size of the tile
@@ -195,12 +190,4 @@ bool Tile::is_wall() const {
 
 void Tile::set_wall(bool wall) {
     this->wall = wall;
-}
-
-void Tile::change_color(bool colliding) {
-    if (!colliding) {
-        tile_color = {1.f, 1.f, 1.f};
-    } else {
-        tile_color = {1.f, 0.f, 0.f};
-    }
 }

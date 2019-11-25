@@ -13,6 +13,11 @@ bool Tilemap::init()
 	tilemap_height = 17;
 	tilemap_width = 29;
 
+    Tile tileInit;
+    if (!tileInit.init_once()) {
+        return false;
+    }
+
 	// Create all the tiles based on the data we got from the .tmx file
 	for (int j = 0; j < tilemap_height; j++) {
 		m_tiles.emplace_back(std::vector<Tile>(tilemap_width));
@@ -111,6 +116,12 @@ void Tilemap::draw_all_tiles(const mat3& projection)
 			tile.draw(projection);
 		}
 	}
+
+    for (auto &vector : m_tiles) {
+        for (auto &tile : vector) {
+            tile.destroy();
+        }
+    }
 }
 
 Tile Tilemap::get_tile(float positionX, float positionY)
