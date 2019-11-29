@@ -24,7 +24,7 @@ public:
 
 
 private:
-    static const size_t MAX_ITEMS = 6;
+    static const size_t MAX_ITEMS = 8;
     const size_t ITEM_DELAY_MS = 10000;
     float next_item_spawn;
     std::shared_ptr<Tilemap> tile_map;
@@ -32,6 +32,8 @@ private:
     // C++ rng
     std::default_random_engine rng;
     std::uniform_real_distribution<float> dist;
+
+    bool check_free_space(vec2 spawn_position);
 
     void spawn_item();
 };
