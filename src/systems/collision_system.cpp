@@ -143,19 +143,25 @@ void CollisionSystem::update() {
                     if (e1_layer != CollisionLayer::Enemy) {
                         //if p1 or p2
                         auto &player_item = ecsManager.getComponent<ItemComponent>(e1);
-                        if (player_item.itemType == ItemType::None) {
-                            if (item.itemType == ItemType::BOMB) {
-                                // pickup bomb
-                                player_item.itemType = ItemType::BOMB;
-                                ecsManager.publish(new ItemEvent(e1, ItemType::BOMB, true));
-                            } else {
-                                // pick up shield and use shield
-                                player_item.itemType = ItemType::SHIELD;
-                                ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, true));
-                            }
-                            entities_to_be_destroyed.insert(e2);
-//                            ecsManager.destroyEntity(e2);
+                        // Remove the current item from the player
+                        if (player_item.itemType == ItemType::SHIELD) {
+                            ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
+                        } else if (player_item.itemType == ItemType::BOMB) {
+                            ecsManager.publish(new ItemEvent(e1, ItemType::BOMB, false));
                         }
+                        // Pickup new item
+                        if (item.itemType == ItemType::BOMB) {
+                            // pickup bomb
+                            player_item.itemType = ItemType::BOMB;
+                            ecsManager.publish(new ItemEvent(e1, ItemType::BOMB, true));
+                        } else {
+                            // pick up shield and use shield
+                            player_item.itemType = ItemType::SHIELD;
+                            ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, true));
+                        }
+                        entities_to_be_destroyed.insert(e2);
+//                      ecsManager.destroyEntity(e2);
+                        //}
                     }
                 }
             }
