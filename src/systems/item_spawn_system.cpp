@@ -42,6 +42,10 @@ void ItemSpawnSystem::spawn_item(){
             break;
     }
 
+    if(!check_free_space(nextPos)) {
+        return;
+    }
+
     Entity item = ecsManager.createEntity();
     int t = rand() % 2;
     ItemType item_type = ItemType::BOMB;
@@ -80,6 +84,17 @@ void ItemSpawnSystem::spawn_item(){
             radius,
             {i_width, i_height}
     });
+}
+
+bool ItemSpawnSystem::check_free_space(vec2 spawn_position) {
+    for (auto const &entity: entities) {
+        auto& transform = ecsManager.getComponent<Transform>(entity);
+        if (spawn_position.x == transform.position.x &&
+            spawn_position.y == transform.position.y) {
+            return false;
+        }
+    }
+    return true;
 }
 
 void ItemSpawnSystem::reset() {
