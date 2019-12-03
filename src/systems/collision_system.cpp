@@ -132,12 +132,12 @@ void CollisionSystem::update() {
                         auto &player_item = ecsManager.getComponent<ItemComponent>(e1);
                         if (player_item.itemType != ItemType::SHIELD) {
                             e1_transform.position = e1_transform.init_position;
-                            entities_to_be_destroyed.insert(e2);
 //                            ecsManager.destroyEntity(e2);
                         } else {
                             player_item.itemType = ItemType::None;
                             ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
                         }
+                        entities_to_be_destroyed.insert(e2);
                     }
                 } else {
                     if (e1_layer != CollisionLayer::Enemy) {
