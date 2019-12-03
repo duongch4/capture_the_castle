@@ -1,4 +1,4 @@
-#version 120
+#version 330
 
 in vec2 textcoord;
 out vec4 colour;

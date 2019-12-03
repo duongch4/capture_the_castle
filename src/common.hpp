@@ -7,6 +7,7 @@
 //#define NOMINMAX
 #include <gl3w.h>
 #include <GLFW/glfw3.h>
+#include <sstream>
 
 // Simple utility macros to avoid mistyping directory name, name has to be a string literal
 // audio_path("audio.ogg") -> data/audio/audio.ogg
@@ -110,6 +111,12 @@ struct Texture
 	bool is_valid()const; // True if texture is valid
 	bool create_from_screen(GLFWwindow const * const window); // Screen texture
 };
+
+template <typename T> std::string to_string(const T& t) {
+    std::ostringstream os;
+    os<<t;
+    return os.str();
+}
 
 //// An entity boils down to a collection of components,
 //// organized by their in-game context (mesh, effect, motion, etc...)

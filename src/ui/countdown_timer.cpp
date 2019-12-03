@@ -56,6 +56,7 @@ bool CountdownTimer::init_clock(vec2 screen_size) {
 }
 
 bool CountdownTimer::init_text() {
+    face_height = 48;
     if (FT_Init_FreeType(&ft))
         return false;
     if (FT_New_Face(ft, font_path("coopbl.ttf"), 0, &timer_face))
@@ -148,9 +149,15 @@ void CountdownTimer::draw_text(const mat3 &projection) {
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(text_mesh.vao);
 
-     Iterate through all characters
+    GLint text_colour_loc = glGetUniformLocation(text_effect.program, "textColour");
+    glUniform3f(text_colour_loc, 0.f, 0.f, 0.f);
+
+    GLint projection_uloc = glGetUniformLocation(text_effect.program, "projection");
+    glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
+
+    // Iterate through all characters
     std::string::const_iterator c;
-    std::string text = to_string(remaining_time);
+    std::string text = to_string(static_cast<int>(remaining_time));
     for(c = text.begin(); c != text.end(); c++)
     {
         Character ch = characters[*c];
@@ -172,11 +179,16 @@ void CountdownTimer::draw_text(const mat3 &projection) {
                 { xpos + w, ypos + h,   1.0, 0.0 }
         };
 
+        GLint in_position_loc = glGetAttribLocation(text_effect.program, "in_position");
+        glEnableVertexAttribArray(in_position_loc);
+        glVertexAttribPointer(in_position_loc, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void*)0);
+
         // Render glyph texture over quad
         glBindTexture(GL_TEXTURE_2D, ch.texture_id);
         // Update content of VBO memory
         glBindBuffer(GL_ARRAY_BUFFER, text_mesh.vbo);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         // draw text
@@ -238,6 +250,8 @@ void CountdownTimer::draw(const mat3 &projection) {
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
+
+    draw_text(projection);
 }
 
 void CountdownTimer::reset_timer() {
