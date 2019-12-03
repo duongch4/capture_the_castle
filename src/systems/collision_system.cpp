@@ -210,8 +210,8 @@ bool CollisionSystem::collideWithCastle(Entity player, Entity castle) {
     float pt = p_position.y;
     float pb = pt + p_boundingBox.y;
 
-    float ct = c_position.y;
-    float cb = ct + c_boundingBox.y;
+    float ct = c_position.y + 100;
+    float cb = ct + c_boundingBox.y - 100;
     float cl = c_position.x - 50 ;
     float cr = cl + c_boundingBox.x + 50;
     CollisionResponse col_res = {false, false, false, false};
