@@ -71,6 +71,9 @@ bool Game::init_game() {
     // Winner's Window Initialization
     win_window.init(m_screen_size);
 
+    timer.init(m_screen_size);
+    timer.start_timer(30);
+
     // Firework particle
     firework.init(m_screen_size);
 
@@ -109,6 +112,7 @@ bool Game::update(float elapsed_ms) {
         itemBoardSystem->update();
         curveMovementSystem->update(elapsed_ms);
         itemEffectSystem->update();
+        timer.update(elapsed_ms);
     } else if (currState == GameState::WIN) {
         firework.update(elapsed_ms);
     }
@@ -142,6 +146,7 @@ void Game::draw() {
     // Render the remaining entities on top our screen texture
     spriteRenderSystem->draw(projection_2D);
     help_btn.draw(projection_2D);
+    timer.draw(projection_2D);
 
     if (currState == GameState::HELP) {
         help_window.draw(projection_2D);
@@ -289,6 +294,7 @@ void Game::destroy() {
     help_window.destroy();
     win_window.destroy();
     firework.destroy();
+    timer.destroy();
 	itemSpawnSystem.reset();
 	movementSystem.reset();
 	playerInputSystem.reset();

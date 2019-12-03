@@ -26,6 +26,7 @@
 #include <systems/soldier_ai_system.hpp>
 #include <systems/curve_movement_system.hpp>
 #include <systems/item_effect_system.hpp>
+#include <ui/countdown_timer.hpp>
 
 class Game : public State {
 public:
@@ -83,6 +84,9 @@ private:
     HelpButton help_btn;
     HelpWindow help_window;
     WinWindow win_window;
+
+    // TODO: TEMPORARY
+    CountdownTimer timer;
 
     // Particle
     Firework firework;

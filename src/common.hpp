@@ -21,6 +21,7 @@
 #define mesh_path(name) data_path  "/meshes/" name
 #define power_up_path(name) data_path "/textures/power_ups/" name
 #define maze_path(name) data_path  "/maze/" name
+#define font_path(name) data_path "/fonts/" name
 
 // Not much math is needed and there are already way too many libraries linked (:
 // If you want to do some overloads..
