@@ -19,15 +19,25 @@ void BoxCollisionSystem::update() {
 
         auto &transform = ecsManager.getComponent<Transform>(e);
         auto &motion = ecsManager.getComponent<Motion>(e).direction;
+        auto &boundingBox = ecsManager.getComponent<C_Collision>(e).boundingBox;
 
-        if (col_res.up || col_res.down) {
-            motion.y = 0.f;
-        } else if (col_res.right || col_res.left) {
-            motion.x = 0.f;
+        int x_diff = abs(tile.get_position().x - transform.position.x);
+        int y_diff = abs(tile.get_position().y - transform.position.y);
+
+        // Compare the x and y distance between entity and tile to determine the direction to move the entity
+        if (y_diff >= x_diff) {
+            if (tile.get_position().y > transform.position.y) {
+                transform.position.y = tile.get_position().y - tile.get_bounding_box().y/2 - boundingBox.y/2;
+            } else {
+                transform.position.y = tile.get_position().y + tile.get_bounding_box().y/2 + boundingBox.y/2;
+            }
+        } else if (x_diff > y_diff) {
+            if (tile.get_position().x > transform.position.x) {
+                transform.position.x = tile.get_position().x - tile.get_bounding_box().x/2 - boundingBox.x/2;
+            } else {
+                transform.position.x = tile.get_position().x + tile.get_bounding_box().x/2 + boundingBox.x/2;
+            }
         }
-        auto &layer = ecsManager.getComponent<C_Collision>(e).layer;
-
-        transform.position = transform.old_position;
 
         collision_queue.pop();
     }
@@ -41,10 +51,9 @@ void BoxCollisionSystem::checkCollision() {
         std::vector<Tile> tiles = tileMap->get_adjacent_tiles(transform.position.x, transform.position.y);
         for (auto &tile : tiles) {
             if (tile.is_wall()) {
-                CollisionResponse col_res = {false, false, false, false};
                 std::pair collisionPair = collides_with_tile(entity, tile);
                 if (collisionPair.first){
-                    ecsManager.publish(new BoxCollisionEvent(entity, tile, col_res));
+                    ecsManager.publish(new BoxCollisionEvent(entity, tile, collisionPair.second));
                 }
 
             }

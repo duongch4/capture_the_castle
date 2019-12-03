@@ -143,16 +143,13 @@ std::vector<Tile> Tilemap::get_adjacent_tiles(float positionX, float positionY)
 	// Convert to the array index of the tile
 	int gridX = (int)std::round((positionX - 23) / 48);
 	int gridY = (int)std::round((positionY - 23) / 48);
-
-	// Get the adjacent 9 tiles and return it
 	std::vector<Tile> adjacentTiles;
-	for (int j = -1; j < 2; j++) {
-		for (int i = -1; i < 2; i++) {
-			int row = gridY + j;
-			int col = gridX + i;
-			adjacentTiles.emplace_back(m_tiles[row][col]);
-		}
-	}
+
+    // Get the adjacent 4 tiles and return it
+    adjacentTiles.emplace_back(m_tiles[gridY - 1][gridX + 0]); // north
+    adjacentTiles.emplace_back(m_tiles[gridY + 0][gridX + 1]); // east
+    adjacentTiles.emplace_back(m_tiles[gridY + 1][gridX + 0]); // south
+    adjacentTiles.emplace_back(m_tiles[gridY + 0][gridX - 1]); // west
 	return adjacentTiles;
 }
 
