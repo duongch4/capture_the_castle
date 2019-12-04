@@ -22,7 +22,6 @@ void CountdownTimer::start_timer(float seconds) {
 void CountdownTimer::update(float elapsed_time) {
     if (timer_active && remaining_time > 0) {
         remaining_time -= elapsed_time / 1000;
-        printf("time remaining: %f", remaining_time);
     }
 }
 
@@ -48,7 +47,7 @@ bool CountdownTimer::init_clock(vec2 screen_size) {
     {
         if (!clock_texture.load_from_file(textures_path("ui/CaptureTheCastle_timer.png")))
         {
-            fprintf(stderr, "Failed to load tile texture!");
+            fprintf(stderr, "Failed to load clock texture!");
         }
     }
     clock_mesh.id = MeshManager::instance().init_mesh(clock_texture.width, clock_texture.height);
@@ -66,7 +65,7 @@ bool CountdownTimer::init_text() {
 
     // Disabling the default 4-byte alignment restrictions used by OpenGL
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    for (GLubyte n = 48; n < 57; n++)
+    for (GLubyte n = 48; n < 58; n++)
     {
         if (FT_Load_Char(timer_face, n, FT_LOAD_RENDER))
         {
@@ -99,6 +98,9 @@ bool CountdownTimer::init_text() {
                 static_cast<GLuint>(timer_face->glyph->advance.x)
         };
         characters.insert(std::pair<GLchar, Character>(n, character));
+        if (character.size.x > max_text_width) {
+            max_text_width = character.size.x;
+        }
     }
     FT_Done_Face(timer_face);
     FT_Done_FreeType(ft);
@@ -137,8 +139,10 @@ void CountdownTimer::destroy() {
 }
 
 void CountdownTimer::draw_text(const mat3 &projection) {
-    float x = 400.f;
-    float y = 400.f;
+    std::string text = to_string(static_cast<int>(remaining_time));
+    int half_width = text.length() * max_text_width / 2;
+    float x = clock_transform.position.x - half_width;
+    float y = clock_transform.position.y - 5;
     float scale = 1.0f;
     // Setting shaders
     glUseProgram(text_effect.program);
@@ -157,7 +161,6 @@ void CountdownTimer::draw_text(const mat3 &projection) {
 
     // Iterate through all characters
     std::string::const_iterator c;
-    std::string text = to_string(static_cast<int>(remaining_time));
     for(c = text.begin(); c != text.end(); c++)
     {
         Character ch = characters[*c];
@@ -170,13 +173,13 @@ void CountdownTimer::draw_text(const mat3 &projection) {
 
         // Update VBO for each character
         GLfloat vertices[6][4] = {
-                { xpos,     ypos + h,   0.0, 0.0 },
-                { xpos,     ypos,       0.0, 1.0 },
-                { xpos + w, ypos,       1.0, 1.0 },
+                { xpos,     ypos + h,   0.0, 1.0 },
+                { xpos,     ypos,       0.0, 0.0 },
+                { xpos + w, ypos,       1.0, 0.0 },
 
-                { xpos,     ypos + h,   0.0, 0.0 },
-                { xpos + w, ypos,       1.0, 1.0 },
-                { xpos + w, ypos + h,   1.0, 0.0 }
+                { xpos,     ypos + h,   0.0, 1.0 },
+                { xpos + w, ypos,       1.0, 0.0 },
+                { xpos + w, ypos + h,   1.0, 1.0 }
         };
 
         GLint in_position_loc = glGetAttribLocation(text_effect.program, "in_position");

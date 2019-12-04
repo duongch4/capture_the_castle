@@ -49,6 +49,7 @@ private:
     FT_Face timer_face;
 
     int face_height;
+    unsigned int max_text_width = 0;
     Mesh text_mesh{};
     Effect text_effect;
 
