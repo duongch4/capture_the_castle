@@ -3,11 +3,11 @@
 #include "common.hpp"
 #include "components.hpp"
 
-class WinBackground
+class PopUpBackground
 {
 
 public:
-    void init(vec2 screen_size);
+    void init(vec2 screen_size, const char* texturePath);
 
     void destroy();
 
@@ -21,6 +21,6 @@ private:
     MeshComponent mesh{};
     Effect effect{};
     Transform transform;
-    Texture winbgSprite;
+    Texture backgroundSprite;
     mat3 out;
 };

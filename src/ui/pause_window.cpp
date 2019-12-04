@@ -1,21 +1,21 @@
 
-#include "win_window.hpp"
+#include "pause_window.hpp"
 #include "ecs/events.hpp"
 
-void WinWindow::init(vec2 screen_size) {
+void PauseWindow::init(vec2 screen_size) {
     // Initialize help button
-    winBackground.init(screen_size, textures_path("ui/CaptureTheCastle_win_screen.png"));
-    vec2 currPos = winBackground.get_position();
-    winnerDp.init({currPos.x, currPos.y - 100});
+    background.init(screen_size, textures_path("ui/CaptureTheCastle_pause_screen.png"));
+    vec2 currPos = background.get_position();
+    close_btn.init({currPos.x + 410, currPos.y - 280});
     restart_btn.init({currPos.x, currPos.y + 75}, textures_path("ui/CaptureTheCastle_new_game_btn.png"));
     main_btn.init({currPos.x, currPos.y + 150}, textures_path("ui/CaptureTheCastle_main_menu_btn.png"));
     quit_btn.init({currPos.x, currPos.y + 225}, textures_path("ui/CaptureTheCastle_quit_btn.png"));
     m_click = Mix_LoadWAV(audio_path("capturethecastle_button_click.wav"));
 }
 
-void WinWindow::destroy() {
-    winBackground.destroy();
-    winnerDp.destroy();
+void PauseWindow::destroy() {
+    background.destroy();
+    close_btn.destroy();
     restart_btn.destroy();
     main_btn.destroy();
     quit_btn.destroy();
@@ -23,16 +23,16 @@ void WinWindow::destroy() {
         Mix_FreeChunk(m_click);
 }
 
-void WinWindow::draw(const mat3 &projection) {
+void PauseWindow::draw(const mat3 &projection) {
     //draw all the UI objects of window
-    winBackground.draw(projection);
-    winnerDp.draw(projection);
+    background.draw(projection);
+    close_btn.draw(projection);
     restart_btn.draw(projection);
     main_btn.draw(projection);
     quit_btn.draw(projection);
 }
 
-ButtonActions WinWindow::checkButtonClicks(vec2 mouseloc) {
+ButtonActions PauseWindow::checkButtonClicks(vec2 mouseloc) {
     if (restart_btn.mouseOnButton(mouseloc)) {
         Mix_PlayChannel(-1, m_click, 0);
         return ButtonActions::RESTART;
@@ -42,17 +42,18 @@ ButtonActions WinWindow::checkButtonClicks(vec2 mouseloc) {
     } else if (quit_btn.mouseOnButton(mouseloc)) {
         Mix_PlayChannel(-1, m_click, 0);
         return ButtonActions::QUIT;
+    } else if (close_btn.mouseOnButton(mouseloc)) {
+        Mix_PlayChannel(-1, m_click, 0);
+        return ButtonActions::CLOSE;
     } else {
         return ButtonActions::NONE;
     }
 }
 
-void WinWindow::checkButtonHovers(vec2 mouseloc) {
+void PauseWindow::checkButtonHovers(vec2 mouseloc) {
     restart_btn.onHover(restart_btn.mouseOnButton(mouseloc));
     main_btn.onHover(main_btn.mouseOnButton(mouseloc));
     quit_btn.onHover(quit_btn.mouseOnButton(mouseloc));
+    close_btn.onHover(close_btn.mouseOnButton(mouseloc));
 }
 
-void WinWindow::setWinTeam(TeamType team) {
-    winnerDp.setWinnerDp(team);
-}

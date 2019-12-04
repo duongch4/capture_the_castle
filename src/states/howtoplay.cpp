@@ -17,6 +17,12 @@ bool HowToPlay::init_state(World *world) {
     quit_btn.setScale({0.8, 0.4});
 
     m_click = Mix_LoadWAV(audio_path("capturethecastle_button_click.wav"));
+    if (m_click == nullptr)
+    {
+        fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+                audio_path("capturethecastle_button_click.wav"));
+        return false;
+    }
     m_background_music = Mix_LoadMUS(audio_path("capturethecastle_main_menu.wav"));
 
     if (m_background_music == nullptr)
@@ -78,6 +84,8 @@ void HowToPlay::reset() {
 void HowToPlay::destroy() {
 	if (m_background_music != nullptr)
 		Mix_FreeMusic(m_background_music);
+	if (m_click != nullptr)
+	    Mix_FreeChunk(m_click);
     background.destroy();
     instructions.destroy();
     quit_btn.destroy();

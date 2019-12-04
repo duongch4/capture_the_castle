@@ -81,12 +81,10 @@ set(SOURCE_FILES
         src/ui/help_window.hpp
         src/ui/closebtn.cpp
         src/ui/closebtn.hpp
-        src/ui/help_background.cpp
-        src/ui/help_background.hpp
         src/ui/win_window.cpp
         src/ui/win_window.hpp
-        src/ui/win_background.cpp
-        src/ui/win_background.hpp
+        src/ui/popup_background.cpp
+        src/ui/popup_background.hpp
         src/ui/win_winnerDp.cpp
         src/ui/win_winnerDp.hpp
         src/ui/howtoplay_background.cpp
@@ -114,7 +112,9 @@ set(SOURCE_FILES
         src/ui/firework.hpp
         src/curve.hpp
         src/systems/curve_movement_system.hpp
-        src/systems/item_effect_system.hpp)
+        src/systems/item_effect_system.hpp
+        src/ui/pause_window.hpp
+        src/ui/pause_window.cpp)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

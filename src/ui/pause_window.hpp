@@ -7,8 +7,9 @@
 #include "ecs/events.hpp"
 #include "win_winnerDp.hpp"
 #include "popupbtn.hpp"
+#include "closebtn.hpp"
 
-class WinWindow
+class PauseWindow
 {
 
 public:
@@ -22,13 +23,11 @@ public:
 
     void checkButtonHovers(vec2 mouseloc);
 
-    void setWinTeam(TeamType team);
-
 private:
-    WinnerDp winnerDp;
+    CloseButton close_btn;
     PopUpButton restart_btn;
     PopUpButton main_btn;
     PopUpButton quit_btn;
-    PopUpBackground winBackground;
+    PopUpBackground background;
     Mix_Chunk* m_click;
 };

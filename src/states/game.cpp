@@ -62,7 +62,7 @@ bool Game::init_game() {
     // Item boards
     registerItemBoards(m_world->get_screen_size());
 
-    // HELP BUTTON
+    // Help Button Initialization
     help_btn.init(m_screen_size);
 
     // Help Window Initialization
@@ -70,6 +70,9 @@ bool Game::init_game() {
 
     // Winner's Window Initialization
     win_window.init(m_screen_size);
+
+    // Pause Window Initialization
+    pause_window.init(m_screen_size);
 
     // Firework particle
     firework.init(m_screen_size);
@@ -145,11 +148,11 @@ void Game::draw() {
 
     if (currState == GameState::HELP) {
         help_window.draw(projection_2D);
-    }
-
-    else if (currState == GameState::WIN) {
+    } else if (currState == GameState::WIN) {
         win_window.draw(projection_2D);
         firework.draw(projection_2D);
+    } else if (currState == GameState::PAUSE) {
+        pause_window.draw(projection_2D);
     }
 }
 
@@ -193,13 +196,22 @@ void Game::on_key(int key, int action) {
         case GLFW_KEY_RIGHT_SHIFT:
             k = InputKeys::RIGHT_SHIFT;
             break;
+        case GLFW_KEY_ESCAPE:
+            k = InputKeys::ESC;
+            break;
         default:
             break;
     }
-    if (action == GLFW_PRESS && k != InputKeys::DEFAULT) {
+    if (action == GLFW_PRESS && !(k == InputKeys::ESC || k == InputKeys::DEFAULT)) {
         ecsManager.publish(new InputKeyEvent(k));
-    } else if (action == GLFW_RELEASE && k != InputKeys::DEFAULT) {
+    } else if (action == GLFW_RELEASE && !(k == InputKeys::DEFAULT || k == InputKeys::ESC)) {
         ecsManager.publish(new KeyReleaseEvent(k));
+    } else if (action == GLFW_PRESS && k == InputKeys::ESC) {
+        if (currState == GameState::NORMAL) {
+            currState = GameState::PAUSE;
+        } else if(currState == GameState::PAUSE) {
+            currState = GameState::NORMAL;
+        }
     }
 }
 
@@ -252,6 +264,9 @@ void Game::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
     else if (currState == GameState::WIN) {
         win_window.checkButtonHovers({ (float) xpos, (float) ypos });
     }
+    else if (currState == GameState::PAUSE) {
+        pause_window.checkButtonHovers({(float) xpos, (float) ypos});
+    }
 }
 
 void Game::reset() {
@@ -265,9 +280,16 @@ void Game::reset() {
     help_window.destroy();
     std::cout << "Help window destroyed" << std::endl;
     win_window.destroy();
-    std::cout << "Firework destroyed" << std::endl;
-    firework.destroy();
     std::cout << "Win window destroyed" << std::endl;
+    firework.destroy();
+    std::cout << "Firework destroyed" << std::endl;
+    pause_window.destroy();
+    std::cout << "Pause window destroyed" << std::endl;
+    if (m_background_music != nullptr)
+        Mix_FreeMusic(m_background_music);
+    if (m_click != nullptr)
+        Mix_FreeChunk(m_click);
+    std::cout << "Releasing music" << std::endl;
     std::cout << "Reinitializing game state" << std::endl;
     init_state(m_world);
 }
@@ -282,12 +304,15 @@ void Game::destroy() {
     glDeleteFramebuffers(1, &m_frame_buffer);
     if (m_background_music != nullptr)
         Mix_FreeMusic(m_background_music);
+    if (m_click != nullptr)
+        Mix_FreeChunk(m_click);
     ecsManager.reset();
     tilemap->destroy();
 	tilemap.reset();
     help_btn.destroy();
     help_window.destroy();
     win_window.destroy();
+    pause_window.destroy();
     firework.destroy();
 	itemSpawnSystem.reset();
 	movementSystem.reset();

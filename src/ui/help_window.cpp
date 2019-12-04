@@ -5,7 +5,7 @@
 void HelpWindow::init(vec2 screen_size) {
     // Initialize help button
     curr_state = CONTROLS;
-    background.init(screen_size);
+    background.init(screen_size, textures_path("ui/CaptureTheCastle_help_screen.png"));
     vec2 currPos = background.get_position();
     close_btn.init({currPos.x + 410, currPos.y - 280});
     instructions.init({currPos.x, currPos.y + 22 }, textures_path("ui/CaptureTheCastle_game_control_instructions.png"));
@@ -14,6 +14,9 @@ void HelpWindow::init(vec2 screen_size) {
                           textures_path("ui/CaptureTheCastle_how_to_play_btn.png"));
 
     m_click = Mix_LoadWAV(audio_path("capturethecastle_button_click.wav"));
+    if (m_click == nullptr)
+        fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+                audio_path("capturethecastle_button_click.wav"));
 }
 
 void HelpWindow::destroy() {
@@ -21,6 +24,8 @@ void HelpWindow::destroy() {
     background.destroy();
     how_to_play_btn.destroy();
     instructions.destroy();
+    if (m_click != nullptr)
+        Mix_FreeChunk(m_click);
 }
 
 void HelpWindow::draw(const mat3 &projection) {

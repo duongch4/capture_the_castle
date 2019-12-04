@@ -33,7 +33,7 @@ enum class InputKeys
     UP, DOWN, RIGHT, LEFT,
     W, A, S, D,
     R, Q, SLASH,
-    RIGHT_SHIFT, LEFT_SHIFT,
+    RIGHT_SHIFT, LEFT_SHIFT, ESC,
     DEFAULT
 };
 

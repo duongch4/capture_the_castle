@@ -26,6 +26,7 @@
 #include <systems/soldier_ai_system.hpp>
 #include <systems/curve_movement_system.hpp>
 #include <systems/item_effect_system.hpp>
+#include <ui/pause_window.hpp>
 
 class Game : public State {
 public:
@@ -83,6 +84,7 @@ private:
     HelpButton help_btn;
     HelpWindow help_window;
     WinWindow win_window;
+    PauseWindow pause_window;
 
     // Particle
     Firework firework;
@@ -106,10 +108,9 @@ private:
     bool init_game();
 
     //Game state
-    enum GameState { HELP, WIN, NORMAL};
+    enum GameState { HELP, WIN, NORMAL, PAUSE, SETUP};
     GameState currState;
     CollisionLayer winner;
-
     World* m_world;
 
     void registerSoldierAiSystem();
