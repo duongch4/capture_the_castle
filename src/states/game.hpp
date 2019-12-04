@@ -85,9 +85,6 @@ private:
     HelpWindow help_window;
     WinWindow win_window;
 
-    // TODO: TEMPORARY
-    CountdownTimer timer;
-
     // Particle
     Firework firework;
 

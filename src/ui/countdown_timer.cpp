@@ -56,6 +56,7 @@ bool CountdownTimer::init_clock(vec2 screen_size) {
 
 bool CountdownTimer::init_text() {
     face_height = 48;
+    text_colour = vec3{0, 0, 0};
     if (FT_Init_FreeType(&ft))
         return false;
     if (FT_New_Face(ft, font_path("coopbl.ttf"), 0, &timer_face))
@@ -136,6 +137,12 @@ bool CountdownTimer::init_text() {
 void CountdownTimer::destroy() {
     clock_effect.release();
     MeshManager::instance().release(clock_mesh.id);
+    characters.clear();
+
+    glDeleteBuffers(1, &text_mesh.vbo);
+    glDeleteBuffers(1, &text_mesh.ibo);
+    glDeleteVertexArrays(1, &text_mesh.vao);
+    text_effect.release();
 }
 
 void CountdownTimer::draw_text(const mat3 &projection) {
@@ -154,7 +161,7 @@ void CountdownTimer::draw_text(const mat3 &projection) {
     glBindVertexArray(text_mesh.vao);
 
     GLint text_colour_loc = glGetUniformLocation(text_effect.program, "textColour");
-    glUniform3f(text_colour_loc, 0.f, 0.f, 0.f);
+    glUniform3f(text_colour_loc, text_colour.x, text_colour.y, text_colour.z);
 
     GLint projection_uloc = glGetUniformLocation(text_effect.program, "projection");
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
