@@ -51,7 +51,7 @@ void SoldierAiSystem::handle_patrol(State& state, size_t& patrol_time, const Ent
 
 	if (patrol_time > PATROL_LIMIT)
 	{
-		curr_pos = curr_tile.get_position();
+		//curr_pos = curr_tile.get_position();
 
 		state = State::IDLE;
 		patrol_time = 0;

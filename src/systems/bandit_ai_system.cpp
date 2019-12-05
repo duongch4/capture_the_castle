@@ -72,7 +72,7 @@ void BanditAiSystem::handle_patrol(
 
 	if (patrol_time > PATROL_LIMIT)
 	{
-		curr_pos = curr_tile.get_position();
+		//curr_pos = curr_tile.get_position();
 
 		state = State::IDLE;
 		patrol_time = 0;
