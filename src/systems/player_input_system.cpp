@@ -11,6 +11,7 @@ void PlayerInputSystem::init(std::shared_ptr<Tilemap> tilemap)
 {
 	ecsManager.subscribe(this, &PlayerInputSystem::onKeyListener);
 	ecsManager.subscribe(this, &PlayerInputSystem::onReleaseListener);
+	ecsManager.subscribe(this, &PlayerInputSystem::onTimeoutListener);
 	m_tilemap = tilemap;
 }
 
@@ -229,4 +230,12 @@ void PlayerInputSystem::spawn_soldier(
 			{ soldierSprite.width * 0.08f * 0.8f, soldierSprite.height * 0.08f * 0.8f }
 		}
 	);
+}
+
+void PlayerInputSystem::onTimeoutListener(TimeoutEvent *input) {
+    for (auto& e : entities)
+    {
+        auto& transform = ecsManager.getComponent<Transform>(e);
+        transform.position = transform.init_position;
+    }
 }

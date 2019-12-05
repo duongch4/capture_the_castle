@@ -39,6 +39,7 @@ private:
 private:
     void onKeyListener(InputKeyEvent* input);
     void onReleaseListener(KeyReleaseEvent* input);
+    void onTimeoutListener(TimeoutEvent* input);
 
 private:
 	size_t soldier_count_1 = 0;

@@ -46,7 +46,6 @@ enum class ButtonActions
     QUIT,
     HOWTOPLAY,
     CONTROLS,
-    LOAD,
     START,
     NONE
 };

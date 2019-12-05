@@ -16,6 +16,11 @@ struct InputKeyEvent: public Event {
     InputKeys key;
 };
 
+struct TimeoutEvent: public Event {
+    TimeoutEvent() = default;
+    ~TimeoutEvent() = default;
+};
+
 struct KeyReleaseEvent: public Event {
     KeyReleaseEvent(InputKeys key) {
         this->keyReleased = key;

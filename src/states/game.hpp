@@ -90,6 +90,7 @@ private:
     SetupWindow setup_window;
     PlayInstructions p1SetUpInstructions;
     PlayInstructions p2SetUpInstructions;
+    CountdownTimer timer;
 
     // Particle
     Firework firework;

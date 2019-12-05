@@ -85,6 +85,7 @@ bool Game::init_game() {
     p2SetUpInstructions.init({m_screen_size.x - 120, 200}, textures_path("ui/CaptureTheCastle_soldier_setting_instructions_p2.png"));
     p1SetUpInstructions.setScale({0.2, 0.2});
     p2SetUpInstructions.setScale({0.2, 0.2});
+    timer.init(m_screen_size);
 
     //--------------------------------------------------------------------------
     // Render all the tiles once to the screen texture
@@ -129,6 +130,11 @@ bool Game::update(float elapsed_ms) {
         boxCollisionSystem->update();
         movementSystem->update(elapsed_ms);
         soldierAiSystem->update(elapsed_ms);
+        timer.update(elapsed_ms);
+        if (timer.check_times_up()) {
+            ecsManager.publish(new TimeoutEvent());
+            currState = GameState::NORMAL;
+        }
     } else if (currState == GameState::WIN) {
         firework.update(elapsed_ms);
     }
@@ -175,6 +181,7 @@ void Game::draw() {
         p1SetUpInstructions.draw(projection_2D);
         p2SetUpInstructions.draw(projection_2D);
     } else if (currState == GameState::SETUP) {
+        timer.draw(projection_2D);
         p1SetUpInstructions.draw(projection_2D);
         p2SetUpInstructions.draw(projection_2D);
     }
@@ -299,7 +306,7 @@ void Game::on_mouse_click(GLFWwindow *pWindow, int button, int action, int mods)
             {
                 case (ButtonActions::START):
                     currState = SETUP;
-                    // TODO: start countdown timer
+                    timer.start_timer(30);
                     break;
                 default:
                     break;
@@ -357,9 +364,12 @@ void Game::reset() {
 }
 
 void Game::winListener(WinEvent *winEvent) {
-    Team winningTeam = ecsManager.getComponent<Team>(winEvent->player);
-    win_window.setWinTeam(winningTeam.assigned);
-    currState = GameState :: WIN;
+    // you should only win when in normal game mode, set up should not allow you to win
+    if (currState == GameState::NORMAL) {
+        Team winningTeam = ecsManager.getComponent<Team>(winEvent->player);
+        win_window.setWinTeam(winningTeam.assigned);
+        currState = GameState :: WIN;
+    }
 }
 
 void Game::destroy() {
