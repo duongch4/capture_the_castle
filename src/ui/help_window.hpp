@@ -25,6 +25,8 @@ public:
 
     void showHowToPlay();
 
+    void showControls();
+
     void resetWindow();
 
 private:

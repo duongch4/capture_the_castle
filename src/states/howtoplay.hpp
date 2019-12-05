@@ -19,15 +19,18 @@ class HowToPlay : public State {
 
 private:
     ButtonActions checkButtonClicks(vec2 mouseloc);
+    enum Page { GOALS, CONTROLS };
 
     HowToPlayBackground background;
     PlayInstructions instructions;
     PopUpButton quit_btn;
     PopUpButton new_game_btn;
     PopUpButton main_menu_btn;
+    PopUpButton controls_btn;
     World* m_world;
     Mix_Music* m_background_music;
     Mix_Chunk* m_click;
+    Page currInstructions;
 };
 
 

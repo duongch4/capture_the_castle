@@ -229,9 +229,6 @@ void Game::on_mouse_click(GLFWwindow *pWindow, int button, int action, int mods)
                     currState = GameState :: NORMAL;
                     help_window.resetWindow();
                     break;
-                case (ButtonActions::HOWTOPLAY):
-                    help_window.showHowToPlay();
-                    break;
                 default:
                     break;
             }
