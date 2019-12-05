@@ -40,8 +40,10 @@ void HelpWindow::draw(const mat3 &projection) {
 
 ButtonActions HelpWindow::checkButtonClicks(vec2 mouseloc) {
     if (close_btn.mouseOnButton(mouseloc)) {
+        Mix_PlayChannel(-1, m_click, 0);
         return ButtonActions::CLOSE;
     } else if (how_to_play_btn.mouseOnButton(mouseloc)) {
+        Mix_PlayChannel(-1, m_click, 0);
         return ButtonActions::HOWTOPLAY;
     } else {
         return ButtonActions::NONE;
