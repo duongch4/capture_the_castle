@@ -37,7 +37,7 @@ void BanditSpawnSystem::spawn_bandit() {
             nextPos
     });
     ecsManager.addComponent<Motion>(bandit, Motion{
-            {1, 0},
+            {0, 0},
             100.f
     });
     ecsManager.addComponent<Team>(bandit, Team{TeamType::BANDIT});

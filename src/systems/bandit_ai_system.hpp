@@ -33,7 +33,8 @@ private:
 		IDLE,
 		CHASE,
 		SEARCH,
-		PATROL
+		PATROL,
+		HOP
 	};
 
 	const size_t MAX_BANDITS = BanditSpawnSystem::get_max_bandits();
@@ -77,24 +78,27 @@ private:
 	float get_distance(const Entity& target, const Entity& bandit) const;
 
 	bool can_chase(const float& distance_1, const float& distance_2, size_t& idle_time);
-	bool cannot_chase(const float& distance_1, const float& distance_2, size_t& chase_time);
+	bool can_chase_target(const Entity& target, const float& distance);
 	void chase(const float& distance_1, const float& distance_2, const Entity& bandit);
 
 	void follow_direction(const Entity& target, const Entity& bandit);
 	bool is_target_move_toward_bandit(const vec2& bandit_transform_pos, const vec2& target_transform_pos, const vec2& target_motion_dir);
 	bool is_target_move_away_bandit(const vec2& bandit_transform_pos, const vec2& target_transform_pos, const vec2& target_motion_dir);
-	
-	
-	bool can_search(Entity target);
-	void handle_search(
-		State& state, size_t& idle_time, size_t& chase_time,
-		float& distance_1, float& distance_2,
-		Entity& bandit, float& speed, float& elapsed_ms
+
+private:
+	const float HOP_DELAY = 0.5f;
+	float m_hop_timer = 0.f;
+
+	void handle_idle_search(
+		State& state, size_t& chase_time,
+		const float& distance_1, const float& distance_2, const Entity& bandit
 	);
-	void check(
-		State& state, size_t& idle_time, size_t& chase_time,
+	bool can_search(Entity target);
+	void handle_search(State& state, Entity& bandit);
+	void handle_hop(
+		State& state, size_t& chase_time,
 		float& distance_1, float& distance_2,
-		Entity& bandit, float& speed, float& elapsed_ms
+		Entity& bandit, float& elapsed_ms
 	);
 
 private:
@@ -105,19 +109,6 @@ private:
 
 private:
 	// Path finding
-	const float THRESHOLD_DECIMAL_POINTS = 1e-3f;
-	enum struct PathState
-	{
-		NONE,
-		INIT,
-		FOUND,
-		NOT_FOUND,
-		OUT_OF_BOUND
-	};
-
-	int OFFSET_ROWS = 6;
-	int OFFSET_COLS = 12;
-	
 	std::vector<Tile> m_path;
 	int path_idx = 0;
 	Tile m_init_tile;
@@ -131,9 +122,6 @@ private:
 	std::vector<Tile> assemble_path(std::vector<std::vector<Tile>>& parents_matrix, Tile init_tile, Tile goal_tile);
 	bool is_equal(Tile a, Tile b);
 	bool is_visited(Tile tile, std::vector<std::vector<bool>>& visited_matrix);
-	//bool is_within_bandit_region(Tile tile);
-	bool is_within_bandit_region(int idx_row, int idx_col, vec2 pos);
-	void move_on_path(std::vector<Tile> path, float& speed, float& elapsed_ms, vec2& bandit_pos);
 };
 
 
