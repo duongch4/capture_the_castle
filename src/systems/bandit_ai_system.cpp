@@ -17,6 +17,11 @@ bool BanditAiSystem::init(std::shared_ptr<Tilemap> tilemap, const std::vector<En
 
 void BanditAiSystem::update(float& elapsed_ms)
 {
+	if (entities.size() < MAX_BANDITS)
+	{
+		m_path.clear();
+		path_idx = 0;
+	}
 	for (auto it = entities.begin(); it != entities.end(); ++it)
 	{
 		auto idx = std::distance(entities.begin(), it);
@@ -34,7 +39,7 @@ void BanditAiSystem::update(float& elapsed_ms)
 		float distance_1 = get_distance(m_targets[0], bandit);
 		float distance_2 = get_distance(m_targets[1], bandit);
 
-		if (idx > 0)
+		if (idx < (MAX_BANDITS - 1))
 		{
 			switch (state)
 			{
@@ -361,7 +366,7 @@ void BanditAiSystem::handle_hop(
 
 		const float sec = elapsed_ms / 1000.f;
 		m_hop_timer -= sec;
-		if (m_hop_timer <= 0)
+		if (m_hop_timer < 0.f)
 		{
 			bandit_pos = tile_pos;
 			m_hop_timer = HOP_DELAY;
