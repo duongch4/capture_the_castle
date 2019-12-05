@@ -23,6 +23,10 @@ void BanditSpawnSystem::update(float elapsed_ms) {
         // Next spawn
         next_bandit_spawn = (BANDIT_DELAY_MS / 2) + dist(rng) * (BANDIT_DELAY_MS / 2);
     }
+	if (entities.size() == MAX_BANDITS)
+	{
+		next_bandit_spawn = BANDIT_DELAY_MS;
+	}
 }
 
 void BanditSpawnSystem::spawn_bandit() {
