@@ -354,6 +354,7 @@ void Game::reset() {
     p1SetUpInstructions.destroy();
     p2SetUpInstructions.destroy();
     std::cout << "SetUp Instructions destroyed" << std::endl;
+    timer.destroy();
     if (m_background_music != nullptr)
         Mix_FreeMusic(m_background_music);
     if (m_click != nullptr)
@@ -388,6 +389,7 @@ void Game::destroy() {
     setup_window.destroy();
     p1SetUpInstructions.destroy();
     p2SetUpInstructions.destroy();
+    timer.destroy();
     firework.destroy();
 	itemSpawnSystem.reset();
 	movementSystem.reset();
