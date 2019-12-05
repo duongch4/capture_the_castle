@@ -129,7 +129,6 @@ bool Game::update(float elapsed_ms) {
         boxCollisionSystem->checkCollision();
         boxCollisionSystem->update();
         movementSystem->update(elapsed_ms);
-        soldierAiSystem->update(elapsed_ms);
         timer.update(elapsed_ms);
         if (timer.check_times_up()) {
             ecsManager.publish(new TimeoutEvent());
