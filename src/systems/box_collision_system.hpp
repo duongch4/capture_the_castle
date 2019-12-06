@@ -23,6 +23,8 @@ public:
 
     void reset() override;
 
+	void setFlagMode(bool mode, Entity flagPlayer, Entity bubb);
+
 private:
     std::shared_ptr<Tilemap> tileMap;
     std::pair<bool, CollisionResponse> collides_with_tile(Entity entity, Tile &tile);
@@ -30,6 +32,10 @@ private:
     CollisionResponse v_collision(Entity entity, Tile &tile, CollisionResponse col_res);
     void boxCollisionListener(BoxCollisionEvent* boxCollisionEvent);
     std::queue<std::tuple<Entity, Tile, CollisionResponse>> collision_queue;
+
+	bool flag;
+	Entity playerWithFlag;
+	Entity bubble;
 };
 
 #endif //CAPTURE_THE_CASTLE_BOX_COLLISION_SYSTEM_HPP

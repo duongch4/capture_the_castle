@@ -12,6 +12,7 @@ void PlayerInputSystem::init(std::shared_ptr<Tilemap> tilemap)
 	ecsManager.subscribe(this, &PlayerInputSystem::onKeyListener);
 	ecsManager.subscribe(this, &PlayerInputSystem::onReleaseListener);
 	m_tilemap = tilemap;
+	flag = false;
 }
 
 void PlayerInputSystem::update()

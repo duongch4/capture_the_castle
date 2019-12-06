@@ -296,12 +296,13 @@ void Game::flagListener(FlagEvent *flagEvent)
 		Entity bubble = registerBubble(flagEvent->flagPlayer, path);
 		collisionSystem->setFlagMode(flagEvent->flagPlayer);
 		playerInputSystem->setFlagMode(true, flagEvent->flagPlayer, bubble);
+		boxCollisionSystem->setFlagMode(true, flagEvent->flagPlayer, bubble);
 	}
 	else
 	{
 		currState = GameState::NORMAL;
 		playerInputSystem->setFlagMode(false, 0, 0);
-
+		boxCollisionSystem->setFlagMode(false, 0, 0);
 	}
 }
 
