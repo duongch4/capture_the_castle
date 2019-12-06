@@ -476,7 +476,7 @@ void BanditAiSystem::reset()
 	m_targets.shrink_to_fit();
 	m_path.clear();
 	m_path.shrink_to_fit();
-	m_tilemap->destroy();
+	//m_tilemap->destroy();
 	this->entities.clear();
 	//this->entities.shrink_to_fit();
 	//this->entities = {};

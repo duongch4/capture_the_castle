@@ -121,6 +121,6 @@ void BanditSpawnSystem::spawn_bandit(const BanditType& bandit_type, const vec2& 
 
 void BanditSpawnSystem::reset()
 {
-	tilemap->destroy();
+	//tilemap->destroy();
 	this->entities.clear();
 }
