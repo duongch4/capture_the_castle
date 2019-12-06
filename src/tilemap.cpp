@@ -312,7 +312,7 @@ std::vector<std::vector<int>> Tilemap::load_map()
     // This version don't use <filesystem> and the file name is hardcoded
 
     // Hardcoded file name for the maze located in ./data/maze
-    std::vector<std::string> fileArray = {"HelloWorld", "BanditCircus", "TwoByTwo"};
+    std::vector<std::string> fileArray = {"HelloWorld", "BanditCircus", "TwoByTwo", "HiLabyrinth"};
     std::string ext = ".tmx";
 
     // Randomly choose one of the maze to load
