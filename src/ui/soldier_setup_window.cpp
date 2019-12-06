@@ -7,9 +7,8 @@ void SetupWindow::init(vec2 screen_size) {
     vec2 currPos = background.get_position();
     instructions.init({currPos.x, currPos.y + 22 }, textures_path("ui/CaptureTheCastle_game_control_instructions.png"));
     instructions.setScale({0.275, 0.275});
-    //TODO: change path to start button
-    start_btn.init({currPos.x + 200, currPos.y + 220},
-                          textures_path("ui/CaptureTheCastle_how_to_play_btn.png"));
+    start_btn.init({currPos.x + 200, currPos.y + 220}, textures_path("ui/CaptureTheCastle_start_btn.png"));
+    start_btn.setScale({0.7, 0.35 });
 
     m_click = Mix_LoadWAV(audio_path("capturethecastle_button_click.wav"));
     if (m_click == nullptr)

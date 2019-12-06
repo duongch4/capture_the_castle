@@ -167,15 +167,16 @@ void Game::draw() {
 
     // Render the remaining entities on top our screen texture
     spriteRenderSystem->draw(projection_2D);
-    help_btn.draw(projection_2D);
 
     if (currState == GameState::HELP) {
         help_window.draw(projection_2D);
+        help_btn.draw(projection_2D);
     } else if (currState == GameState::WIN) {
         win_window.draw(projection_2D);
         firework.draw(projection_2D);
     } else if (currState == GameState::PAUSE) {
         pause_window.draw(projection_2D);
+        help_btn.draw(projection_2D);
     } else if (currState == GameState::START) {
         setup_window.draw(projection_2D);
         p1SetUpInstructions.draw(projection_2D);
@@ -184,6 +185,8 @@ void Game::draw() {
         timer.draw(projection_2D);
         p1SetUpInstructions.draw(projection_2D);
         p2SetUpInstructions.draw(projection_2D);
+    } else if (currState == GameState::NORMAL) {
+        help_btn.draw(projection_2D);
     }
 }
 
@@ -297,6 +300,19 @@ void Game::on_mouse_click(GLFWwindow *pWindow, int button, int action, int mods)
                     break;
                 case (ButtonActions::RESTART):
                     reset();
+                    break;
+                case (ButtonActions::CLOSE):
+                    currState = GameState::NORMAL;
+                    ecsManager.publish(new KeyReleaseEvent(InputKeys::S));
+                    ecsManager.publish(new KeyReleaseEvent(InputKeys::W));
+                    ecsManager.publish(new KeyReleaseEvent(InputKeys::A));
+                    ecsManager.publish(new KeyReleaseEvent(InputKeys::D));
+                    ecsManager.publish(new KeyReleaseEvent(InputKeys::UP));
+                    ecsManager.publish(new KeyReleaseEvent(InputKeys::DOWN));
+                    ecsManager.publish(new KeyReleaseEvent(InputKeys::LEFT));
+                    ecsManager.publish(new KeyReleaseEvent(InputKeys::RIGHT));
+                    ecsManager.publish(new KeyReleaseEvent(InputKeys::LEFT_SHIFT));
+                    ecsManager.publish(new KeyReleaseEvent(InputKeys::RIGHT_SHIFT));
                     break;
                 default:
                     break;

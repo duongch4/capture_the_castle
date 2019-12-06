@@ -3,11 +3,11 @@
 #include "common.hpp"
 #include "components.hpp"
 
-class WinnerDp
+class PopUpImage
 {
 
 public:
-    void init(vec2 pos);
+    void init(vec2 pos, const char* texture_path);
 
     void destroy();
 
@@ -19,6 +19,6 @@ private:
     MeshComponent mesh{};
     Effect effect{};
     Transform transform;
-    Texture winnerDpSprite;
+    Texture imageSprite;
     mat3 out;
 };

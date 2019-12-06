@@ -5,7 +5,7 @@
 #include "components.hpp"
 #include "popup_background.hpp"
 #include "ecs/events.hpp"
-#include "win_winnerDp.hpp"
+#include "popUpImg.hpp"
 #include "popupbtn.hpp"
 
 class WinWindow
@@ -25,7 +25,7 @@ public:
     void setWinTeam(TeamType team);
 
 private:
-    WinnerDp winnerDp;
+    PopUpImage winnerDp;
     PopUpButton restart_btn;
     PopUpButton main_btn;
     PopUpButton quit_btn;

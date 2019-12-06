@@ -5,7 +5,7 @@
 #include "components.hpp"
 #include "popup_background.hpp"
 #include "ecs/events.hpp"
-#include "win_winnerDp.hpp"
+#include "popUpImg.hpp"
 #include "popupbtn.hpp"
 #include "closebtn.hpp"
 
@@ -30,4 +30,5 @@ private:
     PopUpButton quit_btn;
     PopUpBackground background;
     Mix_Chunk* m_click;
+    PopUpImage image;
 };

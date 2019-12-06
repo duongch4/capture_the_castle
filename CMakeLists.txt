@@ -85,8 +85,8 @@ set(SOURCE_FILES
         src/ui/win_window.hpp
         src/ui/popup_background.cpp
         src/ui/popup_background.hpp
-        src/ui/win_winnerDp.cpp
-        src/ui/win_winnerDp.hpp
+        src/ui/popUpImg.cpp
+        src/ui/popUpImg.hpp
         src/ui/howtoplay_background.cpp
         src/ui/howtoplay_background.hpp
         src/ui/play_instructions.cpp

@@ -33,6 +33,7 @@ private:
     CloseButton close_btn;
     PopUpBackground background;
     PopUpButton how_to_play_btn;
+    PopUpButton controls_btn;
     PlayInstructions instructions;
     Mix_Chunk* m_click;
     State curr_state;

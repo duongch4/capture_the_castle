@@ -6,6 +6,7 @@ void PauseWindow::init(vec2 screen_size) {
     // Initialize help button
     background.init(screen_size, textures_path("ui/CaptureTheCastle_pause_screen.png"));
     vec2 currPos = background.get_position();
+    image.init({currPos.x, currPos.y - 100}, textures_path("ui/CaptureTheCastle_paused_img.png"));
     close_btn.init({currPos.x + 410, currPos.y - 280});
     restart_btn.init({currPos.x, currPos.y + 75}, textures_path("ui/CaptureTheCastle_new_game_btn.png"));
     main_btn.init({currPos.x, currPos.y + 150}, textures_path("ui/CaptureTheCastle_main_menu_btn.png"));
@@ -15,6 +16,7 @@ void PauseWindow::init(vec2 screen_size) {
 
 void PauseWindow::destroy() {
     background.destroy();
+    image.destroy();
     close_btn.destroy();
     restart_btn.destroy();
     main_btn.destroy();
@@ -26,6 +28,7 @@ void PauseWindow::destroy() {
 void PauseWindow::draw(const mat3 &projection) {
     //draw all the UI objects of window
     background.draw(projection);
+    image.draw(projection);
     close_btn.draw(projection);
     restart_btn.draw(projection);
     main_btn.draw(projection);

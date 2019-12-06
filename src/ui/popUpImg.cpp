@@ -1,9 +1,9 @@
-#include "win_winnerDp.hpp"
+#include "popUpImg.hpp"
 
 #include <cmath>
 #include <mesh_manager.hpp>
 
-void WinnerDp::init(vec2 pos) {
+void PopUpImage::init(vec2 pos, const char* texture_path) {
     transform = Transform {
             {pos.x, pos.y },
             {pos.x, pos.y },
@@ -13,22 +13,22 @@ void WinnerDp::init(vec2 pos) {
     effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
 
     // Load shared texture
-    if (!winnerDpSprite.is_valid())
+    if (!imageSprite.is_valid())
     {
-        if (!winnerDpSprite.load_from_file(textures_path("ui/CaptureTheCastle_player1_winner.png")))
+        if (!imageSprite.load_from_file(texture_path))
         {
             fprintf(stderr, "Failed to load tile texture!");
         }
     }
-    mesh.id = MeshManager::instance().init_mesh(winnerDpSprite.width, winnerDpSprite.height);
+    mesh.id = MeshManager::instance().init_mesh(imageSprite.width, imageSprite.height);
 }
 
-void WinnerDp::destroy() {
+void PopUpImage::destroy() {
     effect.release();
     MeshManager::instance().release(mesh.id);
 }
 
-void WinnerDp::draw(const mat3 &projection) {
+void PopUpImage::draw(const mat3 &projection) {
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // begin transform
     out = { { 1.f, 0.f, 0.f }, { 0.f, 1.f, 0.f}, { 0.f, 0.f, 1.f} };
@@ -70,7 +70,7 @@ void WinnerDp::draw(const mat3 &projection) {
 
     // Enabling and binding texture to slot 0
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, winnerDpSprite.id);
+    glBindTexture(GL_TEXTURE_2D, imageSprite.id);
 
     // Setting uniform values to the currently bound program
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&out);
@@ -83,11 +83,11 @@ void WinnerDp::draw(const mat3 &projection) {
 
 }
 
-void WinnerDp::setWinnerDp(TeamType team) {
+void PopUpImage::setWinnerDp(TeamType team) {
     if (team == TeamType :: PLAYER1) {
-        winnerDpSprite.load_from_file(textures_path("ui/CaptureTheCastle_player1_winner.png"));
+        imageSprite.load_from_file(textures_path("ui/CaptureTheCastle_player1_winner.png"));
     } else if (team == TeamType::PLAYER2) {
-        winnerDpSprite.load_from_file(textures_path("ui/CaptureTheCastle_player2_winner.png"));
+        imageSprite.load_from_file(textures_path("ui/CaptureTheCastle_player2_winner.png"));
     }
 }
 
