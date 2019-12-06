@@ -281,7 +281,7 @@ void BanditAiSystem::handle_idle_search(
 		return;
 	}
 
-	ecsManager.getComponent<Motion>(bandit).direction = { 0, 0 };
+	ecsManager.getComponent<Motion>(bandit).direction = { 0.f, 0.f };
 }
 
 void BanditAiSystem::handle_search(BanditState& state, Entity& bandit)
