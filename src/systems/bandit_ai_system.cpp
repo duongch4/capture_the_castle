@@ -3,35 +3,23 @@
 bool BanditAiSystem::init(std::shared_ptr<Tilemap> tilemap, const std::vector<Entity>& players)
 {
 	m_targets = players;
-	for (size_t i = 0; i < MAX_BANDITS; ++i)
-	{
-		m_idle_times.emplace_back(0);
-		m_chase_times.emplace_back(0);
-		m_patrol_times.emplace_back(0);
-		m_prev_dirs.emplace_back(vec2{ 1.f,0.f });
-		m_states.emplace_back(State::IDLE);
-	}
 	m_tilemap = tilemap;
 	return true;
 }
 
 void BanditAiSystem::update(float& elapsed_ms)
 {
-	if (entities.size() < MAX_BANDITS)
-	{
-		m_path.clear();
-		path_idx = 0;
-	}
 	for (auto it = entities.begin(); it != entities.end(); ++it)
 	{
-		size_t idx = (size_t)std::distance(entities.begin(), it);
 		Entity bandit = *it;
+		BanditType bandit_type = ecsManager.getComponent<BanditSpawnComponent>(bandit).type;
+		BanditAiComponent& bandit_ai_comp = ecsManager.getComponent<BanditAiComponent>(bandit);
 
-		State& state = m_states[idx];
-		size_t& idle_time = m_idle_times[idx];
-		size_t& chase_time = m_chase_times[idx];
-		size_t& patrol_time = m_patrol_times[idx];
-		vec2& prev_dir = m_prev_dirs[idx];
+		BanditState& state = bandit_ai_comp.state;
+		size_t& idle_time = bandit_ai_comp.idle_time;
+		size_t& chase_time = bandit_ai_comp.chase_time;
+		size_t& patrol_time = bandit_ai_comp.patrol_time;
+		vec2& prev_dir = bandit_ai_comp.prev_dir;
 
 		float speed = BASE_SPEED * (1.f + dist(rng));
 		ecsManager.getComponent<Motion>(bandit).speed = speed;
@@ -39,52 +27,51 @@ void BanditAiSystem::update(float& elapsed_ms)
 		float distance_1 = get_distance(m_targets[0], bandit);
 		float distance_2 = get_distance(m_targets[1], bandit);
 
-		if (idx < (MAX_BANDITS - 1))
+		if (bandit_type == BanditType::NORM)
 		{
 			switch (state)
 			{
-			case State::IDLE:
+			case BanditState::IDLE:
 				handle_idle(state, idle_time, chase_time, distance_1, distance_2, bandit);
 				break;
-			case State::PATROL:
+			case BanditState::PATROL:
 				handle_patrol(state, patrol_time, chase_time, distance_1, distance_2, bandit, prev_dir);
 				break;
-			case State::CHASE:
+			case BanditState::CHASE:
 				handle_chase(state, chase_time, distance_1, distance_2, bandit);
 				break;
 			}
 		}
-		else
+		else if(bandit_type == BanditType::BOSS)
 		{
 			switch (state)
 			{
-			case State::IDLE:
+			case BanditState::IDLE:
 				handle_idle_search(state, chase_time, distance_1, distance_2, bandit);
 				break;
-			case State::CHASE:
-				handle_chase(state, chase_time, distance_1, distance_2, bandit);
-				break;
-			case State::SEARCH:
+				//case BanditState::CHASE:
+				//	handle_chase(state, chase_time, distance_1, distance_2, bandit);
+				//	break;
+			case BanditState::SEARCH:
 				handle_search(state, bandit);
 				break;
-			case State::HOP:
+			case BanditState::HOP:
 				handle_hop(state, chase_time, distance_1, distance_2, bandit, elapsed_ms);
 				break;
 			}
 		}
-
 	}
 }
 
 void BanditAiSystem::handle_patrol(
-	State& state, size_t& patrol_time, size_t& chase_time,
+	BanditState& state, size_t& patrol_time, size_t& chase_time,
 	const float& distance_1, const float& distance_2,
 	const Entity& bandit, vec2& prev_dir
 )
 {
 	if (can_chase(distance_1, distance_2, chase_time))
 	{
-		state = State::CHASE;
+		state = BanditState::CHASE;
 		patrol_time = 0;
 		return;
 	}
@@ -95,7 +82,7 @@ void BanditAiSystem::handle_patrol(
 
 	if (patrol_time > PATROL_LIMIT)
 	{
-		state = State::IDLE;
+		state = BanditState::IDLE;
 		patrol_time = 0;
 		return;
 	}
@@ -145,20 +132,20 @@ bool BanditAiSystem::is_within_bandit_region(const Tile& tile)
 }
 
 void BanditAiSystem::handle_idle(
-	State& state, size_t& idle_time, size_t& chase_time,
+	BanditState& state, size_t& idle_time, size_t& chase_time,
 	const float& distance_1, const float& distance_2, const Entity& bandit
 )
 {
 	if (can_chase(distance_1, distance_2, chase_time))
 	{
-		state = State::CHASE;
+		state = BanditState::CHASE;
 		idle_time = 0;
 		return;
 	}
 
 	if (idle_time > IDLE_LIMIT)
 	{
-		state = State::PATROL;
+		state = BanditState::PATROL;
 		idle_time = 0;
 		return;
 	}
@@ -179,7 +166,7 @@ bool BanditAiSystem::can_chase_target(const Entity& target, const float& distanc
 }
 
 void BanditAiSystem::handle_chase(
-	State& state, size_t& chase_time,
+	BanditState& state,	size_t& chase_time,
 	const float& distance_1, const float& distance_2, const Entity& bandit
 )
 {
@@ -188,7 +175,7 @@ void BanditAiSystem::handle_chase(
 
 	if (!can_chase(distance_1, distance_2, chase_time) || curr_tile.is_wall())
 	{
-		state = State::IDLE;
+		state = BanditState::IDLE;
 		chase_time = 0;
 		return;
 	}
@@ -232,7 +219,7 @@ void BanditAiSystem::follow_direction(const Entity& target, const Entity& bandit
 	if (
 		is_target_move_toward_bandit(bandit_transform_pos, target_transform_pos, target_motion_dir) ||
 		is_target_move_away_bandit(bandit_transform_pos, target_transform_pos, target_motion_dir)
-	)
+		)
 	{
 		bandit_speed += SPEED_UP;
 	}
@@ -275,30 +262,36 @@ bool BanditAiSystem::can_search(Entity target)
 }
 
 void BanditAiSystem::handle_idle_search(
-	State& state, size_t& chase_time,
+	BanditState& state,	size_t& chase_time,
 	const float& distance_1, const float& distance_2, const Entity& bandit
 )
 {
-	if (can_chase(distance_1, distance_2, chase_time))
-	{
-		state = State::CHASE;
-		return;
-	}
+	m_path.clear();
+	path_idx = 0;
+
+	//if (can_chase(distance_1, distance_2, chase_time))
+	//{
+	//	state = State::CHASE;
+	//	return;
+	//}
 
 	if (can_search(m_targets[0]) || can_search(m_targets[1]))
 	{
-		state = State::SEARCH;
+		state = BanditState::SEARCH;
 		return;
 	}
 
 	ecsManager.getComponent<Motion>(bandit).direction = { 0, 0 };
 }
 
-void BanditAiSystem::handle_search(State& state, Entity& bandit)
+void BanditAiSystem::handle_search(BanditState& state, Entity& bandit)
 {
+	m_path.clear();
+	path_idx = 0;
+
 	if (!can_search(m_targets[0]) && !can_search(m_targets[1]))
 	{
-		state = State::IDLE;
+		state = BanditState::IDLE;
 		return;
 	}
 
@@ -333,30 +326,30 @@ void BanditAiSystem::handle_search(State& state, Entity& bandit)
 
 	if (m_path.size() > 1)
 	{
-		state = State::HOP;
+		state = BanditState::HOP;
 		return;
 	}
 	else
 	{
-		state = State::IDLE;
+		state = BanditState::IDLE;
 		return;
 	}
 }
 
 
 void BanditAiSystem::handle_hop(
-	State& state, size_t& chase_time,
+	BanditState& state, size_t& chase_time,
 	float& distance_1, float& distance_2,
 	Entity& bandit, float& elapsed_ms
 )
 {
-	if (can_chase(distance_1, distance_2, chase_time))
-	{
-		state = State::CHASE;
-		path_idx = 0;
-		m_path.clear();
-		return;
-	}
+	//if (can_chase(distance_1, distance_2, chase_time))
+	//{
+	//	state = State::CHASE;
+	//	path_idx = 0;
+	//	m_path.clear();
+	//	return;
+	//}
 
 	if (path_idx < m_path.size())
 	{
@@ -375,7 +368,7 @@ void BanditAiSystem::handle_hop(
 	}
 	else
 	{
-		state = State::IDLE;
+		state = BanditState::IDLE;
 		path_idx = 0;
 		m_path.clear();
 	}
@@ -398,7 +391,7 @@ void BanditAiSystem::clear_path_finding()
 
 std::vector<Tile> BanditAiSystem::do_BFS()
 {
-	std::pair<int,int> hw = m_tilemap->get_height_width();
+	std::pair<int, int> hw = m_tilemap->get_height_width();
 	int height = hw.first;
 	int width = hw.second;
 	// Visited Matrix
@@ -477,27 +470,14 @@ bool BanditAiSystem::is_equal(Tile a, Tile b)
 	return (a.get_idx() == b.get_idx());
 }
 
-void BanditAiSystem::reset() {
-    m_idle_times.clear();
-	m_idle_times.shrink_to_fit();
-    m_chase_times.clear();
-	m_chase_times.shrink_to_fit();
-	m_patrol_times.clear();
-	m_patrol_times.shrink_to_fit();
-    m_states.clear();
-	m_states.shrink_to_fit();
-
-    m_bandits.clear();
-	m_bandits.shrink_to_fit();
-    m_targets.clear();
-	m_targets.shrink_to_fit();
-    m_path.clear();
-	m_path.shrink_to_fit();
+void BanditAiSystem::reset()
+{
 	m_targets.clear();
 	m_targets.shrink_to_fit();
+	m_path.clear();
+	m_path.shrink_to_fit();
+	m_tilemap->destroy();
 	this->entities.clear();
 	//this->entities.shrink_to_fit();
-	m_prev_dirs.clear();
-	m_prev_dirs.shrink_to_fit();
 	//this->entities = {};
 }

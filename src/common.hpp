@@ -72,6 +72,21 @@ enum class CollisionLayer
 
 };
 
+enum class BanditType
+{
+	NORM,
+	BOSS
+};
+
+enum class BanditState
+{
+	IDLE,
+	CHASE,
+	SEARCH,
+	PATROL,
+	HOP
+};
+
 enum class ItemType
 {
     BOMB,
