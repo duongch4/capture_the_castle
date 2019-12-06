@@ -33,6 +33,8 @@ bool Game::init_state(World* world) {
     registerCurveMovementSystem();
     registerItemEffectSystem();
 
+	//registerRainSystem(world->get_screen_size());
+
     ecsManager.subscribe(this, &Game::winListener);
 
     return init_game();
@@ -619,8 +621,7 @@ void Game::registerMovementSystem(const vec2& screen)
         signature.set(ecsManager.getComponentType<Transform>());
         ecsManager.setSystemSignature<MovementSystem>(signature);
     }
-    movementSystem->init();
-    movementSystem->setScreenSize(screen);
+    movementSystem->init(screen);
 }
 
 void Game::registerSoldierAiSystem() {
@@ -630,6 +631,17 @@ void Game::registerSoldierAiSystem() {
         signature.set(ecsManager.getComponentType<SoldierAiComponent>());
         ecsManager.setSystemSignature<SoldierAiSystem>(signature);
     }
+}
+
+void Game::registerRainSystem(const vec2& screen)
+{
+	rainSystem = ecsManager.registerSystem<RainSystem>();
+	{
+		Signature signature;
+		signature.set(ecsManager.getComponentType<RainComponent>());
+		ecsManager.setSystemSignature<RainSystem>(signature);
+	}
+	//rainSystem->init(screen);
 }
 
 void Game::registerCurveMovementSystem()

@@ -10,65 +10,66 @@ static const int PARTICLE_LIFE = 4;
 static const float SPAWN_DELAY = 0.1f;
 static const float SPAWN_GROUP_DELAY = 0.6f;
 
-bool Rain::init(vec2 screen_size) {
-    m_rng = std::default_random_engine(std::random_device()());
-    std::uniform_real_distribution<float> distVelocity(50, 300);
-    std::uniform_real_distribution<float> distPositionX(0 + screen_size.x / 5, screen_size.x - screen_size.x / 5);
-    std::uniform_real_distribution<float> distPositionY(0 + screen_size.y / 5, 0 + screen_size.y / 2);
-    std::uniform_real_distribution<float> distColor(0, 1);
-    std::uniform_real_distribution<float> distRadian(-M_PI, M_PI);
-    std::uniform_real_distribution<float> distSpawnTimer(0.8, 2.5);
-    m_dist_PositionX = distPositionX;
-    m_dist_PositionY = distPositionY;
-    m_dist_Color = distColor;
-    m_dist_Radian = distRadian;
-    m_dist_Velocity = distVelocity;
-    m_dist_SpawnTimer = distSpawnTimer;
+bool RainSystem::init(vec2 screen_size) {
+	return true;
+    //m_rng = std::default_random_engine(std::random_device()());
+    //std::uniform_real_distribution<float> distVelocity(50, 300);
+    //std::uniform_real_distribution<float> distPositionX(0 + screen_size.x / 5, screen_size.x - screen_size.x / 5);
+    //std::uniform_real_distribution<float> distPositionY(0 + screen_size.y / 5, 0 + screen_size.y / 2);
+    //std::uniform_real_distribution<float> distColor(0, 1);
+    //std::uniform_real_distribution<float> distRadian(-M_PI, M_PI);
+    //std::uniform_real_distribution<float> distSpawnTimer(0.8, 2.5);
+    //m_dist_PositionX = distPositionX;
+    //m_dist_PositionY = distPositionY;
+    //m_dist_Color = distColor;
+    //m_dist_Radian = distRadian;
+    //m_dist_Velocity = distVelocity;
+    //m_dist_SpawnTimer = distSpawnTimer;
 
-    m_spawn_timer = SPAWN_DELAY;
-    m_spawn_count = 0;
+    //m_spawn_timer = SPAWN_DELAY;
+    //m_spawn_count = 0;
 
-    m_curve.set_control_points({
-        vec2{300.f, 350.f}, vec2{420.f, 30.f}, vec2{1000.f, 30.f}, vec2{1200.f, 350.f}
-    });
+    //m_curve.set_control_points({
+    //    vec2{300.f, 350.f}, vec2{420.f, 30.f}, vec2{1000.f, 30.f}, vec2{1200.f, 350.f}
+    //});
 
-    std::vector<GLfloat> screen_vertex_buffer_data;
-    constexpr float z = -0.01f;
+    //std::vector<GLfloat> screen_vertex_buffer_data;
+    //constexpr float z = -0.01f;
 
-    for (int i = 0; i < NUM_SEGMENTS; i++) {
-        screen_vertex_buffer_data.push_back(std::cos(M_PI * 2.0 * float(i) / (float)NUM_SEGMENTS));
-        screen_vertex_buffer_data.push_back(std::sin(M_PI * 2.0 * float(i) / (float)NUM_SEGMENTS));
-        screen_vertex_buffer_data.push_back(z);
+    //for (int i = 0; i < NUM_SEGMENTS; i++) {
+    //    screen_vertex_buffer_data.push_back(std::cos(M_PI * 2.0 * float(i) / (float)NUM_SEGMENTS));
+    //    screen_vertex_buffer_data.push_back(std::sin(M_PI * 2.0 * float(i) / (float)NUM_SEGMENTS));
+    //    screen_vertex_buffer_data.push_back(z);
 
-        screen_vertex_buffer_data.push_back(std::cos(M_PI * 2.0 * float(i + 1) / (float)NUM_SEGMENTS));
-        screen_vertex_buffer_data.push_back(std::sin(M_PI * 2.0 * float(i + 1) / (float)NUM_SEGMENTS));
-        screen_vertex_buffer_data.push_back(z);
+    //    screen_vertex_buffer_data.push_back(std::cos(M_PI * 2.0 * float(i + 1) / (float)NUM_SEGMENTS));
+    //    screen_vertex_buffer_data.push_back(std::sin(M_PI * 2.0 * float(i + 1) / (float)NUM_SEGMENTS));
+    //    screen_vertex_buffer_data.push_back(z);
 
-        screen_vertex_buffer_data.push_back(0);
-        screen_vertex_buffer_data.push_back(0);
-        screen_vertex_buffer_data.push_back(z);
-    }
+    //    screen_vertex_buffer_data.push_back(0);
+    //    screen_vertex_buffer_data.push_back(0);
+    //    screen_vertex_buffer_data.push_back(z);
+    //}
 
-    // Clearing errors
-    gl_flush_errors();
+    //// Clearing errors
+    //gl_flush_errors();
 
-    // Vertex Buffer creation
-    glGenBuffers(1, &mesh.vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-    glBufferData(GL_ARRAY_BUFFER, screen_vertex_buffer_data.size()*sizeof(GLfloat), screen_vertex_buffer_data.data(), GL_STATIC_DRAW);
+    //// Vertex Buffer creation
+    //glGenBuffers(1, &mesh.vbo);
+    //glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+    //glBufferData(GL_ARRAY_BUFFER, screen_vertex_buffer_data.size()*sizeof(GLfloat), screen_vertex_buffer_data.data(), GL_STATIC_DRAW);
 
-    glGenBuffers(1, &m_instance_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, m_instance_vbo);
+    //glGenBuffers(1, &m_instance_vbo);
+    //glBindBuffer(GL_ARRAY_BUFFER, m_instance_vbo);
 
-    if (gl_has_errors())
-        return false;
+    //if (gl_has_errors())
+    //    return false;
 
-    m_pop = Mix_LoadWAV(audio_path("capturethecastle_firecracker.wav"));
+    //m_pop = Mix_LoadWAV(audio_path("capturethecastle_firecracker.wav"));
 
-    return effect.load_from_file(shader_path("firework.vs.glsl"), shader_path("firework.fs.glsl"));
+    //return effect.load_from_file(shader_path("firework.vs.glsl"), shader_path("firework.fs.glsl"));
 }
 
-void Rain::destroy() {
+void RainSystem::destroy() {
 	if (m_pop != nullptr)
 		Mix_FreeChunk(m_pop);
     glDeleteBuffers(1, &mesh.vbo);
@@ -82,7 +83,7 @@ void Rain::destroy() {
 	m_particles.shrink_to_fit();
 }
 
-void Rain::update(float ms) {
+void RainSystem::update(float ms) {
     float seconds = ms / 1000;
     m_spawn_timer -= seconds;
 
@@ -120,7 +121,7 @@ void Rain::update(float ms) {
     }
 }
 
-void Rain::kaboom(vec2 position) {
+void RainSystem::kaboom(vec2 position) {
     if (m_particles.size() < MAX_PARTICLE) {
         for (int i = 0; i < NUM_PARTICLE; i++) {
             Particle particle;
@@ -141,7 +142,7 @@ void Rain::kaboom(vec2 position) {
     Mix_PlayChannel(-1, m_pop, 0);
 }
 
-void Rain::draw(const mat3& projection) {
+void RainSystem::draw(const mat3& projection) {
     // Setting shaders
     glUseProgram(effect.program);
 
@@ -194,11 +195,16 @@ void Rain::draw(const mat3& projection) {
     glVertexAttribDivisor(3, 0);
 }
 
-void Rain::next_time() {
+void RainSystem::next_time() {
     if (time + time_step <= 1.0f && time + time_step >= 0.f) {
         time += time_step;
     } else {
         time_step = -time_step;
         time += time_step;
     }
+}
+
+void RainSystem::reset()
+{
+	this->entities.clear();
 }

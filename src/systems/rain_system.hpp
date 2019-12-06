@@ -18,7 +18,7 @@
 
 extern ECSManager ecsManager;
 
-class Rain : public System
+class RainSystem : public System
 {
 public:
 	bool init(std::shared_ptr<Tilemap> tilemap, const std::vector<Entity>& players);

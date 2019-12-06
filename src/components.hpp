@@ -83,13 +83,13 @@ struct Transform {
 };
 
 // Collision component of an entity handles collision testing and collision handling
-struct C_Collision{
+struct C_Collision {
     CollisionLayer layer;
     float radius;
     vec2 boundingBox;
 };
 
-struct ItemComponent{
+struct ItemComponent {
     bool in_use;
     ItemType itemType;
 };
@@ -112,17 +112,21 @@ struct BanditAiComponent {
 };
 
 struct ItemBoardComponent {};
-struct PlaceableComponent{};
+struct PlaceableComponent {};
 
 struct PlayerInputControlComponent {};
 
 struct SoldierAiComponent {};
 
-struct CurveMotionComponent{
+struct CurveMotionComponent {
     vec2 p0;
     vec2 p1;
     vec2 p2;
     vec2 p3;
+};
+
+struct RainComponent {
+	//
 };
 
 #endif //CAPTURE_THE_CASTLE_COMPONENTS_HPP
