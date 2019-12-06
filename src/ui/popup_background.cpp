@@ -1,9 +1,9 @@
-#include "help_background.hpp"
+#include "popup_background.hpp"
 
 #include <cmath>
 #include <mesh_manager.hpp>
 
-void HelpBackground::init(vec2 screen_size) {
+void PopUpBackground::init(vec2 screen_size, const char* texturePath) {
     transform = Transform {
             { screen_size.x / 2, screen_size.y / 2 },
             { screen_size.x / 2, screen_size.y / 2 },
@@ -13,22 +13,22 @@ void HelpBackground::init(vec2 screen_size) {
     effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
 
     // Load shared texture
-    if (!helpInstrSprite.is_valid())
+    if (!backgroundSprite.is_valid())
     {
-        if (!helpInstrSprite.load_from_file(textures_path("ui/CaptureTheCastle_help_screen.png")))
+        if (!backgroundSprite.load_from_file(texturePath))
         {
             fprintf(stderr, "Failed to load tile texture!");
         }
     }
-    mesh.id = MeshManager::instance().init_mesh(helpInstrSprite.width, helpInstrSprite.height);
+    mesh.id = MeshManager::instance().init_mesh(backgroundSprite.width, backgroundSprite.height);
 }
 
-void HelpBackground::destroy() {
+void PopUpBackground::destroy() {
     effect.release();
     MeshManager::instance().release(mesh.id);
 }
 
-void HelpBackground::draw(const mat3 &projection) {
+void PopUpBackground::draw(const mat3 &projection) {
     // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
     // begin transform
     out = { { 1.f, 0.f, 0.f }, { 0.f, 1.f, 0.f}, { 0.f, 0.f, 1.f} };
@@ -70,7 +70,7 @@ void HelpBackground::draw(const mat3 &projection) {
 
     // Enabling and binding texture to slot 0
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, helpInstrSprite.id);
+    glBindTexture(GL_TEXTURE_2D, backgroundSprite.id);
 
     // Setting uniform values to the currently bound program
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&out);
@@ -83,11 +83,11 @@ void HelpBackground::draw(const mat3 &projection) {
 
 }
 
-vec2 HelpBackground::get_position() {
+vec2 PopUpBackground::get_position() {
     return vec2{transform.position.x, transform.position.y };
 }
 
-vec2 HelpBackground::get_bounding_box() {
-    return {(float)(fabs(transform.scale.x) * helpInstrSprite.width),
-            (float)(fabs(transform.scale.y) * helpInstrSprite.height)};
+vec2 PopUpBackground::get_bounding_box() {
+    return {(float)(fabs(transform.scale.x) * backgroundSprite.width),
+            (float)(fabs(transform.scale.y) * backgroundSprite.height)};
 }

@@ -40,7 +40,7 @@ bool Game::init_state(World* world) {
 
 bool Game::init_game() {
     // Initializing game
-    currState = GameState::NORMAL;
+    currState = GameState::START;
     m_screen_size = m_world->get_screen_size();
 
     //--------------------------------------------------------------------------
@@ -62,7 +62,7 @@ bool Game::init_game() {
     // Item boards
     registerItemBoards(m_world->get_screen_size());
 
-    // HELP BUTTON
+    // Help Button Initialization
     help_btn.init(m_screen_size);
 
     // Help Window Initialization
@@ -71,8 +71,21 @@ bool Game::init_game() {
     // Winner's Window Initialization
     win_window.init(m_screen_size);
 
+    // Pause Window Initialization
+    pause_window.init(m_screen_size);
+
+    // SetUp Window Initialization
+    setup_window.init(m_screen_size);
+
     // Firework particle
     firework.init(m_screen_size);
+
+    // Initialize Setup Instructions
+    p1SetUpInstructions.init({120, 200}, textures_path("ui/CaptureTheCastle_soldier_setting_instructions_p1.png"));
+    p2SetUpInstructions.init({m_screen_size.x - 120, 200}, textures_path("ui/CaptureTheCastle_soldier_setting_instructions_p2.png"));
+    p1SetUpInstructions.setScale({0.2, 0.2});
+    p2SetUpInstructions.setScale({0.2, 0.2});
+    timer.init(m_screen_size);
 
     //--------------------------------------------------------------------------
     // Render all the tiles once to the screen texture
@@ -109,6 +122,18 @@ bool Game::update(float elapsed_ms) {
         itemBoardSystem->update();
         curveMovementSystem->update(elapsed_ms);
         itemEffectSystem->update();
+    } else if (currState == GameState::SETUP) {
+        playerInputSystem->update();
+        collisionSystem->checkCollision();
+        collisionSystem->update();
+        boxCollisionSystem->checkCollision();
+        boxCollisionSystem->update();
+        movementSystem->update(elapsed_ms);
+        timer.update(elapsed_ms);
+        if (timer.check_times_up()) {
+            ecsManager.publish(new TimeoutEvent());
+            currState = GameState::NORMAL;
+        }
     } else if (currState == GameState::WIN) {
         firework.update(elapsed_ms);
     }
@@ -141,15 +166,26 @@ void Game::draw() {
 
     // Render the remaining entities on top our screen texture
     spriteRenderSystem->draw(projection_2D);
-    help_btn.draw(projection_2D);
 
     if (currState == GameState::HELP) {
         help_window.draw(projection_2D);
-    }
-
-    else if (currState == GameState::WIN) {
+        help_btn.draw(projection_2D);
+    } else if (currState == GameState::WIN) {
         win_window.draw(projection_2D);
         firework.draw(projection_2D);
+    } else if (currState == GameState::PAUSE) {
+        pause_window.draw(projection_2D);
+        help_btn.draw(projection_2D);
+    } else if (currState == GameState::START) {
+        setup_window.draw(projection_2D);
+        p1SetUpInstructions.draw(projection_2D);
+        p2SetUpInstructions.draw(projection_2D);
+    } else if (currState == GameState::SETUP) {
+        timer.draw(projection_2D);
+        p1SetUpInstructions.draw(projection_2D);
+        p2SetUpInstructions.draw(projection_2D);
+    } else if (currState == GameState::NORMAL) {
+        help_btn.draw(projection_2D);
     }
 }
 
@@ -193,13 +229,30 @@ void Game::on_key(int key, int action) {
         case GLFW_KEY_RIGHT_SHIFT:
             k = InputKeys::RIGHT_SHIFT;
             break;
+        case GLFW_KEY_ESCAPE:
+            k = InputKeys::ESC;
+            break;
         default:
             break;
     }
-    if (action == GLFW_PRESS && k != InputKeys::DEFAULT) {
-        ecsManager.publish(new InputKeyEvent(k));
-    } else if (action == GLFW_RELEASE && k != InputKeys::DEFAULT) {
-        ecsManager.publish(new KeyReleaseEvent(k));
+    if (action == GLFW_PRESS && !(k == InputKeys::ESC || k == InputKeys::DEFAULT)) {
+        if (currState == GameState::NORMAL && !(k == InputKeys::SLASH || k == InputKeys::Q)) {
+            ecsManager.publish(new InputKeyEvent(k));
+        } else if (currState == GameState::SETUP) {
+            ecsManager.publish(new InputKeyEvent(k));
+        }
+    } else if (action == GLFW_RELEASE && !(k == InputKeys::DEFAULT || k == InputKeys::ESC)) {
+        if (currState == GameState::NORMAL && !(k == InputKeys::SLASH || k == InputKeys::Q)) {
+            ecsManager.publish(new KeyReleaseEvent(k));
+        } else if (currState == GameState::SETUP) {
+            ecsManager.publish(new KeyReleaseEvent(k));
+        }
+    } else if (action == GLFW_PRESS && k == InputKeys::ESC) {
+        if (currState == GameState::NORMAL) {
+            currState = GameState::PAUSE;
+        } else if(currState == GameState::PAUSE) {
+            currState = GameState::NORMAL;
+        }
     }
 }
 
@@ -216,9 +269,6 @@ void Game::on_mouse_click(GLFWwindow *pWindow, int button, int action, int mods)
                 case (ButtonActions::CLOSE):
                     currState = GameState :: NORMAL;
                     help_window.resetWindow();
-                    break;
-                case (ButtonActions::HOWTOPLAY):
-                    help_window.showHowToPlay();
                     break;
                 default:
                     break;
@@ -238,6 +288,44 @@ void Game::on_mouse_click(GLFWwindow *pWindow, int button, int action, int mods)
                 default:
                     break;
             }
+        } else if (currState == GameState::PAUSE) {
+            switch(pause_window.checkButtonClicks({ (float) xpos, (float) ypos }))
+            {
+                case (ButtonActions::MAIN):
+                    m_world->set_state(std::make_unique<Menu>());
+                    break;
+                case (ButtonActions::QUIT):
+                    m_world->set_window_closed();
+                    break;
+                case (ButtonActions::RESTART):
+                    reset();
+                    break;
+                case (ButtonActions::CLOSE):
+                    currState = GameState::NORMAL;
+                    ecsManager.publish(new KeyReleaseEvent(InputKeys::S));
+                    ecsManager.publish(new KeyReleaseEvent(InputKeys::W));
+                    ecsManager.publish(new KeyReleaseEvent(InputKeys::A));
+                    ecsManager.publish(new KeyReleaseEvent(InputKeys::D));
+                    ecsManager.publish(new KeyReleaseEvent(InputKeys::UP));
+                    ecsManager.publish(new KeyReleaseEvent(InputKeys::DOWN));
+                    ecsManager.publish(new KeyReleaseEvent(InputKeys::LEFT));
+                    ecsManager.publish(new KeyReleaseEvent(InputKeys::RIGHT));
+                    ecsManager.publish(new KeyReleaseEvent(InputKeys::LEFT_SHIFT));
+                    ecsManager.publish(new KeyReleaseEvent(InputKeys::RIGHT_SHIFT));
+                    break;
+                default:
+                    break;
+            }
+        } else if(currState == GameState::START) {
+            switch(setup_window.checkButtonClicks({ (float) xpos, (float) ypos }))
+            {
+                case (ButtonActions::START):
+                    currState = SETUP;
+                    timer.start_timer(30);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
@@ -252,6 +340,12 @@ void Game::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
     else if (currState == GameState::WIN) {
         win_window.checkButtonHovers({ (float) xpos, (float) ypos });
     }
+    else if (currState == GameState::PAUSE) {
+        pause_window.checkButtonHovers({(float) xpos, (float) ypos});
+    }
+    else if (currState == GameState::START) {
+        setup_window.checkButtonHovers({(float) xpos, (float) ypos});
+    }
 }
 
 void Game::reset() {
@@ -265,29 +359,52 @@ void Game::reset() {
     help_window.destroy();
     std::cout << "Help window destroyed" << std::endl;
     win_window.destroy();
-    std::cout << "Firework destroyed" << std::endl;
-    firework.destroy();
     std::cout << "Win window destroyed" << std::endl;
+    setup_window.destroy();
+    std::cout << "Setup window destroyed" << std::endl;
+    firework.destroy();
+    std::cout << "Firework destroyed" << std::endl;
+    pause_window.destroy();
+    std::cout << "Pause window destroyed" << std::endl;
+    p1SetUpInstructions.destroy();
+    p2SetUpInstructions.destroy();
+    std::cout << "SetUp Instructions destroyed" << std::endl;
+    timer.destroy();
+    if (m_background_music != nullptr)
+        Mix_FreeMusic(m_background_music);
+    if (m_click != nullptr)
+        Mix_FreeChunk(m_click);
+    std::cout << "Releasing music" << std::endl;
     std::cout << "Reinitializing game state" << std::endl;
     init_state(m_world);
 }
 
 void Game::winListener(WinEvent *winEvent) {
-    Team winningTeam = ecsManager.getComponent<Team>(winEvent->player);
-    win_window.setWinTeam(winningTeam.assigned);
-    currState = GameState :: WIN;
+    // you should only win when in normal game mode, set up should not allow you to win
+    if (currState == GameState::NORMAL) {
+        Team winningTeam = ecsManager.getComponent<Team>(winEvent->player);
+        win_window.setWinTeam(winningTeam.assigned);
+        currState = GameState :: WIN;
+    }
 }
 
 void Game::destroy() {
     glDeleteFramebuffers(1, &m_frame_buffer);
     if (m_background_music != nullptr)
         Mix_FreeMusic(m_background_music);
+    if (m_click != nullptr)
+        Mix_FreeChunk(m_click);
     ecsManager.reset();
     tilemap->destroy();
 	tilemap.reset();
     help_btn.destroy();
     help_window.destroy();
     win_window.destroy();
+    pause_window.destroy();
+    setup_window.destroy();
+    p1SetUpInstructions.destroy();
+    p2SetUpInstructions.destroy();
+    timer.destroy();
     firework.destroy();
 	itemSpawnSystem.reset();
 	movementSystem.reset();

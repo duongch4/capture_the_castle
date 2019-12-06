@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SDL_mixer.h>
 #include "common.hpp"
 #include "components.hpp"
 
@@ -29,4 +30,5 @@ private:
     Texture helpBtnSprite;
     mat3 out;
     int currIndex;
+    Mix_Chunk* m_click;
 };
