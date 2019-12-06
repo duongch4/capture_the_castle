@@ -26,9 +26,8 @@ private:
 	const float SCALE_NORM = 0.09f;
 	const vec2 SCALE_SHEET = { SCALE_NORM * 5.f / 7.f, SCALE_NORM };
 	static const size_t MAX_BANDITS = 3;
-    const float BANDIT_DELAY_MS = 10000;
-    float next_bandit_spawn;
-	const int boss_count = 0;
+    const float BANDIT_DELAY_MS = 10000.f;
+    float next_bandit_spawn = 0.f;
     std::shared_ptr<Tilemap> tilemap;
 
     // C++ rng
