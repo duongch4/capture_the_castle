@@ -12,6 +12,8 @@ void PlayerInputSystem::init(std::shared_ptr<Tilemap> tilemap)
 	ecsManager.subscribe(this, &PlayerInputSystem::onKeyListener);
 	ecsManager.subscribe(this, &PlayerInputSystem::onReleaseListener);
 	ecsManager.subscribe(this, &PlayerInputSystem::onTimeoutListener);
+	bomb_set_sound = Mix_LoadWAV(audio_path("capturethecastle_set_bomb.wav"));
+	soldier_set_sound = Mix_LoadWAV(audio_path("capturethecastle_set_soldier.wav"));
 	m_tilemap = tilemap;
 }
 
@@ -50,6 +52,7 @@ void PlayerInputSystem::update()
                             place_bomb(tile, TeamType::PLAYER1);
                             ecsManager.publish(new ItemEvent(e, ItemType::BOMB, false));
                             item.itemType = ItemType::None;
+                            Mix_PlayChannel(-1, bomb_set_sound, 0);
                         }
 					    break;
 					case InputKeys::Q:
@@ -58,6 +61,7 @@ void PlayerInputSystem::update()
 							MazeRegion::PLAYER1, TeamType::PLAYER1,
 							textures_path("red_soldier_sprite_sheet-01.png")
 						);
+                        Mix_PlayChannel(-1, soldier_set_sound, 0);
 						break;
 					default:
 						break;
@@ -93,12 +97,14 @@ void PlayerInputSystem::update()
 							MazeRegion::PLAYER2, TeamType::PLAYER2,
 							textures_path("blue_soldier_sprite_sheet-01.png")
 						);
+						Mix_PlayChannel(-1, soldier_set_sound, 0);
 						break;
                     case InputKeys ::RIGHT_SHIFT:
                         if (item.itemType == ItemType::BOMB){
                             place_bomb(tile, TeamType::PLAYER2);
                             ecsManager.publish(new ItemEvent(e, ItemType::BOMB, false));
                             item.itemType = ItemType::None;
+                            Mix_PlayChannel(-1, bomb_set_sound, 0);
                         }
                         break;
 					default:
@@ -160,7 +166,12 @@ void PlayerInputSystem::onReleaseListener(KeyReleaseEvent* input)
 void PlayerInputSystem::reset() {
     keysPressed.clear();
 	this->entities.clear();
-
+    if (bomb_set_sound != nullptr) {
+        Mix_FreeChunk(bomb_set_sound);
+    }
+    if (soldier_set_sound != nullptr) {
+        Mix_FreeChunk(soldier_set_sound);
+    }
 }
 
 void PlayerInputSystem::place_bomb(const Tile& tile, const TeamType& team_type) {

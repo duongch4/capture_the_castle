@@ -11,6 +11,7 @@
 #include <texture_manager.hpp>
 #include <tilemap.hpp>
 #include <random>
+#include <SDL_mixer.h>
 
 extern ECSManager ecsManager;
 
@@ -71,6 +72,8 @@ private:
 	std::default_random_engine rng;
 	std::uniform_real_distribution<float> dist;
 	std::random_device rd;
+    Mix_Chunk* bomb_set_sound;
+    Mix_Chunk* soldier_set_sound;
 };
 
 

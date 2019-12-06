@@ -10,13 +10,19 @@ bool CountdownTimer::init(vec2 screen_size) {
     remaining_time = 0;
     timer_active = false;
     characters.clear();
-
+    ticking_sound = Mix_LoadWAV(audio_path("capturethecastle_ticktock.wav"));
+    if (ticking_sound == nullptr)
+        return false;
+    timeout_sound = Mix_LoadWAV(audio_path("capturethecastle_timeout.wav"));
+    if (timeout_sound == nullptr)
+        return false;
     return init_clock(screen_size) && init_text();
 }
 
 void CountdownTimer::start_timer(float seconds) {
     remaining_time = seconds;
     timer_active = true;
+    Mix_PlayChannel(-1, ticking_sound, 2);
 }
 
 void CountdownTimer::update(float elapsed_time) {
@@ -28,6 +34,7 @@ void CountdownTimer::update(float elapsed_time) {
 
 bool CountdownTimer::check_times_up() {
    if (timer_active && remaining_time < 0) {
+       Mix_PlayChannel(-1, timeout_sound, 0);
        reset_timer();
        return true;
    }
@@ -143,6 +150,10 @@ void CountdownTimer::destroy() {
     glDeleteBuffers(1, &text_mesh.ibo);
     glDeleteVertexArrays(1, &text_mesh.vao);
     text_effect.release();
+    if (ticking_sound != nullptr)
+        Mix_FreeChunk(ticking_sound);
+    if (timeout_sound != nullptr)
+        Mix_FreeChunk(timeout_sound);
 }
 
 void CountdownTimer::draw_text(const mat3 &projection) {

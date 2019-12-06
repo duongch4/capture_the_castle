@@ -11,6 +11,7 @@
 #include <common.hpp>
 #include <map>
 #include <components.hpp>
+#include <SDL_mixer.h>
 
 struct ivec2 {
     int x, y;
@@ -61,6 +62,8 @@ private:
 
     std::map<GLchar, Character> characters;
     mat3 out{};
+    Mix_Chunk* ticking_sound;
+    Mix_Chunk* timeout_sound;
 };
 
 

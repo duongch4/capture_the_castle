@@ -13,6 +13,9 @@ extern ECSManager ecsManager;
 void CollisionSystem::init() {
     ecsManager.subscribe(this, &CollisionSystem::collisionListener);
     player_respawn_sound = Mix_LoadWAV(audio_path("capturethecastle_player_respawn.wav"));
+    shield_pop_sound = Mix_LoadWAV(audio_path("capturethecastle_shield_pop.wav"));
+    item_pick_up_sound = Mix_LoadWAV(audio_path("capturethecastle_item_pickup.wav"));
+    bomb_explosion_sound = Mix_LoadWAV(audio_path("capturethecastle_bomb_explosion.wav"));
 }
 
 void CollisionSystem::checkCollision() {
@@ -74,6 +77,7 @@ void CollisionSystem::update() {
                         } else {
                             ecsManager.publish(new ItemEvent(e2, ItemType::SHIELD, false));
                             player2_item.itemType = ItemType::None;
+                            Mix_PlayChannel(-1, shield_pop_sound, 0);
                         }
                         break;
                     case MazeRegion::PLAYER2:
@@ -83,6 +87,7 @@ void CollisionSystem::update() {
                         } else {
                             ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
                             player1_item.itemType = ItemType::None;
+                            Mix_PlayChannel(-1, shield_pop_sound, 0);
                         }
                         break;
                     case MazeRegion::BANDIT:
@@ -115,6 +120,7 @@ void CollisionSystem::update() {
 //                    ecsManager.destroyEntity(e2);
                     ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
                     player_item.itemType = ItemType::None;
+                    Mix_PlayChannel(-1, shield_pop_sound, 0);
                 }
             } else if (e2_layer == CollisionLayer::Item) {
                 /// handle item collision
@@ -132,13 +138,16 @@ void CollisionSystem::update() {
                         auto &player_item = ecsManager.getComponent<ItemComponent>(e1);
                         if (player_item.itemType != ItemType::SHIELD) {
                             e1_transform.position = e1_transform.init_position;
+                            Mix_PlayChannel(-1, player_respawn_sound, 0);
 //                            ecsManager.destroyEntity(e2);
                         } else {
                             player_item.itemType = ItemType::None;
                             ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
+                            Mix_PlayChannel(-1, shield_pop_sound, 0);
                         }
                         entities_to_be_destroyed.insert(e2);
                     }
+                    Mix_PlayChannel(-1, bomb_explosion_sound, 0);
                 } else {
                     if (e1_layer != CollisionLayer::Enemy) {
                         //if p1 or p2
@@ -159,6 +168,7 @@ void CollisionSystem::update() {
                             player_item.itemType = ItemType::SHIELD;
                             ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, true));
                         }
+                        Mix_PlayChannel(-1, item_pick_up_sound, 0);
                         entities_to_be_destroyed.insert(e2);
 //                      ecsManager.destroyEntity(e2);
                         //}
@@ -242,5 +252,17 @@ void CollisionSystem::reset() {
         collision_queue.pop();
     }
     this->entities.clear();
+    if (player_respawn_sound != nullptr) {
+        Mix_FreeChunk(player_respawn_sound);
+    }
+    if (shield_pop_sound != nullptr) {
+        Mix_FreeChunk(shield_pop_sound);
+    }
+    if (item_pick_up_sound != nullptr) {
+        Mix_FreeChunk(item_pick_up_sound);
+    }
+    if (bomb_explosion_sound != nullptr) {
+        Mix_FreeChunk(bomb_explosion_sound);
+    }
 	//tileMap->destroy();
 }

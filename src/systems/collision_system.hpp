@@ -30,6 +30,9 @@ private:
     std::set<Entity> entities_to_be_destroyed;
 
     Mix_Chunk* player_respawn_sound;
+    Mix_Chunk* shield_pop_sound;
+    Mix_Chunk* item_pick_up_sound;
+    Mix_Chunk* bomb_explosion_sound;
 };
 //
 
