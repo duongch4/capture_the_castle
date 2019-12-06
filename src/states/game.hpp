@@ -44,6 +44,7 @@ public:
     void reset() override;
     void destroy() override;
 
+private:
     void registerComponents();
 
     void registerItemBoards(const vec2& screen);
@@ -57,6 +58,7 @@ public:
     void registerCastle(const Transform& transform, const TeamType& team_type, const char* texture_path);
 
     void registerBanditAiSystem();
+	void registerSoldierAiSystem();
     void registerBoxCollisionSystem();
     void registerCollisionSystem();
     void registerBanditSpawnSystem();
@@ -120,12 +122,10 @@ private:
     bool init_game();
 
     //Game state
-    enum GameState { START, HELP, WIN, NORMAL, PAUSE, SETUP};
+    enum struct GameState { START, HELP, WIN, NORMAL, PAUSE, SETUP};
     GameState currState;
     CollisionLayer winner;
     World* m_world;
-
-    void registerSoldierAiSystem();
 };
 
 
