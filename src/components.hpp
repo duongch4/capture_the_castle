@@ -99,8 +99,18 @@ struct Team {
     TeamType assigned;
 };
 
-struct BanditSpawnComponent {};
-struct BanditAiComponent {};
+struct BanditSpawnComponent {
+	BanditType type;
+};
+
+struct BanditAiComponent {
+	BanditState	state;
+	size_t idle_time;
+	size_t chase_time;
+	size_t patrol_time;
+	vec2 prev_dir;
+};
+
 struct ItemBoardComponent {};
 struct PlaceableComponent{};
 

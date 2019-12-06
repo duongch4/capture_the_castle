@@ -28,15 +28,6 @@ public:
 	void reset() override;
 
 private:
-	enum struct State
-	{
-		IDLE,
-		CHASE,
-		SEARCH,
-		PATROL,
-		HOP
-	};
-
 	const size_t MAX_BANDITS = BanditSpawnSystem::get_max_bandits();
 	const size_t IDLE_LIMIT = 10; // beats
 	const size_t CHASE_DISTANCE_THRESHOLD = 80;
@@ -45,30 +36,23 @@ private:
 	const float BASE_SPEED = 40.f;
 	const float SPEED_UP = BASE_SPEED * 1.2f;
 
-	std::vector<size_t> m_idle_times;
-	std::vector<size_t> m_chase_times;
-	std::vector<size_t> m_patrol_times;
-	std::vector<State> m_states;
-	std::vector<Entity> m_bandits;
 	std::vector<Entity> m_targets;
 	std::shared_ptr<Tilemap> m_tilemap;
 
-	std::vector<vec2> m_prev_dirs;
-
 private:
 	void handle_idle(
-		State& state, size_t& idle_time, size_t& chase_time,
+		BanditState & state, size_t& idle_time, size_t& chase_time,
 		const float& distance_1, const float& distance_2, const Entity& bandit
 	);
 
 	void handle_patrol(
-		State& state, size_t& idle_time, size_t& chase_time,
+		BanditState & state, size_t& idle_time, size_t& chase_time,
 		const float& distance_1, const float& distance_2,
 		const Entity& bandit, vec2& prev_dir
 	);
 
 	void handle_chase(
-		State& state, size_t& chase_time,
+		BanditState & state, size_t& chase_time,
 		const float& distance_1, const float& distance_2, const Entity& bandit
 	);
 
@@ -86,17 +70,17 @@ private:
 	bool is_target_move_away_bandit(const vec2& bandit_transform_pos, const vec2& target_transform_pos, const vec2& target_motion_dir);
 
 private:
-	const float HOP_DELAY = 0.5f;
+	const float HOP_DELAY = 0.4f;
 	float m_hop_timer = 0.f;
 
 	void handle_idle_search(
-		State& state, size_t& chase_time,
+		BanditState & state, size_t& chase_time,
 		const float& distance_1, const float& distance_2, const Entity& bandit
 	);
 	bool can_search(Entity target);
-	void handle_search(State& state, Entity& bandit);
+	void handle_search(BanditState & state, Entity& bandit);
 	void handle_hop(
-		State& state, size_t& chase_time,
+		BanditState & state, size_t& chase_time,
 		float& distance_1, float& distance_2,
 		Entity& bandit, float& elapsed_ms
 	);
