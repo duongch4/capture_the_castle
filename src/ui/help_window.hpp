@@ -11,7 +11,6 @@
 
 class HelpWindow
 {
-    enum State { CONTROLS, HOWTOPLAY };
 public:
     void init(vec2 screen_size);
 
@@ -36,5 +35,7 @@ private:
     PopUpButton controls_btn;
     PlayInstructions instructions;
     Mix_Chunk* m_click;
-    State curr_state;
+
+	enum struct State { CONTROLS, HOWTOPLAY };
+	State curr_state;
 };
