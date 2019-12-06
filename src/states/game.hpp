@@ -50,7 +50,10 @@ public:
     void registerPlayers(std::vector<Entity>& players);
     void registerCastles();
     void registerItemBoard(const Transform& transform, const TeamType& team_type, const char* texture_path);
-    Entity registerPlayer(const Transform& transform, const Motion& motion, const TeamType& team_type, const char* texture_path);
+    Entity registerPlayer(
+		const Transform& transform, const Motion& motion,
+		const TeamType& team_type, const CollisionLayer& collision_layer, const char* texture_path
+	);
     void registerCastle(const Transform& transform, const TeamType& team_type, const char* texture_path);
 
     void registerBanditAiSystem();
@@ -66,6 +69,9 @@ public:
     void registerItemEffectSystem();
 
     void renderTilesToScreenTexture();
+
+private:
+	const float COUNTDOWN_TIMER = 30.f;
 
 private:
     // Audio

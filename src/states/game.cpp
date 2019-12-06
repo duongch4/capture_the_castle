@@ -321,7 +321,7 @@ void Game::on_mouse_click(GLFWwindow *pWindow, int button, int action, int mods)
             {
                 case (ButtonActions::START):
                     currState = SETUP;
-                    timer.start_timer(30);
+                    timer.start_timer(COUNTDOWN_TIMER);
                     break;
                 default:
                     break;
@@ -469,7 +469,7 @@ void Game::registerItemBoard(const Transform& transform, const TeamType& team_ty
     ecsManager.addComponent<MeshComponent>(picked_up_item, itemMesh);
 }
 
-Entity Game::registerPlayer(const Transform& transform, const Motion& motion, const TeamType& team_type, const char* texture_path)
+Entity Game::registerPlayer(const Transform& transform, const Motion& motion, const TeamType& team_type, const CollisionLayer& collision_layer, const char* texture_path)
 {
     Entity player = ecsManager.createEntity();
     ecsManager.addComponent<Transform>(player, transform);
@@ -487,16 +487,10 @@ Entity Game::registerPlayer(const Transform& transform, const Motion& motion, co
     MeshComponent playerMesh{};
     playerMesh.id = MeshManager::instance().init_mesh(playerSprite.width, playerSprite.height, playerSprite.sprite_size.x, playerSprite.sprite_size.y, playerSprite.sprite_index.x, playerSprite.sprite_index.y, 0);
     ecsManager.addComponent<MeshComponent>(player, playerMesh);
-    CollisionLayer collisionLayer;
-    if (team_type == TeamType::PLAYER1){
-        collisionLayer = CollisionLayer::PLAYER1;
-    } else if (team_type == TeamType::PLAYER2){
-        collisionLayer = CollisionLayer::PLAYER2;
-    }
     ecsManager.addComponent(
             player,
             C_Collision{
-                    collisionLayer,
+					collision_layer,
                     playerSprite.width / 2 * 0.09f,
                     { playerSprite.width * 0.09f * 0.8f, playerSprite.height * 0.09f * 0.8f }
             }
@@ -726,7 +720,7 @@ void Game::registerPlayers(std::vector<Entity>& players)
             { 0.09f * 5 / 7, 0.09f },
             { 120.f, m_screen_size.y / 2 + 130.f }
     };
-    Entity player1 = registerPlayer(transform_player1, motion_player, TeamType::PLAYER1, textures_path("red_king_sprite_sheet.png"));
+    Entity player1 = registerPlayer(transform_player1, motion_player, TeamType::PLAYER1, CollisionLayer::PLAYER1, textures_path("red_king_sprite_sheet.png"));
     players.emplace_back(player1);
 
     // PLAYER 2
@@ -737,7 +731,7 @@ void Game::registerPlayers(std::vector<Entity>& players)
             { 0.09f * 5 / 7, 0.09f },
             { 120.f, m_screen_size.y / 2 + 130.f }
     };
-    Entity player2 = registerPlayer(transform_player2, motion_player, TeamType::PLAYER2, textures_path("blue_king_sprite_sheet.png"));
+    Entity player2 = registerPlayer(transform_player2, motion_player, TeamType::PLAYER2, CollisionLayer::PLAYER2, textures_path("blue_king_sprite_sheet.png"));
     players.emplace_back(player2);
 }
 
