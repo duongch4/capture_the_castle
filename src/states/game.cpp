@@ -83,8 +83,8 @@ bool Game::init_game() {
     // Initialize Setup Instructions
     p1SetUpInstructions.init({120, 200}, textures_path("ui/CaptureTheCastle_soldier_setting_instructions_p1.png"));
     p2SetUpInstructions.init({m_screen_size.x - 120, 200}, textures_path("ui/CaptureTheCastle_soldier_setting_instructions_p2.png"));
-    p1SetUpInstructions.setScale({0.2, 0.2});
-    p2SetUpInstructions.setScale({0.2, 0.2});
+    p1SetUpInstructions.setScale({0.2f, 0.2f});
+    p2SetUpInstructions.setScale({0.2f, 0.2f});
     timer.init(m_screen_size);
 
     //--------------------------------------------------------------------------
@@ -124,8 +124,6 @@ bool Game::update(float elapsed_ms) {
         itemEffectSystem->update();
     } else if (currState == GameState::SETUP) {
         playerInputSystem->update();
-        collisionSystem->checkCollision();
-        collisionSystem->update();
         boxCollisionSystem->checkCollision();
         boxCollisionSystem->update();
         movementSystem->update(elapsed_ms);
@@ -320,7 +318,7 @@ void Game::on_mouse_click(GLFWwindow *pWindow, int button, int action, int mods)
             switch(setup_window.checkButtonClicks({ (float) xpos, (float) ypos }))
             {
                 case (ButtonActions::START):
-                    currState = SETUP;
+                    currState = GameState::SETUP;
                     timer.start_timer(COUNTDOWN_TIMER);
                     break;
                 default:
