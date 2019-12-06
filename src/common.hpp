@@ -87,6 +87,12 @@ enum class BanditState
 	HOP
 };
 
+enum class SoldierState
+{
+	IDLE,
+	PATROL
+};
+
 enum class ItemType
 {
     BOMB,

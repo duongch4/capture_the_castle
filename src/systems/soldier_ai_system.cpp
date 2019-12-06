@@ -3,13 +3,6 @@
 bool SoldierAiSystem::init(std::shared_ptr<Tilemap> tilemap, const std::vector<Entity>& players)
 {
 	m_targets = players;
-	for (size_t i = 0; i < MAX_SOLDIERS; ++i)
-	{
-		m_idle_times.emplace_back(0);
-		m_patrol_times.emplace_back(0);
-		m_prev_dirs.emplace_back(vec2{ 1.f,0.f });
-		m_states.emplace_back(State::IDLE);
-	}
 	m_tilemap = tilemap;
 	return true;
 }
@@ -18,23 +11,23 @@ void SoldierAiSystem::update(float& elapsed_ms)
 {
 	for (auto it = entities.begin(); it != entities.end(); ++it)
 	{
-		auto idx = std::distance(entities.begin(), it);
 		Entity soldier = *it;
+		SoldierAiComponent& soldier_ai_comp = ecsManager.getComponent<SoldierAiComponent>(soldier);
 
-		State& state = m_states[idx];
-		size_t& idle_time = m_idle_times[idx];
-		size_t& patrol_time = m_patrol_times[idx];
-		vec2& prev_dir = m_prev_dirs[idx];
+		SoldierState& state = soldier_ai_comp.state;
+		size_t& idle_time = soldier_ai_comp.idle_time;
+		size_t& patrol_time = soldier_ai_comp.patrol_time;
+		vec2& prev_dir = soldier_ai_comp.prev_dir;
 
 		float speed = BASE_SPEED * (1.f + dist(rng));
 		ecsManager.getComponent<Motion>(soldier).speed = speed;
 
 		switch (state)
 		{
-		case State::IDLE:
+		case SoldierState::IDLE:
 			handle_idle(state, idle_time, soldier);
 			break;
-		case State::PATROL:
+		case SoldierState::PATROL:
 			handle_patrol(state, patrol_time, soldier, prev_dir);
 			break;
 		}
@@ -43,7 +36,7 @@ void SoldierAiSystem::update(float& elapsed_ms)
 
 }
 
-void SoldierAiSystem::handle_patrol(State& state, size_t& patrol_time, const Entity& soldier, vec2& prev_dir)
+void SoldierAiSystem::handle_patrol(SoldierState& state, size_t& patrol_time, const Entity& soldier, vec2& prev_dir)
 {
 	vec2& curr_pos = ecsManager.getComponent<Transform>(soldier).position;
 	vec2& curr_dir = ecsManager.getComponent<Motion>(soldier).direction;
@@ -53,7 +46,7 @@ void SoldierAiSystem::handle_patrol(State& state, size_t& patrol_time, const Ent
 	{
 		//curr_pos = curr_tile.get_position();
 
-		state = State::IDLE;
+		state = SoldierState::IDLE;
 		patrol_time = 0;
 		return;
 	}
@@ -92,11 +85,11 @@ bool SoldierAiSystem::can_move(const Entity& soldier, const Tile& tile)
 	return is_within_soldier_region(soldier, tile) && !tile.is_wall();
 }
 
-void SoldierAiSystem::handle_idle(State& state, size_t& idle_time, const Entity& soldier)
+void SoldierAiSystem::handle_idle(SoldierState& state, size_t& idle_time, const Entity& soldier)
 {
 	if (idle_time > IDLE_LIMIT)
 	{
-		state = State::PATROL;
+		state = SoldierState::PATROL;
 		idle_time = 0;
 		return;
 	}
@@ -168,18 +161,7 @@ bool SoldierAiSystem::is_within_soldier_region(const Entity& soldier, const Tile
 }
 
 void SoldierAiSystem::reset() {
-    m_idle_times.clear();
-	m_idle_times.shrink_to_fit();
-    m_patrol_times.clear();
-	m_patrol_times.shrink_to_fit();
-    m_states.clear();
-	m_states.shrink_to_fit();
-    m_soldiers.clear();
-	m_soldiers.shrink_to_fit();
     m_targets.clear();
 	m_targets.shrink_to_fit();
-    m_prev_dirs.clear();
-	m_prev_dirs.shrink_to_fit();
 	this->entities.clear();
-
 }

@@ -221,14 +221,21 @@ void PlayerInputSystem::spawn_soldier(
 	ecsManager.addComponent<Transform>(soldier, transform);
 	ecsManager.addComponent<Motion>(soldier, motion);
 
-	ecsManager.addComponent<SoldierAiComponent>(soldier, SoldierAiComponent{});
+	ecsManager.addComponent<SoldierAiComponent>(
+		soldier,
+		SoldierAiComponent{
+			SoldierState::IDLE,
+			0,0,
+			vec2{ 0.f,0.f }
+		}
+	);
 
 	Effect soldierEffect{};
 	soldierEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
 	ecsManager.addComponent<Effect>(soldier, soldierEffect);
 	Sprite soldierSprite = { texture_path };
 	TextureManager::instance().load_from_file(soldierSprite);
-	soldierSprite.sprite_index = { 0 , 3 };
+	soldierSprite.sprite_index = { 0 , 0 };
 	soldierSprite.sprite_size = { soldierSprite.width / 7.0f , soldierSprite.height / 5.0f };
 	ecsManager.addComponent<Sprite>(soldier, soldierSprite);
 	MeshComponent soldierMesh{};

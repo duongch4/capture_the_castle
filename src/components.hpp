@@ -116,7 +116,12 @@ struct PlaceableComponent {};
 
 struct PlayerInputControlComponent {};
 
-struct SoldierAiComponent {};
+struct SoldierAiComponent {
+	SoldierState state;
+	size_t idle_time;
+	size_t patrol_time;
+	vec2 prev_dir;
+};
 
 struct CurveMotionComponent {
     vec2 p0;
@@ -125,8 +130,6 @@ struct CurveMotionComponent {
     vec2 p3;
 };
 
-struct RainComponent {
-	//
-};
+struct RainComponent {};
 
 #endif //CAPTURE_THE_CASTLE_COMPONENTS_HPP
