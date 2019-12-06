@@ -24,7 +24,7 @@ void BanditAiSystem::update(float& elapsed_ms)
 	}
 	for (auto it = entities.begin(); it != entities.end(); ++it)
 	{
-		auto idx = std::distance(entities.begin(), it);
+		size_t idx = (size_t)std::distance(entities.begin(), it);
 		Entity bandit = *it;
 
 		State& state = m_states[idx];
