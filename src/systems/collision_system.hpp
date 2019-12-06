@@ -20,6 +20,8 @@ public:
     void init();
     void checkCollision();
     void update();
+	void setFlagMode(Entity flagPlayer);
+	void setBubble(Entity bubb);
     void reset() override;
 
 private:
@@ -28,7 +30,9 @@ private:
     float distance(vec2 e1, vec2 e2);
     std::queue<std::pair<Entity, Entity>> collision_queue;
     std::set<Entity> entities_to_be_destroyed;
-
+	Entity playerWithFlag;
+	Entity bubble;
+	bool flagMode;
     Mix_Chunk* player_respawn_sound;
 };
 //

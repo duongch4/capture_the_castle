@@ -20,6 +20,7 @@ public:
     void update();
     void reset() override;
 	static const size_t get_max_soldiers() { return 2 * MAX_SOLDIERS; };
+	void setFlagMode(bool mode, Entity flagPlayer, Entity bubb);
 
 private:
     const std::vector<InputKeys> PLAYER1KEYS = {
@@ -35,6 +36,10 @@ private:
 	std::map<InputKeys, bool> keysPressed;
 
 	std::shared_ptr<Tilemap> m_tilemap;
+
+	bool flag;
+	Entity playerWithFlag;
+	Entity bubble;
 
 private:
     void onKeyListener(InputKeyEvent* input);

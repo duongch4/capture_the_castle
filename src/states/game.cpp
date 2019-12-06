@@ -34,7 +34,7 @@ bool Game::init_state(World* world) {
     registerItemEffectSystem();
 
     ecsManager.subscribe(this, &Game::winListener);
-
+	ecsManager.subscribe(this, &Game::flagListener);
     return init_game();
 }
 
@@ -95,7 +95,7 @@ bool Game::init_game() {
 }
 
 bool Game::update(float elapsed_ms) {
-    if (currState == GameState::NORMAL) {
+    if (currState == GameState::NORMAL || currState == GameState::FLAG) {
         banditSpawnSystem->update(elapsed_ms);
         banditAiSystem->update(elapsed_ms);
         playerInputSystem->update();
@@ -278,6 +278,33 @@ void Game::winListener(WinEvent *winEvent) {
     currState = GameState :: WIN;
 }
 
+void Game::flagListener(FlagEvent *flagEvent)
+{
+	if (flagEvent->flag)
+	{
+		currState = GameState::FLAG;
+		auto &team = ecsManager.getComponent<Team>(flagEvent->flagPlayer);
+		const char* path;
+		if (team.assigned == TeamType::PLAYER1)
+		{
+			path = flag_path("CaptureTheCastle_bubble_flag_blue.png");
+		}
+		else if (team.assigned == TeamType::PLAYER2)
+		{
+			path = flag_path("CaptureTheCastle_bubble_flag_red.png");
+		}
+		Entity bubble = registerBubble(flagEvent->flagPlayer, path);
+		collisionSystem->setFlagMode(flagEvent->flagPlayer);
+		playerInputSystem->setFlagMode(true, flagEvent->flagPlayer, bubble);
+	}
+	else
+	{
+		currState = GameState::NORMAL;
+		playerInputSystem->setFlagMode(false, 0, 0);
+
+	}
+}
+
 void Game::destroy() {
     glDeleteFramebuffers(1, &m_frame_buffer);
     if (m_background_music != nullptr)
@@ -382,6 +409,37 @@ Entity Game::registerPlayer(const Transform& transform, const Motion& motion, co
             false,
             ItemType::None});
     return player;
+}
+
+Entity Game::registerBubble(Entity player, const char* texture_path)
+{
+	auto& transform = ecsManager.getComponent<Transform>(player);
+	Transform transform_bubble = Transform{
+		 { transform.position.x, transform.position.y - 20.f },
+		 // { 120.f - castleWidth, m_screen_size.y / 2 - castleHeight},  debugging purpose
+		 { transform.position.x, transform.position.y - 20.f },
+		 {0.8f, 0.8f },
+		 { transform.position.x, transform.position.y - 20.f }
+	};
+	auto& motion = ecsManager.getComponent<Motion>(player);
+	auto& team = ecsManager.getComponent<Team>(player);
+	Entity bubble = ecsManager.createEntity();
+	ecsManager.addComponent<Transform>(bubble, transform_bubble);
+	ecsManager.addComponent<Motion>(bubble, { {0.f, 0.f}, motion.speed });
+	ecsManager.addComponent<Team>(bubble, team);
+
+	Effect bubbleEffect{};
+	bubbleEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
+	ecsManager.addComponent<Effect>(bubble, bubbleEffect);
+	Sprite bubbleSprite = { texture_path };
+	TextureManager::instance().load_from_file(bubbleSprite);
+	bubbleSprite.sprite_size = { (float) bubbleSprite.width , (float)bubbleSprite.height};
+	ecsManager.addComponent<Sprite>(bubble, bubbleSprite);
+	MeshComponent bubbleMesh{};
+	bubbleMesh.id = MeshManager::instance().init_mesh(bubbleSprite.width, bubbleSprite.height);
+	ecsManager.addComponent<MeshComponent>(bubble, bubbleMesh);
+	collisionSystem->setBubble(bubble);
+	return bubble;
 }
 
 void Game::registerCastle(const Transform& transform, const TeamType& team_type, const char* texture_path)

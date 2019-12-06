@@ -108,6 +108,11 @@ void PlayerInputSystem::update()
 			++wait_2;
 		}
 		motion.direction = next_dir;
+		if (e == playerWithFlag && flag)
+		{
+			auto& bubbMotion = ecsManager.getComponent<Motion>(bubble);
+			bubbMotion.direction = next_dir;
+		}
 	}
 }
 
@@ -229,4 +234,11 @@ void PlayerInputSystem::spawn_soldier(
 			{ soldierSprite.width * 0.08f * 0.8f, soldierSprite.height * 0.08f * 0.8f }
 		}
 	);
+}
+
+void PlayerInputSystem::setFlagMode(bool mode, Entity flagPlayer, Entity bubb)
+{
+	flag = mode;
+	playerWithFlag = flagPlayer;
+	bubble = bubb;
 }

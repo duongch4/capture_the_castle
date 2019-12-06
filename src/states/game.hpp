@@ -49,6 +49,7 @@ public:
     void registerItemBoard(const Transform& transform, const TeamType& team_type, const char* texture_path);
     Entity registerPlayer(const Transform& transform, const Motion& motion, const TeamType& team_type, const char* texture_path);
     void registerCastle(const Transform& transform, const TeamType& team_type, const char* texture_path);
+	Entity registerBubble(Entity player, const char* texture_path);
 
     void registerBanditAiSystem();
     void registerBoxCollisionSystem();
@@ -103,10 +104,11 @@ private:
 
 
     void winListener(WinEvent* winEvent);
+	void flagListener(FlagEvent* flagEvent);
     bool init_game();
 
     //Game state
-    enum GameState { HELP, WIN, NORMAL};
+    enum GameState { HELP, WIN, NORMAL, FLAG,};
     GameState currState;
     CollisionLayer winner;
 
