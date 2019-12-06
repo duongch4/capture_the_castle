@@ -23,6 +23,11 @@ public:
     void reset() override;
 
 private:
+	void handle_item_collision(const Entity& e2, const CollisionLayer& e1_layer, const Entity& e1, Transform& e1_transform);
+	void handle_player_enemy_collision(const Entity& e1, const MazeRegion& region, const TeamType& e1_team, Transform& e1_transform, const Entity& e2);
+	void handle_player_player_collision(const Entity& e1, const Entity& e2, const MazeRegion& region, Transform& e2_transform, Transform& e1_transform);
+
+private:
     void collisionListener(CollisionEvent* collisionEvent);
     bool collideWithCastle(Entity player, Entity castle);
     float distance(vec2 e1, vec2 e2);
