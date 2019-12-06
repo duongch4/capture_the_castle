@@ -21,8 +21,8 @@ void BoxCollisionSystem::update() {
         auto &motion = ecsManager.getComponent<Motion>(e).direction;
         auto &boundingBox = ecsManager.getComponent<C_Collision>(e).boundingBox;
 
-        int x_diff = abs(tile.get_position().x - transform.position.x);
-        int y_diff = abs(tile.get_position().y - transform.position.y);
+        float x_diff = abs(tile.get_position().x - transform.position.x);
+        float y_diff = abs(tile.get_position().y - transform.position.y);
 
         // Compare the x and y distance between entity and tile to determine the direction to move the entity
         if (y_diff >= x_diff) {

@@ -93,7 +93,7 @@ void BanditSpawnSystem::spawn_bandit(const BanditType& bandit_type, const vec2& 
 	{
 		banditSprite.sprite_size = { (float)banditSprite.width, (float)banditSprite.height };
 
-		collision_radius = banditSprite.width / 2.f * SCALE_BOSS;
+		collision_radius = banditSprite.width / 2.f;
 		collision_width = (float)banditSprite.width * SCALE_BOSS;
 		collision_height = (float)banditSprite.height * SCALE_BOSS;
 	}

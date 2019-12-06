@@ -197,7 +197,6 @@ void PlayerInputSystem::place_bomb(const Tile& tile, const TeamType& team_type) 
         itemSprite = {power_up_path("CaptureTheCastle_powerup_bomb_setBlue.png")};
     }
     TextureManager::instance().load_from_file(itemSprite);
-    itemSprite.sprite_size = { itemSprite.width / 7.0f , itemSprite.height / 5.0f };
     ecsManager.addComponent<Sprite>(bomb, itemSprite);
     MeshComponent itemMesh{MeshManager::instance().init_mesh(
             itemSprite.width, itemSprite.height)};
