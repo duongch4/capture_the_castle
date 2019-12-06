@@ -33,7 +33,6 @@ void CollisionSystem::checkCollision() {
                 if (distance(e1_transform.position, e2_transform.position) <
                     fmin(e1_collision.radius, e2_collision.radius) && e2_collision.layer != CollisionLayer::Castle) {
                     ecsManager.publish(new CollisionEvent(entity1, entity2));
-					std::cout << "collision  " << entity1 << "   " << entity2 << std::endl;
                 }
             }
         }
@@ -91,7 +90,7 @@ void CollisionSystem::update() {
 								ecsManager.publish(new FlagEvent(e2, false));
 								flagMode = false;
 								playerWithFlag = 0;
-								std::cout << "95 " << flagMode << std::endl;
+								//std::cout << "95 " << flagMode << std::endl;
 								entities_to_be_destroyed.insert(bubble);
 							}
                             player2_item.itemType = ItemType::None;
@@ -105,7 +104,7 @@ void CollisionSystem::update() {
 								ecsManager.publish(new FlagEvent(e1, false));
 								flagMode = false;
 								playerWithFlag = 0;
-								std::cout << "109 " << flagMode << std::endl;
+								//std::cout << "109 " << flagMode << std::endl;
 								entities_to_be_destroyed.insert(bubble);
 							}
                             Mix_PlayChannel(-1, player_respawn_sound, 0);
@@ -130,7 +129,7 @@ void CollisionSystem::update() {
 									ecsManager.publish(new FlagEvent(e1, false));
 									flagMode = false;
 									playerWithFlag = 0;
-									std::cout << "133 " << flagMode << std::endl;
+									//std::cout << "133 " << flagMode << std::endl;
 									entities_to_be_destroyed.insert(bubble);
 								}
                                 Mix_PlayChannel(-1, player_respawn_sound, 0);
@@ -144,7 +143,7 @@ void CollisionSystem::update() {
 									ecsManager.publish(new FlagEvent(e1, false));
 									flagMode = false;
 									playerWithFlag = 0;
-									std::cout << "148 " << flagMode << std::endl;
+									//std::cout << "148 " << flagMode << std::endl;
 									entities_to_be_destroyed.insert(bubble);
 								}
                                 Mix_PlayChannel(-1, player_respawn_sound, 0);
@@ -157,7 +156,7 @@ void CollisionSystem::update() {
 								ecsManager.publish(new FlagEvent(e1, false));
 								flagMode = false;
 								playerWithFlag = 0;
-								std::cout << "161 " << flagMode << std::endl;
+								//std::cout << "161 " << flagMode << std::endl;
 								entities_to_be_destroyed.insert(bubble);
 							}
                             Mix_PlayChannel(-1, player_respawn_sound, 0);
@@ -190,7 +189,7 @@ void CollisionSystem::update() {
 								ecsManager.publish(new FlagEvent(e1, false));
 								flagMode = false;
 								playerWithFlag = 0;
-								std::cout << "194 " << flagMode << std::endl;
+								//std::cout << "194 " << flagMode << std::endl;
 								entities_to_be_destroyed.insert(bubble);
 							}
                             entities_to_be_destroyed.insert(e2);
