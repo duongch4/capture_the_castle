@@ -179,7 +179,12 @@ void PlayerInputSystem::place_bomb(const Tile& tile, const TeamType& team_type) 
     Effect itemEffect{};
     itemEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(bomb, itemEffect);
-    Sprite itemSprite = {power_up_path("CaptureTheCastle_powerup_bomb.png")};
+    Sprite itemSprite;
+    if (team_type == TeamType ::PLAYER1){
+        itemSprite = {power_up_path("CaptureTheCastle_powerup_bomb_setRed.png")};
+    } else if (team_type == TeamType::PLAYER2){
+        itemSprite = {power_up_path("CaptureTheCastle_powerup_bomb_setBlue.png")};
+    }
     TextureManager::instance().load_from_file(itemSprite);
     itemSprite.sprite_size = { itemSprite.width / 7.0f , itemSprite.height / 5.0f };
     ecsManager.addComponent<Sprite>(bomb, itemSprite);

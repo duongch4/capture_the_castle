@@ -487,10 +487,16 @@ Entity Game::registerPlayer(const Transform& transform, const Motion& motion, co
     MeshComponent playerMesh{};
     playerMesh.id = MeshManager::instance().init_mesh(playerSprite.width, playerSprite.height, playerSprite.sprite_size.x, playerSprite.sprite_size.y, playerSprite.sprite_index.x, playerSprite.sprite_index.y, 0);
     ecsManager.addComponent<MeshComponent>(player, playerMesh);
+    CollisionLayer collisionLayer;
+    if (team_type == TeamType::PLAYER1){
+        collisionLayer = CollisionLayer::PLAYER1;
+    } else if (team_type == TeamType::PLAYER2){
+        collisionLayer = CollisionLayer::PLAYER2;
+    }
     ecsManager.addComponent(
             player,
             C_Collision{
-                    CollisionLayer::PLAYER1,
+                    collisionLayer,
                     playerSprite.width / 2 * 0.09f,
                     { playerSprite.width * 0.09f * 0.8f, playerSprite.height * 0.09f * 0.8f }
             }

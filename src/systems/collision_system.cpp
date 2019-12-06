@@ -132,12 +132,12 @@ void CollisionSystem::update() {
                         auto &player_item = ecsManager.getComponent<ItemComponent>(e1);
                         if (player_item.itemType != ItemType::SHIELD) {
                             e1_transform.position = e1_transform.init_position;
-                            entities_to_be_destroyed.insert(e2);
 //                            ecsManager.destroyEntity(e2);
                         } else {
                             player_item.itemType = ItemType::None;
                             ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
                         }
+                        entities_to_be_destroyed.insert(e2);
                     }
                 } else {
                     if (e1_layer != CollisionLayer::Enemy) {
@@ -172,9 +172,8 @@ void CollisionSystem::update() {
 
 
     std::set<Entity>::iterator it = entities_to_be_destroyed.begin();
-    //std::cout<<"Things in the set:"<<std::endl;
     while (it != entities_to_be_destroyed.end()) {
-        std::cout<<*it<<std::endl;
+//        std::cout<<*it<<std::endl;
         it++;
     }
 
@@ -217,19 +216,19 @@ bool CollisionSystem::collideWithCastle(Entity player, Entity castle) {
     float pt = p_position.y;
     float pb = pt + p_boundingBox.y;
 
-    float tt = c_position.y - c_boundingBox.y;
-    float tb = tt + 2 * c_boundingBox.y;
-    float tl = c_position.x - c_boundingBox.x;
-    float tr = tl + 2 * c_boundingBox.x;
+    float ct = c_position.y + 100;
+    float cb = ct + c_boundingBox.y - 100;
+    float cl = c_position.x - 50 ;
+    float cr = cl + c_boundingBox.x + 50;
     CollisionResponse col_res = {false, false, false, false};
 
-    col_res.left = (pr >= tl && pr <= tr); //approach from left
-    col_res.right = (pl <= tr && pl >= tl); //approach from right
-    bool x_over = (pr >= tl && pl <= tl); //overlap
+    col_res.left = (pr >= cl && pr <= cr); //approach from left
+    col_res.right = (pl <= cr && pl >= cl); //approach from right
+    bool x_over = (pr >= cl && pl <= cl); //overlap
 
-    col_res.down = (pt >= tt && pt <= tb); // approach from bottom
-    col_res.up = (pb <= tb && pb >= tt); //approach from top
-    bool y_over = (pb >= tb && pt <= tt); //overlap
+    col_res.down = (pt >= ct && pt <= cb); // approach from bottom
+    col_res.up = (pb <= cb && pb >= ct); //approach from top
+    bool y_over = (pb >= cb && pt <= ct); //overlap
 
     bool x_overlap = col_res.left || col_res.right || x_over;
     bool y_overlap = col_res.down || col_res.up || y_over;
