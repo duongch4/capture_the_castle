@@ -42,6 +42,17 @@ void CollisionSystem::checkCollision() {
 }
 
 void CollisionSystem::update() {
+    for (auto const &entity: entities){
+        auto &collision =  ecsManager.getComponent<C_Collision>(entity);
+        if(collision.layer == CollisionLayer::PLAYER1 || collision.layer == CollisionLayer::PLAYER2){
+            auto &item = ecsManager.getComponent<ItemComponent>(entity);
+            if (item.itemType != ItemType::SHIELD && collision.wait_count >= 0){
+                collision.wait_count-= 1;
+            } else {
+                collision.wait_count = 20;
+            }
+        }
+    }
     entities_to_be_destroyed.clear();
     while (collision_queue.size() > 0) {
         std::pair<Entity, Entity> collision_pair = collision_queue.front();
@@ -60,6 +71,10 @@ void CollisionSystem::update() {
 
             auto &e1_transform = ecsManager.getComponent<Transform>(e1);
             auto &e2_transform = ecsManager.getComponent<Transform>(e2);
+
+            int wait_count1 = ecsManager.getComponent<C_Collision>(e1).wait_count;
+            int wait_count2 = ecsManager.getComponent<C_Collision>(e2).wait_count;
+
             MazeRegion region = Tilemap::get_region(e1_transform.position.x, e1_transform.position.y);
 
             if (e2_layer == CollisionLayer::Castle) {
@@ -71,7 +86,7 @@ void CollisionSystem::update() {
                 auto &player2_item = ecsManager.getComponent<ItemComponent>(e2);
                 switch (region) {
                     case MazeRegion::PLAYER1:
-                        if (player2_item.itemType != ItemType::SHIELD) {
+                        if (player2_item.itemType != ItemType::SHIELD && wait_count2 < 0) {
                             e2_transform.position = e2_transform.init_position;
                             Mix_PlayChannel(-1, player_respawn_sound, 0);
                         } else {
@@ -81,7 +96,7 @@ void CollisionSystem::update() {
                         }
                         break;
                     case MazeRegion::PLAYER2:
-                        if (player1_item.itemType != ItemType::SHIELD) {
+                        if (player1_item.itemType != ItemType::SHIELD && wait_count1 < 0) {
                             e1_transform.position = e1_transform.init_position;
                             Mix_PlayChannel(-1, player_respawn_sound, 0);
                         } else {
