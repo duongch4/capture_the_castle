@@ -249,9 +249,10 @@ void Game::on_key(int key, int action) {
         }
     } else if (action == GLFW_PRESS && k == InputKeys::ESC) {
         if (currState == GameState::NORMAL || currState == GameState::FLAG) {
+			oldState = currState;
             currState = GameState::PAUSE;
         } else if(currState == GameState::PAUSE) {
-            currState = GameState::NORMAL;
+            currState = oldState;
         }
     }
 }
@@ -381,7 +382,7 @@ void Game::reset() {
 
 void Game::winListener(WinEvent *winEvent) {
     // you should only win when in normal game mode, set up should not allow you to win
-    if (currState == GameState::FLAG || currState == GameState::NORMAL) {
+    if (currState == GameState::FLAG) {
         Team winningTeam = ecsManager.getComponent<Team>(winEvent->player);
         win_window.setWinTeam(winningTeam.assigned);
         currState = GameState :: WIN;
