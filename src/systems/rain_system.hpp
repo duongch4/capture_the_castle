@@ -38,24 +38,22 @@ private:
 		vec3 color = { 0.f, 0.f, 0.f };
 		float mass = 1.f;
 	};
-	static const int MAX_PARTICLE = 300;
-	static const int NUM_PARTICLE = 100;
+	static const int SPAWN_GROUP = 2;
+	static const int MAX_PARTICLE = 900;
+	static const int NUM_PARTICLE = 450;
 
 	float air_density = 1.1455f;
-	float air_speed = 1.f;
+	float air_speed = 2.f;
 	const float DRAG_COEF_SPHERE = 0.47f;
 	const float GRAVITY_ACC = 9.81f;
-	const float PARTICLE_RADIUS = 4.f;
-	const float PARTICLE_LIFE = 4.f;
-
-	const float SPAWN_DELAY = 0.f;
-	const float SPAWN_GROUP_DELAY = 10.f;
+	const float PARTICLE_RADIUS = 4.2f;
+	const float PARTICLE_LIFE = 15.f;
 
 	const float ENEMY_MASS = 8.f;
 	const float PLAYER_MASS = 5.f;
 
 private:
-	void setup_randomness(const vec2& screen_size);
+	void setup_randomness();
 	void destroy();
 
 	void handle_motion(const float& dt);
@@ -75,9 +73,9 @@ private:
 
 	float m_spawn_timer;
 	int m_spawn_count;
+	vec2 m_screen_size;
 
 	std::default_random_engine m_rng;
-	std::uniform_real_distribution<float> m_dist_PositionX;
 	std::uniform_real_distribution<float> m_dist_PositionY;
 	std::uniform_real_distribution<float> m_dist_Color;
 	std::uniform_real_distribution<float> m_dist_Radian;

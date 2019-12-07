@@ -557,6 +557,7 @@ void Game::registerBoxCollisionSystem()
         signature.set(ecsManager.getComponentType<Transform>());
         signature.set(ecsManager.getComponentType<C_Collision>());
         signature.set(ecsManager.getComponentType<Motion>());
+		signature.set(ecsManager.getComponentType<Team>());
         ecsManager.setSystemSignature<BoxCollisionSystem>(signature);
     }
     boxCollisionSystem->init(tilemap);

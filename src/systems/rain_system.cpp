@@ -4,10 +4,12 @@
 constexpr int NUM_SEGMENTS = 8;
 
 bool RainSystem::init(const vec2& screen_size) {
-    m_rng = std::default_random_engine(std::random_device()());
-	setup_randomness(screen_size);
+	m_screen_size = screen_size;
 
-    m_spawn_timer = SPAWN_DELAY;
+    m_rng = std::default_random_engine(std::random_device()());
+	setup_randomness();
+
+    m_spawn_timer = 0.f;
     m_spawn_count = 0;
 
     std::vector<GLfloat> screen_vertex_buffer_data;
@@ -41,21 +43,19 @@ bool RainSystem::init(const vec2& screen_size) {
     if (gl_has_errors())
         return false;
 
-    //m_pop = Mix_LoadWAV(audio_path("capturethecastle_firecracker.wav"));
+    m_pop = Mix_LoadWAV(audio_path("capturethecastle_hail.wav"));
 
     return effect.load_from_file(shader_path("firework.vs.glsl"), shader_path("firework.fs.glsl"));
 }
 
-void RainSystem::setup_randomness(const vec2 & screen_size)
+void RainSystem::setup_randomness()
 {
 	std::uniform_real_distribution<float> distVelocityX(50.f, 1000.f);
 	std::uniform_real_distribution<float> distVelocityY(50.f, 500.f);
-	std::uniform_real_distribution<float> distPositionX(0.f, screen_size.x);
 	std::uniform_real_distribution<float> distPositionY(0.f, 0.f);
 	std::uniform_real_distribution<float> distColor(0.7f, 1.f);
 	std::uniform_real_distribution<float> distRadian(-M_PI, M_PI);
-	std::uniform_real_distribution<float> distSpawnDelay(5.f, 10.f);
-	m_dist_PositionX = distPositionX;
+	std::uniform_real_distribution<float> distSpawnDelay(25.f, 45.f);
 	m_dist_PositionY = distPositionY;
 	m_dist_Color = distColor;
 	m_dist_Radian = distRadian;
@@ -65,15 +65,14 @@ void RainSystem::setup_randomness(const vec2 & screen_size)
 }
 
 void RainSystem::destroy() {
-	if (m_pop != nullptr)
-		Mix_FreeChunk(m_pop);
+	if (m_pop != nullptr) Mix_FreeChunk(m_pop);
     glDeleteBuffers(1, &mesh.vbo);
     glDeleteBuffers(1, &m_instance_vbo);
 
     glDeleteShader(effect.vertex);
     glDeleteShader(effect.fragment);
     glDeleteShader(effect.program);
-	//m_curve.clear_points();
+
     m_particles.clear();
 	m_particles.shrink_to_fit();
 }
@@ -179,7 +178,9 @@ void RainSystem::handle_motion(const float& dt)
 
 		// F = 0.5 * density * speed^2 * drag_coef * surface_area
 		float air_drag_force = 0.5f * air_density * air_speed * air_speed * DRAG_COEF_SPHERE * 4.f * 3.1415f * particle.radius * particle.radius;
-		vec2 force = { -air_drag_force, particle.mass * GRAVITY_ACC };
+		int random_bit = rand() & 1;
+		float random_sign = (random_bit == 1) ? 1.f : -1.f;
+		vec2 force = { random_sign * air_drag_force, particle.mass * GRAVITY_ACC };
 		vec2 acc = { force.x / particle.mass, force.y / particle.mass };
 		particle.velocity.x += acc.x * dt;
 		particle.velocity.y += acc.y * dt;
@@ -194,16 +195,14 @@ void RainSystem::handle_spawn(const float& dt)
 
 	if (m_spawn_timer < 0.f)
 	{
-		do_hail(vec2{ m_dist_PositionX(m_rng), m_dist_PositionY(m_rng) });
+		int random_bit = rand() & 1;
+		float pos_x = (random_bit == 0) ? 0.f : m_screen_size.x;
+		do_hail(vec2{ pos_x, m_dist_PositionY(m_rng) });
 		m_spawn_count++;
-		if (m_spawn_count > 100)
+		if (m_spawn_count == SPAWN_GROUP)
 		{
 			m_spawn_count = 0;
 			m_spawn_timer = m_dist_SpawnDelay(m_rng);
-		}
-		else
-		{
-			m_spawn_timer = SPAWN_DELAY;
 		}
 	}
 }
@@ -242,7 +241,7 @@ void RainSystem::do_hail(const vec2& position) {
             m_particles.emplace_back(particle);
         }
     }
-    //Mix_PlayChannel(-1, m_pop, 0);
+    Mix_PlayChannel(-1, m_pop, 0);
 }
 
 void RainSystem::draw(const mat3& projection) {
