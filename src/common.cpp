@@ -164,6 +164,19 @@ bool Texture::is_valid()const
 	return id != 0;
 }
 
+float dist(float x1, float y1, float x2, float y2)
+{
+	float dx = x2 - x1;
+	float dy = y2 - y1;
+
+	return dx * dx + dy * dy;
+}
+
+bool intersect_circle_circle(const vec2& c1, const vec2& c2, const float& r1, const float& r2)
+{
+	return (dist(c1.x, c1.y, c2.x, c2.y) < (r1 + r2) * (r1 + r2));
+}
+
 //namespace
 //{
 //	bool gl_compile_shader(GLuint shader)

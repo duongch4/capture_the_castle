@@ -26,6 +26,8 @@
 #include <systems/soldier_ai_system.hpp>
 #include <systems/curve_movement_system.hpp>
 #include <systems/item_effect_system.hpp>
+#include <systems/rain_system.hpp>
+
 #include <ui/countdown_timer.hpp>
 #include <ui/pause_window.hpp>
 #include <ui/soldier_setup_window.hpp>
@@ -44,16 +46,21 @@ public:
     void reset() override;
     void destroy() override;
 
+private:
     void registerComponents();
 
     void registerItemBoards(const vec2& screen);
     void registerPlayers(std::vector<Entity>& players);
     void registerCastles();
     void registerItemBoard(const Transform& transform, const TeamType& team_type, const char* texture_path);
-    Entity registerPlayer(const Transform& transform, const Motion& motion, const TeamType& team_type, const char* texture_path);
+    Entity registerPlayer(
+		const Transform& transform, const Motion& motion,
+		const TeamType& team_type, const CollisionLayer& collision_layer, const char* texture_path
+	);
     void registerCastle(const Transform& transform, const TeamType& team_type, const char* texture_path);
 
     void registerBanditAiSystem();
+	void registerSoldierAiSystem();
     void registerBoxCollisionSystem();
     void registerCollisionSystem();
     void registerBanditSpawnSystem();
@@ -64,8 +71,12 @@ public:
     void registerItemSpawnSystem();
     void registerItemBoardSystem();
     void registerItemEffectSystem();
+	void registerRainSystem(const vec2& screen);
 
     void renderTilesToScreenTexture();
+
+private:
+	const float COUNTDOWN_TIMER = 30.f;
 
 private:
     // Audio
@@ -107,19 +118,18 @@ private:
     std::shared_ptr<CurveMovementSystem> curveMovementSystem;
     std::shared_ptr<ItemSpawnSystem> itemSpawnSystem;
     std::shared_ptr<ItemBoardSystem> itemBoardSystem;
-    std::shared_ptr<ItemEffectSystem> itemEffectSystem;
+	std::shared_ptr<ItemEffectSystem> itemEffectSystem;
+	std::shared_ptr<RainSystem> rainSystem;
 
 
     void winListener(WinEvent* winEvent);
     bool init_game();
 
     //Game state
-    enum GameState { START, HELP, WIN, NORMAL, PAUSE, SETUP};
+    enum struct GameState { START, HELP, WIN, NORMAL, PAUSE, SETUP};
     GameState currState;
     CollisionLayer winner;
     World* m_world;
-
-    void registerSoldierAiSystem();
 };
 
 

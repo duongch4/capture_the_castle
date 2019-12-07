@@ -11,9 +11,8 @@
 class MovementSystem : public System
 {
 public:
-    void init();
+    void init(const vec2& screen);
     void update(float ms);
-	void setScreenSize(const vec2& screen);
 	void reset() override;
 
 private:

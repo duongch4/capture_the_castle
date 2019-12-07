@@ -158,7 +158,7 @@ void CountdownTimer::destroy() {
 
 void CountdownTimer::draw_text(const mat3 &projection) {
     std::string text = to_string(static_cast<int>(remaining_time));
-    int half_width = text.length() * max_text_width / 2;
+    size_t half_width = text.length() * max_text_width / 2;
     float x = clock_transform.position.x - half_width;
     float y = clock_transform.position.y - 5;
     float scale = 1.0f;
