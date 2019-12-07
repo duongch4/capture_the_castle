@@ -63,7 +63,7 @@ bool CountdownTimer::init_clock(vec2 screen_size) {
 
 bool CountdownTimer::init_text() {
     face_height = 48;
-    text_colour = vec3{0, 0, 0};
+    text_colour = vec3{0.86, 0.62, 0.156};
     if (FT_Init_FreeType(&ft))
         return false;
     if (FT_New_Face(ft, font_path("coopbl.ttf"), 0, &timer_face))

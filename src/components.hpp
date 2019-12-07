@@ -87,6 +87,7 @@ struct C_Collision {
     CollisionLayer layer;
     float radius;
     vec2 boundingBox;
+    int wait_count = 0;
 };
 
 struct ItemComponent {

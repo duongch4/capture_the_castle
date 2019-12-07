@@ -49,14 +49,24 @@ void CollisionSystem::checkCollision()
 	}
 }
 
-void CollisionSystem::update()
-{
-	entities_to_be_destroyed.clear();
-	while (collision_queue.size() > 0)
-	{
-		std::pair<Entity, Entity> collision_pair = collision_queue.front();
-		Entity e1 = collision_pair.first;
-		Entity e2 = collision_pair.second;
+
+void CollisionSystem::update() {
+    for (auto const &entity: entities){
+        auto &collision =  ecsManager.getComponent<C_Collision>(entity);
+        if(collision.layer == CollisionLayer::PLAYER1 || collision.layer == CollisionLayer::PLAYER2){
+            auto &item = ecsManager.getComponent<ItemComponent>(entity);
+            if (item.itemType != ItemType::SHIELD && collision.wait_count >= 0){
+                collision.wait_count-= 1;
+            } else {
+                collision.wait_count = 20;
+            }
+        }
+    }
+    entities_to_be_destroyed.clear();
+    while (collision_queue.size() > 0) {
+        std::pair<Entity, Entity> collision_pair = collision_queue.front();
+        Entity e1 = collision_pair.first;
+        Entity e2 = collision_pair.second;
 
 		TeamType e1_team = ecsManager.getComponent<Team>(e1).assigned;
 		TeamType e2_team = ecsManager.getComponent<Team>(e2).assigned;
@@ -71,30 +81,82 @@ void CollisionSystem::update()
 			CollisionLayer e1_layer = ecsManager.getComponent<C_Collision>(e1).layer;
 			CollisionLayer e2_layer = ecsManager.getComponent<C_Collision>(e2).layer;
 
-			auto& e1_transform = ecsManager.getComponent<Transform>(e1);
-			auto& e2_transform = ecsManager.getComponent<Transform>(e2);
-			MazeRegion region = Tilemap::get_region(e1_transform.position.x, e1_transform.position.y);
+            auto &e1_transform = ecsManager.getComponent<Transform>(e1);
+            auto &e2_transform = ecsManager.getComponent<Transform>(e2);
 
-			if (e2_layer == CollisionLayer::Castle)
-			{
-				///handle win event
-				ecsManager.publish(new WinEvent(e1));
-			}
-			else if (e1_layer == CollisionLayer::PLAYER1 && e2_layer == CollisionLayer::PLAYER2)
-			{
-				handle_player_player_collision(e1, e2, region, e2_transform, e1_transform);
-			}
-			else if (e2_layer == CollisionLayer::Enemy)
-			{
-				handle_player_enemy_collision(e1, region, e1_team, e1_transform, e2);
-			}
-			else if (e2_layer == CollisionLayer::Item)
-			{
-				handle_item_collision(e2, e1_layer, e1, e1_transform);
-			}
-			collision_queue.pop();
-		}
-	}
+            int wait_count1 = ecsManager.getComponent<C_Collision>(e1).wait_count;
+            int wait_count2 = ecsManager.getComponent<C_Collision>(e2).wait_count;
+
+            MazeRegion region = Tilemap::get_region(e1_transform.position.x, e1_transform.position.y);
+
+            if (e2_layer == CollisionLayer::Castle) {
+                ///handle win event
+                ecsManager.publish(new WinEvent(e1));
+            } else if (e1_layer == CollisionLayer::PLAYER1 && e2_layer == CollisionLayer::PLAYER2) {
+                ///player vs player event
+                auto &player1_item = ecsManager.getComponent<ItemComponent>(e1);
+                auto &player2_item = ecsManager.getComponent<ItemComponent>(e2);
+                switch (region) {
+                    case MazeRegion::PLAYER1:
+                        if (player2_item.itemType != ItemType::SHIELD && wait_count2 < 0) {
+                            e2_transform.position = e2_transform.init_position;
+                            Mix_PlayChannel(-1, player_respawn_sound, 0);
+                        } else {
+                            ecsManager.publish(new ItemEvent(e2, ItemType::SHIELD, false));
+                            player2_item.itemType = ItemType::None;
+                            Mix_PlayChannel(-1, shield_pop_sound, 0);
+                        }
+                        break;
+                    case MazeRegion::PLAYER2:
+                        if (player1_item.itemType != ItemType::SHIELD && wait_count1 < 0) {
+                            e1_transform.position = e1_transform.init_position;
+                            Mix_PlayChannel(-1, player_respawn_sound, 0);
+                        } else {
+                            ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
+                            player1_item.itemType = ItemType::None;
+                            Mix_PlayChannel(-1, shield_pop_sound, 0);
+                        }
+                        break;
+                    case MazeRegion::BANDIT:
+                        break;
+                }
+            } else if (e2_layer == CollisionLayer::Enemy) {
+                /// handle player enemy collision
+                auto &player_item = ecsManager.getComponent<ItemComponent>(e1);
+                if (player_item.itemType != ItemType::SHIELD) {
+                    switch (region) {
+                        case MazeRegion::PLAYER1:
+                            if (e1_team == TeamType::PLAYER2) {
+                                e1_transform.position = e1_transform.init_position;
+                                Mix_PlayChannel(-1, player_respawn_sound, 0);
+                            }
+                            break;
+                        case MazeRegion::PLAYER2:
+                            if (e1_team == TeamType::PLAYER1) {
+                                e1_transform.position = e1_transform.init_position;
+                                Mix_PlayChannel(-1, player_respawn_sound, 0);
+                            }
+                            break;
+                        case MazeRegion::BANDIT:
+                            e1_transform.position = e1_transform.init_position;
+                            Mix_PlayChannel(-1, player_respawn_sound, 0);
+                            break;
+                    }
+                } else {
+                    entities_to_be_destroyed.insert(e2);
+//                    ecsManager.destroyEntity(e2);
+                    ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
+                    player_item.itemType = ItemType::None;
+                    Mix_PlayChannel(-1, shield_pop_sound, 0);
+                }
+            } else if (e2_layer == CollisionLayer::Item) {
+                /// handle item collision
+                auto &item = ecsManager.getComponent<ItemComponent>(e2);
+                /// Bomb in_use, respawn player, delete enemy, delete itself
+                if (item.in_use && item.itemType == ItemType::BOMB) {
+                    if (e1_layer == CollisionLayer::Enemy) {
+                        entities_to_be_destroyed.insert(e1);
+                        entities_to_be_destroyed.insert(e2);
 
 
 
