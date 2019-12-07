@@ -61,9 +61,6 @@ void CollisionSystem::update() {
 			//std::cout << "castle 59  " << collision_queue.size() << std::endl;
 		//}
 
-        CollisionLayer e1_layer = ecsManager.getComponent<C_Collision>(e1).layer;
-        CollisionLayer e2_layer = ecsManager.getComponent<C_Collision>(e2).layer;
-
         if ((e1_team == e2_team && !flagMode) ||
             (flagMode && e1_team == e2_team && e2_layer != CollisionLayer::Castle)) {
             collision_queue.pop();

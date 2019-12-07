@@ -22,7 +22,7 @@ bool Hint::init(vec2 screen_size) {
 
 bool Hint::init_text() {
     face_height = 25;
-    text_colour = vec3{0.22, 0.71, 0.29};
+    text_colour = vec3{0.09, 0.47, 0.15};
     if (FT_Init_FreeType(&ft))
         return false;
     if (FT_New_Face(ft, font_path("coopbl.ttf"), 0, &timer_face))
