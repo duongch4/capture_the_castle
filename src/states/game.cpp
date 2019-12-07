@@ -94,6 +94,7 @@ bool Game::init_game() {
 
     m_click = Mix_LoadWAV(audio_path("capturethecastle_button_click.wav"));
     m_background_music = Mix_LoadMUS(audio_path("capturethecastle_background.wav"));
+	flag_sound = Mix_LoadWAV(audio_path("capturethecastle_flag_taken.wav"));
 
     if (m_background_music == nullptr)
     {
@@ -253,9 +254,10 @@ void Game::on_key(int key, int action) {
         }
     } else if (action == GLFW_PRESS && k == InputKeys::ESC) {
         if (currState == GameState::NORMAL || currState == GameState::FLAG) {
+			oldState = currState;
             currState = GameState::PAUSE;
         } else if(currState == GameState::PAUSE) {
-            currState = GameState::NORMAL;
+            currState = oldState;
         }
     }
 }
@@ -379,6 +381,10 @@ void Game::reset() {
         Mix_FreeMusic(m_background_music);
     if (m_click != nullptr)
         Mix_FreeChunk(m_click);
+	if (flag_sound != nullptr)
+	{
+		Mix_FreeChunk(flag_sound);
+	}
     std::cout << "Releasing music" << std::endl;
     std::cout << "Reinitializing game state" << std::endl;
     init_state(m_world);
@@ -386,7 +392,7 @@ void Game::reset() {
 
 void Game::winListener(WinEvent *winEvent) {
     // you should only win when in normal game mode, set up should not allow you to win
-    if (currState == GameState::FLAG || currState == GameState::NORMAL) {
+    if (currState == GameState::FLAG) {
         Team winningTeam = ecsManager.getComponent<Team>(winEvent->player);
         win_window.setWinTeam(winningTeam.assigned);
         currState = GameState :: WIN;
@@ -395,7 +401,7 @@ void Game::winListener(WinEvent *winEvent) {
 
 void Game::flagListener(FlagEvent *flagEvent)
 {
-	if (flagEvent->flag)
+	if (flagEvent->flag && currState == GameState::NORMAL)
 	{
 		currState = GameState::FLAG;
 		auto &team = ecsManager.getComponent<Team>(flagEvent->flagPlayer);
@@ -412,8 +418,9 @@ void Game::flagListener(FlagEvent *flagEvent)
 		collisionSystem->setFlagMode(flagEvent->flagPlayer);
 		playerInputSystem->setFlagMode(true, flagEvent->flagPlayer, bubble);
 		boxCollisionSystem->setFlagMode(true, flagEvent->flagPlayer, bubble);
+		Mix_PlayChannel(-1, flag_sound, 0);
 	}
-	else
+	else if(flagEvent->flag == false && currState == FLAG)
 	{
 		currState = GameState::NORMAL;
 		playerInputSystem->setFlagMode(false, 0, 0);
@@ -594,6 +601,7 @@ void Game::registerCastle(const Transform& transform, const TeamType& team_type,
                     { castleSprite.width * 0.2f, castleSprite.height * 0.2f }
             }
     );
+	//std::cout << castle << std::endl;
 }
 
 void Game::registerBanditAiSystem()

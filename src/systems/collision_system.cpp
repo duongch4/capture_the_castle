@@ -25,13 +25,14 @@ void CollisionSystem::checkCollision() {
             auto &e1_collision = ecsManager.getComponent<C_Collision>(entity1);
             auto &e2_collision = ecsManager.getComponent<C_Collision>(entity2);
 
-            auto &e1_transform = ecsManager.getComponent<Transform>(entity1);
-            auto &e2_transform = ecsManager.getComponent<Transform>(entity2);
-            if (e1_collision.layer < e2_collision.layer) {
-                if (e2_collision.layer == CollisionLayer::Castle &&
-                    (e1_collision.layer == CollisionLayer::PLAYER2 || e1_collision.layer == CollisionLayer::PLAYER1)) {
-                    if (collideWithCastle(entity1, entity2)) {
-                        ecsManager.publish(new CollisionEvent(entity1, entity2));
+
+            auto& e1_transform = ecsManager.getComponent<Transform>(entity1);
+            auto& e2_transform = ecsManager.getComponent<Transform>(entity2);
+            if (e1_collision.layer < e2_collision.layer){
+                if (e2_collision.layer == CollisionLayer::Castle && (e1_collision.layer == CollisionLayer::PLAYER2 || e1_collision.layer == CollisionLayer::PLAYER1)){
+                    if (collideWithCastle(entity1, entity2)){
+						//std::cout << "collide with castle 33" << std::endl;
+                        ecsManager.publish(new CollisionEvent (entity1, entity2));
                     }
                 }
                 if (distance(e1_transform.position, e2_transform.position) <
@@ -53,6 +54,13 @@ void CollisionSystem::update() {
         TeamType e1_team = ecsManager.getComponent<Team>(e1).assigned;
         TeamType e2_team = ecsManager.getComponent<Team>(e2).assigned;
 
+		
+		CollisionLayer e1_layer = ecsManager.getComponent<C_Collision>(e1).layer;
+		CollisionLayer e2_layer = ecsManager.getComponent<C_Collision>(e2).layer;
+		//if (e2_layer == CollisionLayer::Castle) {
+			//std::cout << "castle 59  " << collision_queue.size() << std::endl;
+		//}
+
         CollisionLayer e1_layer = ecsManager.getComponent<C_Collision>(e1).layer;
         CollisionLayer e2_layer = ecsManager.getComponent<C_Collision>(e2).layer;
 
@@ -71,11 +79,15 @@ void CollisionSystem::update() {
             if (e2_layer == CollisionLayer::Castle) {
                 ///handle win event
 
-                if (!flagMode) {
-                    ecsManager.publish(new FlagEvent(e1, true));
-                    break;
-                }
-
+				if (!flagMode)
+				{
+					//e2_layer = ecsManager.getComponent<C_Collision>(e2).layer;
+					//printf("%d\n", e2_layer);
+					//std::cout << "start flag " << e2 << std::endl;
+					ecsManager.publish(new FlagEvent(e1, true));
+					collision_queue.pop();
+					break;
+				}
             } else if (e1_layer == CollisionLayer::PLAYER1 && e2_layer == CollisionLayer::PLAYER2) {
                 ///player vs player event
                 auto &player1_item = ecsManager.getComponent<ItemComponent>(e1);

@@ -73,7 +73,7 @@ private:
     // Audio
     Mix_Music* m_background_music;
     Mix_Chunk* m_click;
-
+	Mix_Chunk* flag_sound;
     // Screen size
     vec2 m_screen_size;
 
@@ -120,6 +120,7 @@ private:
     //Game state
 	enum GameState { START, HELP, WIN, NORMAL, PAUSE, SETUP , FLAG};
     GameState currState;
+	GameState oldState;
     CollisionLayer winner;
     World* m_world;
 

@@ -67,7 +67,7 @@ struct FlagEvent: public Event
 		this->flagPlayer = player;
 		this->flag = mode;
 	}
-	FlagEvent() = default;
+	~FlagEvent() = default;
 	Entity flagPlayer;
 	bool flag;
 };
