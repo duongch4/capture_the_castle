@@ -3,29 +3,12 @@
 
 constexpr int NUM_SEGMENTS = 8;
 
-bool RainSystem::init(vec2 screen_size) {
+bool RainSystem::init(const vec2& screen_size) {
     m_rng = std::default_random_engine(std::random_device()());
-	std::uniform_real_distribution<float> distVelocityX(50, 1000);
-	std::uniform_real_distribution<float> distVelocityY(50, 500);
-	std::uniform_real_distribution<float> distPositionX(0, screen_size.x);
-	std::uniform_real_distribution<float> distPositionY(0, 0);
-    std::uniform_real_distribution<float> distColor(0.7, 1);
-	std::uniform_real_distribution<float> distRadian(-M_PI, M_PI);
-    //std::uniform_real_distribution<float> distSpawnTimer(0.8, 2.5);
-    m_dist_PositionX = distPositionX;
-    m_dist_PositionY = distPositionY;
-    m_dist_Color = distColor;
-    m_dist_Radian = distRadian;
-	m_dist_VelocityX = distVelocityX;
-	m_dist_VelocityY = distVelocityY;
-    //m_dist_SpawnTimer = distSpawnTimer;
+	setup_randomness(screen_size);
 
     m_spawn_timer = SPAWN_DELAY;
     m_spawn_count = 0;
-
-    m_curve.set_control_points({
-        vec2{300.f, 350.f}, vec2{420.f, 30.f}, vec2{1000.f, 30.f}, vec2{1200.f, 350.f}
-    });
 
     std::vector<GLfloat> screen_vertex_buffer_data;
     constexpr float z = -0.01f;
@@ -61,8 +44,24 @@ bool RainSystem::init(vec2 screen_size) {
     //m_pop = Mix_LoadWAV(audio_path("capturethecastle_firecracker.wav"));
 
     return effect.load_from_file(shader_path("firework.vs.glsl"), shader_path("firework.fs.glsl"));
-	//return true;
+}
 
+void RainSystem::setup_randomness(const vec2 & screen_size)
+{
+	std::uniform_real_distribution<float> distVelocityX(50.f, 1000.f);
+	std::uniform_real_distribution<float> distVelocityY(50.f, 500.f);
+	std::uniform_real_distribution<float> distPositionX(0.f, screen_size.x);
+	std::uniform_real_distribution<float> distPositionY(0.f, 0.f);
+	std::uniform_real_distribution<float> distColor(0.7f, 1.f);
+	std::uniform_real_distribution<float> distRadian(-M_PI, M_PI);
+	std::uniform_real_distribution<float> distSpawnDelay(5.f, 10.f);
+	m_dist_PositionX = distPositionX;
+	m_dist_PositionY = distPositionY;
+	m_dist_Color = distColor;
+	m_dist_Radian = distRadian;
+	m_dist_VelocityX = distVelocityX;
+	m_dist_VelocityY = distVelocityY;
+	m_dist_SpawnDelay = distSpawnDelay;
 }
 
 void RainSystem::destroy() {
@@ -74,7 +73,7 @@ void RainSystem::destroy() {
     glDeleteShader(effect.vertex);
     glDeleteShader(effect.fragment);
     glDeleteShader(effect.program);
-	m_curve.clear_points();
+	//m_curve.clear_points();
     m_particles.clear();
 	m_particles.shrink_to_fit();
 }
@@ -193,17 +192,14 @@ void RainSystem::handle_spawn(const float& dt)
 {
 	m_spawn_timer -= dt;
 
-	if (m_spawn_timer <= 0)
+	if (m_spawn_timer < 0.f)
 	{
-		// using the points on curve for position
-		kaboom(vec2{ m_dist_PositionX(m_rng), m_dist_PositionY(m_rng) });
-		//kaboom(m_curve.get_curve_points(time));
-		//next_time();
+		do_hail(vec2{ m_dist_PositionX(m_rng), m_dist_PositionY(m_rng) });
 		m_spawn_count++;
-		if (m_spawn_count == 100)
+		if (m_spawn_count > 100)
 		{
 			m_spawn_count = 0;
-			m_spawn_timer = SPAWN_GROUP_DELAY;
+			m_spawn_timer = m_dist_SpawnDelay(m_rng);
 		}
 		else
 		{
@@ -227,7 +223,7 @@ void RainSystem::handle_particle_life()
 	}
 }
 
-void RainSystem::kaboom(vec2 position) {
+void RainSystem::do_hail(const vec2& position) {
     if (m_particles.size() < MAX_PARTICLE) {
         for (int i = 0; i < NUM_PARTICLE; i++) {
             Particle particle;
@@ -300,15 +296,6 @@ void RainSystem::draw(const mat3& projection) {
     glVertexAttribDivisor(1, 0);
     glVertexAttribDivisor(2, 0);
     glVertexAttribDivisor(3, 0);
-}
-
-void RainSystem::next_time() {
-    if (time + time_step <= 1.0f && time + time_step >= 0.f) {
-        time += time_step;
-    } else {
-        time_step = -time_step;
-        time += time_step;
-    }
 }
 
 void RainSystem::reset()
