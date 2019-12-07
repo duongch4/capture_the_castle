@@ -428,7 +428,8 @@ void Game::registerItemBoard(const Transform& transform, const TeamType& team_ty
     Entity itemBoard = ecsManager.createEntity();
     ecsManager.addComponent<Transform>(itemBoard, transform);
     ecsManager.addComponent<Team>(itemBoard, Team{ team_type });
-    Effect itemBoardEffect{};
+    EffectComponent itemBoardEffect{};
+    EffectManager::instance().
     itemBoardEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(itemBoard, itemBoardEffect);
     Sprite itemBoardSprite = { texture_path };
