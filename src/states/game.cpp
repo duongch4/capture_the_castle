@@ -33,6 +33,8 @@ bool Game::init_state(World* world) {
     registerCurveMovementSystem();
     registerItemEffectSystem();
 
+	registerRainSystem(world->get_screen_size());
+
     ecsManager.subscribe(this, &Game::winListener);
 	ecsManager.subscribe(this, &Game::flagListener);
     return init_game();
@@ -83,8 +85,8 @@ bool Game::init_game() {
     // Initialize Setup Instructions
     p1SetUpInstructions.init({120, 200}, textures_path("ui/CaptureTheCastle_soldier_setting_instructions_p1.png"));
     p2SetUpInstructions.init({m_screen_size.x - 120, 200}, textures_path("ui/CaptureTheCastle_soldier_setting_instructions_p2.png"));
-    p1SetUpInstructions.setScale({0.2, 0.2});
-    p2SetUpInstructions.setScale({0.2, 0.2});
+    p1SetUpInstructions.setScale({0.2f, 0.2f});
+    p2SetUpInstructions.setScale({0.2f, 0.2f});
     timer.init(m_screen_size);
     hint.init(m_screen_size);
 
@@ -124,10 +126,9 @@ bool Game::update(float elapsed_ms) {
         itemBoardSystem->update();
         curveMovementSystem->update(elapsed_ms);
         itemEffectSystem->update();
+		rainSystem->update(elapsed_ms);
     } else if (currState == GameState::SETUP) {
         playerInputSystem->update();
-        collisionSystem->checkCollision();
-        collisionSystem->update();
         boxCollisionSystem->checkCollision();
         boxCollisionSystem->update();
         movementSystem->update(elapsed_ms);
@@ -326,8 +327,8 @@ void Game::on_mouse_click(GLFWwindow *pWindow, int button, int action, int mods)
             switch(setup_window.checkButtonClicks({ (float) xpos, (float) ypos }))
             {
                 case (ButtonActions::START):
-                    currState = SETUP;
-                    timer.start_timer(30);
+                    currState = GameState::SETUP;
+                    timer.start_timer(COUNTDOWN_TIMER);
                     break;
                 default:
                     break;
@@ -420,7 +421,7 @@ void Game::flagListener(FlagEvent *flagEvent)
 		boxCollisionSystem->setFlagMode(true, flagEvent->flagPlayer, bubble);
 		Mix_PlayChannel(-1, flag_sound, 0);
 	}
-	else if(flagEvent->flag == false && currState == FLAG)
+	else if(flagEvent->flag == false && currState == GameState::FLAG)
 	{
 		currState = GameState::NORMAL;
 		playerInputSystem->setFlagMode(false, 0, 0);
@@ -510,7 +511,7 @@ void Game::registerItemBoard(const Transform& transform, const TeamType& team_ty
     ecsManager.addComponent<MeshComponent>(picked_up_item, itemMesh);
 }
 
-Entity Game::registerPlayer(const Transform& transform, const Motion& motion, const TeamType& team_type, const char* texture_path)
+Entity Game::registerPlayer(const Transform& transform, const Motion& motion, const TeamType& team_type, const CollisionLayer& collision_layer, const char* texture_path)
 {
     Entity player = ecsManager.createEntity();
     ecsManager.addComponent<Transform>(player, transform);
@@ -528,16 +529,10 @@ Entity Game::registerPlayer(const Transform& transform, const Motion& motion, co
     MeshComponent playerMesh{};
     playerMesh.id = MeshManager::instance().init_mesh(playerSprite.width, playerSprite.height, playerSprite.sprite_size.x, playerSprite.sprite_size.y, playerSprite.sprite_index.x, playerSprite.sprite_index.y, 0);
     ecsManager.addComponent<MeshComponent>(player, playerMesh);
-    CollisionLayer collisionLayer;
-    if (team_type == TeamType::PLAYER1){
-        collisionLayer = CollisionLayer::PLAYER1;
-    } else if (team_type == TeamType::PLAYER2){
-        collisionLayer = CollisionLayer::PLAYER2;
-    }
     ecsManager.addComponent(
             player,
             C_Collision{
-                    collisionLayer,
+					collision_layer,
                     playerSprite.width / 2 * 0.09f,
                     { playerSprite.width * 0.09f * 0.8f, playerSprite.height * 0.09f * 0.8f }
             }
@@ -634,6 +629,7 @@ void Game::registerBoxCollisionSystem()
         signature.set(ecsManager.getComponentType<Transform>());
         signature.set(ecsManager.getComponentType<C_Collision>());
         signature.set(ecsManager.getComponentType<Motion>());
+		signature.set(ecsManager.getComponentType<Team>());
         ecsManager.setSystemSignature<BoxCollisionSystem>(signature);
     }
     boxCollisionSystem->init(tilemap);
@@ -642,14 +638,14 @@ void Game::registerBoxCollisionSystem()
 void Game::registerCollisionSystem()
 {
     collisionSystem = ecsManager.registerSystem<CollisionSystem>();
-
-        Signature signature;
-        signature.set(ecsManager.getComponentType<Transform>());
-        signature.set(ecsManager.getComponentType<Team>());
-        signature.set(ecsManager.getComponentType<C_Collision>());
-        // signature.set(ecsManager.getComponentType<Motion>());
-        ecsManager.setSystemSignature<CollisionSystem>(signature);
-
+	{
+		Signature signature;
+		signature.set(ecsManager.getComponentType<Transform>());
+		signature.set(ecsManager.getComponentType<Team>());
+		signature.set(ecsManager.getComponentType<C_Collision>());
+		// signature.set(ecsManager.getComponentType<Motion>());
+		ecsManager.setSystemSignature<CollisionSystem>(signature);
+	}
     collisionSystem->init();
 }
 
@@ -701,8 +697,7 @@ void Game::registerMovementSystem(const vec2& screen)
         signature.set(ecsManager.getComponentType<Transform>());
         ecsManager.setSystemSignature<MovementSystem>(signature);
     }
-    movementSystem->init();
-    movementSystem->setScreenSize(screen);
+    movementSystem->init(screen);
 }
 
 void Game::registerSoldierAiSystem() {
@@ -712,6 +707,20 @@ void Game::registerSoldierAiSystem() {
         signature.set(ecsManager.getComponentType<SoldierAiComponent>());
         ecsManager.setSystemSignature<SoldierAiSystem>(signature);
     }
+}
+
+void Game::registerRainSystem(const vec2& screen)
+{
+	rainSystem = ecsManager.registerSystem<RainSystem>();
+	{
+		Signature signature;
+		//signature.set(ecsManager.getComponentType<RainComponent>());
+		signature.set(ecsManager.getComponentType<Transform>());
+		signature.set(ecsManager.getComponentType<Motion>());
+		signature.set(ecsManager.getComponentType<C_Collision>());
+		ecsManager.setSystemSignature<RainSystem>(signature);
+	}
+	rainSystem->init(screen);
 }
 
 void Game::registerCurveMovementSystem()
@@ -763,7 +772,7 @@ void Game::registerComponents()
     ecsManager.registerComponent<CurveMotionComponent>();
     ecsManager.registerComponent<ItemBoardComponent>();
     ecsManager.registerComponent<PlaceableComponent>();
-
+	ecsManager.registerComponent<RainComponent>();
 }
 
 void Game::registerCastles()
@@ -801,7 +810,7 @@ void Game::registerPlayers(std::vector<Entity>& players)
             { 0.09f * 5 / 7, 0.09f },
             { 120.f, m_screen_size.y / 2 + 130.f }
     };
-    Entity player1 = registerPlayer(transform_player1, motion_player, TeamType::PLAYER1, textures_path("red_king_sprite_sheet.png"));
+    Entity player1 = registerPlayer(transform_player1, motion_player, TeamType::PLAYER1, CollisionLayer::PLAYER1, textures_path("red_king_sprite_sheet.png"));
     players.emplace_back(player1);
 
     // PLAYER 2
@@ -812,7 +821,7 @@ void Game::registerPlayers(std::vector<Entity>& players)
             { 0.09f * 5 / 7, 0.09f },
             { 120.f, m_screen_size.y / 2 + 130.f }
     };
-    Entity player2 = registerPlayer(transform_player2, motion_player, TeamType::PLAYER2, textures_path("blue_king_sprite_sheet.png"));
+    Entity player2 = registerPlayer(transform_player2, motion_player, TeamType::PLAYER2, CollisionLayer::PLAYER2, textures_path("blue_king_sprite_sheet.png"));
     players.emplace_back(player2);
 }
 

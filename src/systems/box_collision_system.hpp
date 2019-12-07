@@ -19,6 +19,12 @@ public:
 
     void checkCollision();
 
+	bool should_collide(Tile& tile, TeamType& team_type, C_Collision& collision);
+
+	bool is_soldier_in_bandit_region(TeamType& team_type, C_Collision& collision, Tile& tile);
+
+	bool is_bandit_in_player_region(TeamType& team_type, Tile& tile);
+
     void update();
 
     void reset() override;

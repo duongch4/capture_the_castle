@@ -54,7 +54,7 @@ private:
 
 	size_t wait_1 = 0;
 	size_t wait_2 = 0;
-	static const size_t RESPAWN_IDLE = 200;
+	static const size_t RESPAWN_IDLE = 30;
 
 private:
 	void handle_soldier_spawn(
