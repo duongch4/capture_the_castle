@@ -116,7 +116,7 @@ private:
     bool init_game();
 
     //Game state
-	enum GameState { START, HELP, WIN, NORMAL, PAUSE, SETUP , FLAG,};
+	enum GameState { START, HELP, WIN, NORMAL, PAUSE, SETUP , FLAG};
     GameState currState;
     CollisionLayer winner;
     World* m_world;
