@@ -51,7 +51,7 @@ private:
 
 	const float SPAWN_DELAY = 0.f;
 	//static const float SPAWN_DELAY = 0.1f;
-	const float SPAWN_GROUP_DELAY = 0.f;
+	const float SPAWN_GROUP_DELAY = 10.f;
 	//static const float SPAWN_GROUP_DELAY = 0.6f;
 
 	const float ENEMY_MASS = 8.f;

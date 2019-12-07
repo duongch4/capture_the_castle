@@ -113,7 +113,6 @@ void RainSystem::handle_collisions(const float& dt)
 					handle_particle_entity_collision(p1, e_transform, e_motion, collision_layer, dt);
 				}
 			}
-
 		}
 	}
 }
@@ -242,7 +241,6 @@ void RainSystem::kaboom(vec2 position) {
             particle.velocity.y = randomVelocityY * sin(randomRadian);
             particle.radius = PARTICLE_RADIUS;
             particle.life = PARTICLE_LIFE;
-			//particle.color = vec3{ 0, 0, m_dist_Color(m_rng) };
 			particle.color = vec3{ m_dist_Color(m_rng), m_dist_Color(m_rng), m_dist_Color(m_rng) };
 
             m_particles.emplace_back(particle);
