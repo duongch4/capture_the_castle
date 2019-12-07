@@ -86,6 +86,7 @@ bool Game::init_game() {
     p1SetUpInstructions.setScale({0.2, 0.2});
     p2SetUpInstructions.setScale({0.2, 0.2});
     timer.init(m_screen_size);
+    hint.init(m_screen_size);
 
     //--------------------------------------------------------------------------
     // Render all the tiles once to the screen texture
@@ -184,8 +185,11 @@ void Game::draw() {
         timer.draw(projection_2D);
         p1SetUpInstructions.draw(projection_2D);
         p2SetUpInstructions.draw(projection_2D);
-    } else if ((currState == GameState::NORMAL || currState == GameState::FLAG)) {
+    } else if (currState == GameState::NORMAL){
         help_btn.draw(projection_2D);
+    } else if (currState == GameState::FLAG)  {
+        help_btn.draw(projection_2D);
+        hint.draw(projection_2D);
     }
 }
 
@@ -370,6 +374,7 @@ void Game::reset() {
     p2SetUpInstructions.destroy();
     std::cout << "SetUp Instructions destroyed" << std::endl;
     timer.destroy();
+    hint.destroy();
     if (m_background_music != nullptr)
         Mix_FreeMusic(m_background_music);
     if (m_click != nullptr)
@@ -433,6 +438,7 @@ void Game::destroy() {
     p1SetUpInstructions.destroy();
     p2SetUpInstructions.destroy();
     timer.destroy();
+    hint.destroy();
     firework.destroy();
 	itemSpawnSystem.reset();
 	movementSystem.reset();
