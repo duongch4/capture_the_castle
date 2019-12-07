@@ -13,10 +13,10 @@ extern ECSManager ecsManager;
 void CollisionSystem::init() {
     ecsManager.subscribe(this, &CollisionSystem::collisionListener);
     player_respawn_sound = Mix_LoadWAV(audio_path("capturethecastle_player_respawn.wav"));
-	shield_pop_sound = Mix_LoadWAV(audio_path("capturethecastle_shield_pop.wav"));
-	item_pick_up_sound = Mix_LoadWAV(audio_path("capturethecastle_item_pickup.wav"));
-	bomb_explosion_sound = Mix_LoadWAV(audio_path("capturethecastle_bomb_explosion.wav"));
-	flagMode = false;
+    shield_pop_sound = Mix_LoadWAV(audio_path("capturethecastle_shield_pop.wav"));
+    item_pick_up_sound = Mix_LoadWAV(audio_path("capturethecastle_item_pickup.wav"));
+    bomb_explosion_sound = Mix_LoadWAV(audio_path("capturethecastle_bomb_explosion.wav"));
+    flagMode = false;
 }
 
 void CollisionSystem::checkCollision() {
@@ -24,6 +24,7 @@ void CollisionSystem::checkCollision() {
         for (auto const &entity2: entities) {
             auto &e1_collision = ecsManager.getComponent<C_Collision>(entity1);
             auto &e2_collision = ecsManager.getComponent<C_Collision>(entity2);
+
 
             auto& e1_transform = ecsManager.getComponent<Transform>(entity1);
             auto& e2_transform = ecsManager.getComponent<Transform>(entity2);
@@ -52,6 +53,7 @@ void CollisionSystem::update() {
 
         TeamType e1_team = ecsManager.getComponent<Team>(e1).assigned;
         TeamType e2_team = ecsManager.getComponent<Team>(e2).assigned;
+
 		
 		CollisionLayer e1_layer = ecsManager.getComponent<C_Collision>(e1).layer;
 		CollisionLayer e2_layer = ecsManager.getComponent<C_Collision>(e2).layer;
@@ -59,16 +61,14 @@ void CollisionSystem::update() {
 			//std::cout << "castle 59  " << collision_queue.size() << std::endl;
 		//}
 
-        if ((e1_team == e2_team && !flagMode) ||(flagMode && e1_team == e2_team && e2_layer != CollisionLayer::Castle)) {
+        if ((e1_team == e2_team && !flagMode) ||
+            (flagMode && e1_team == e2_team && e2_layer != CollisionLayer::Castle)) {
             collision_queue.pop();
             break;
-		}
-		else if(flagMode && e1_team == e2_team && e2_layer == CollisionLayer::Castle && e1 == playerWithFlag)
-		{
-			ecsManager.publish(new WinEvent(e1));
-			break;
-		}
-		else {
+        } else if (flagMode && e1_team == e2_team && e2_layer == CollisionLayer::Castle && e1 == playerWithFlag) {
+            ecsManager.publish(new WinEvent(e1));
+            break;
+        } else {
             auto &e1_transform = ecsManager.getComponent<Transform>(e1);
             auto &e2_transform = ecsManager.getComponent<Transform>(e2);
             MazeRegion region = Tilemap::get_region(e1_transform.position.x, e1_transform.position.y);
@@ -85,48 +85,65 @@ void CollisionSystem::update() {
 					collision_queue.pop();
 					break;
 				}
-
             } else if (e1_layer == CollisionLayer::PLAYER1 && e2_layer == CollisionLayer::PLAYER2) {
                 ///player vs player event
                 auto &player1_item = ecsManager.getComponent<ItemComponent>(e1);
                 auto &player2_item = ecsManager.getComponent<ItemComponent>(e2);
-                switch (region) {
-                    case MazeRegion::PLAYER1:
-                        if (player2_item.itemType != ItemType::SHIELD) {
+                if (!flagMode) {
+                    switch (region) {
+                        case MazeRegion::PLAYER1:
+                            if (player2_item.itemType != ItemType::SHIELD) {
+                                e2_transform.position = e2_transform.init_position;
+                                Mix_PlayChannel(-1, player_respawn_sound, 0);
+                            } else {
+                                ecsManager.publish(new ItemEvent(e2, ItemType::SHIELD, false));
+                                player2_item.itemType = ItemType::None;
+                                Mix_PlayChannel(-1, shield_pop_sound, 0);
+                            }
+                            break;
+                        case MazeRegion::PLAYER2:
+                            if (player1_item.itemType != ItemType::SHIELD) {
+                                e1_transform.position = e1_transform.init_position;
+                                Mix_PlayChannel(-1, player_respawn_sound, 0);
+                            } else {
+                                ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
+                                player1_item.itemType = ItemType::None;
+                                Mix_PlayChannel(-1, shield_pop_sound, 0);
+                            }
+                            break;
+                        case MazeRegion::BANDIT:
+                            break;
+                    }
+
+                } else {
+                    auto &player1_item = ecsManager.getComponent<ItemComponent>(e1).itemType;
+                    auto &player2_item = ecsManager.getComponent<ItemComponent>(e2).itemType;
+
+                    if (e1 == playerWithFlag) {
+                        if (player1_item != ItemType::SHIELD) {
+                            e1_transform.position = e1_transform.init_position;
+                            Mix_PlayChannel(-1, player_respawn_sound, 0);
+                            ecsManager.publish(new FlagEvent(e1, false));
+                            flagMode = false;
+                            playerWithFlag = 0;
+                            entities_to_be_destroyed.insert(bubble);
+                        } else {
+                            player1_item = ItemType::None;
+                            Mix_PlayChannel(-1, shield_pop_sound, 0);
+                        }
+                    } else if (e2 == playerWithFlag) {
+                        if (player1_item != ItemType::SHIELD) {
                             e2_transform.position = e2_transform.init_position;
                             Mix_PlayChannel(-1, player_respawn_sound, 0);
+                            ecsManager.publish(new FlagEvent(e2, false));
+                            flagMode = false;
+                            playerWithFlag = 0;
+                            entities_to_be_destroyed.insert(bubble);
                         } else {
-                            ecsManager.publish(new ItemEvent(e2, ItemType::SHIELD, false));
-							if (flagMode && e2 == playerWithFlag)
-							{
-								ecsManager.publish(new FlagEvent(e2, false));
-								flagMode = false;
-								playerWithFlag = 0;
-								entities_to_be_destroyed.insert(bubble);
-							}
-                            player2_item.itemType = ItemType::None;
+                            player2_item = ItemType::None;
                             Mix_PlayChannel(-1, shield_pop_sound, 0);
                         }
-                        break;
-                    case MazeRegion::PLAYER2:
-                        if (player1_item.itemType != ItemType::SHIELD) {
-                            e1_transform.position = e1_transform.init_position;
-							if (flagMode && e1 == playerWithFlag)
-							{
-								ecsManager.publish(new FlagEvent(e1, false));
-								flagMode = false;
-								playerWithFlag = 0;
-								entities_to_be_destroyed.insert(bubble);
-							}
-                            Mix_PlayChannel(-1, player_respawn_sound, 0);
-                        } else {
-                            ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
-                            player1_item.itemType = ItemType::None;
-                            Mix_PlayChannel(-1, shield_pop_sound, 0);
-                        }
-                        break;
-                    case MazeRegion::BANDIT:
-                        break;
+                    }
                 }
             } else if (e2_layer == CollisionLayer::Enemy) {
                 /// handle player enemy collision
@@ -136,38 +153,35 @@ void CollisionSystem::update() {
                         case MazeRegion::PLAYER1:
                             if (e1_team == TeamType::PLAYER2) {
                                 e1_transform.position = e1_transform.init_position;
-								if (flagMode && e1 == playerWithFlag)
-								{
-									ecsManager.publish(new FlagEvent(e1, false));
-									flagMode = false;
-									playerWithFlag = 0;
-									entities_to_be_destroyed.insert(bubble);
-								}
+                                if (flagMode && e1 == playerWithFlag) {
+                                    ecsManager.publish(new FlagEvent(e1, false));
+                                    flagMode = false;
+                                    playerWithFlag = 0;
+                                    entities_to_be_destroyed.insert(bubble);
+                                }
                                 Mix_PlayChannel(-1, player_respawn_sound, 0);
                             }
                             break;
                         case MazeRegion::PLAYER2:
                             if (e1_team == TeamType::PLAYER1) {
                                 e1_transform.position = e1_transform.init_position;
-								if (flagMode && e1 == playerWithFlag)
-								{
-									ecsManager.publish(new FlagEvent(e1, false));
-									flagMode = false;
-									playerWithFlag = 0;
-									entities_to_be_destroyed.insert(bubble);
-								}
+                                if (flagMode && e1 == playerWithFlag) {
+                                    ecsManager.publish(new FlagEvent(e1, false));
+                                    flagMode = false;
+                                    playerWithFlag = 0;
+                                    entities_to_be_destroyed.insert(bubble);
+                                }
                                 Mix_PlayChannel(-1, player_respawn_sound, 0);
                             }
                             break;
                         case MazeRegion::BANDIT:
                             e1_transform.position = e1_transform.init_position;
-							if (flagMode && e1 == playerWithFlag)
-							{
-								ecsManager.publish(new FlagEvent(e1, false));
-								flagMode = false;
-								playerWithFlag = 0;
-								entities_to_be_destroyed.insert(bubble);
-							}
+                            if (flagMode && e1 == playerWithFlag) {
+                                ecsManager.publish(new FlagEvent(e1, false));
+                                flagMode = false;
+                                playerWithFlag = 0;
+                                entities_to_be_destroyed.insert(bubble);
+                            }
                             Mix_PlayChannel(-1, player_respawn_sound, 0);
                             break;
                     }
@@ -194,15 +208,14 @@ void CollisionSystem::update() {
                         auto &player_item = ecsManager.getComponent<ItemComponent>(e1);
                         if (player_item.itemType != ItemType::SHIELD) {
                             e1_transform.position = e1_transform.init_position;
-							if (flagMode && e1 == playerWithFlag)
-							{
-								ecsManager.publish(new FlagEvent(e1, false));
-								flagMode = false;
-								playerWithFlag = 0;
-								entities_to_be_destroyed.insert(bubble);
-							}
+                            if (flagMode && e1 == playerWithFlag) {
+                                ecsManager.publish(new FlagEvent(e1, false));
+                                flagMode = false;
+                                playerWithFlag = 0;
+                                entities_to_be_destroyed.insert(bubble);
+                            }
                             entities_to_be_destroyed.insert(e2);
-							Mix_PlayChannel(-1, player_respawn_sound, 0);
+                            Mix_PlayChannel(-1, player_respawn_sound, 0);
                         } else {
                             player_item.itemType = ItemType::None;
                             ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
@@ -239,7 +252,6 @@ void CollisionSystem::update() {
             collision_queue.pop();
         }
     }
-
 
 
     std::set<Entity>::iterator it = entities_to_be_destroyed.begin();
@@ -279,8 +291,8 @@ bool CollisionSystem::collideWithCastle(Entity player, Entity castle) {
     auto &c_boundingBox = ecsManager.getComponent<C_Collision>(castle).boundingBox;
     auto &c_team = ecsManager.getComponent<Team>(castle).assigned;
     auto &p_team = ecsManager.getComponent<Team>(player).assigned;
-	if (p_team == c_team && !flagMode)
-		return false;
+    if (p_team == c_team && !flagMode)
+        return false;
 
     float pl = p_position.x;
     float pr = pl + p_boundingBox.x;
@@ -289,7 +301,7 @@ bool CollisionSystem::collideWithCastle(Entity player, Entity castle) {
 
     float ct = c_position.y + 100;
     float cb = ct + c_boundingBox.y - 100;
-    float cl = c_position.x - 50 ;
+    float cl = c_position.x - 50;
     float cr = cl + c_boundingBox.x + 50;
     CollisionResponse col_res = {false, false, false, false};
 
@@ -325,16 +337,14 @@ void CollisionSystem::reset() {
     if (bomb_explosion_sound != nullptr) {
         Mix_FreeChunk(bomb_explosion_sound);
     }
-	//tileMap->destroy();
+    //tileMap->destroy();
 }
 
-void CollisionSystem::setFlagMode(Entity flagPlayer)
-{
-	flagMode = true;
-	playerWithFlag = flagPlayer;
+void CollisionSystem::setFlagMode(Entity flagPlayer) {
+    flagMode = true;
+    playerWithFlag = flagPlayer;
 }
 
-void CollisionSystem::setBubble(Entity bubb)
-{
-	bubble = bubb;
+void CollisionSystem::setBubble(Entity bubb) {
+    bubble = bubb;
 }

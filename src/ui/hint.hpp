@@ -1,9 +1,9 @@
 //
-// Created by Owner on 2019-11-29.
+// Created by Tianyan Zhu on 2019-12-06.
 //
 
-#ifndef CAPTURE_THE_CASTLE_COUNTDOWN_TIMER_HPP
-#define CAPTURE_THE_CASTLE_COUNTDOWN_TIMER_HPP
+#ifndef CAPTURE_THE_CASTLE_HINT_HPP
+#define CAPTURE_THE_CASTLE_HINT_HPP
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -12,25 +12,19 @@
 #include <map>
 #include <components.hpp>
 #include <SDL_mixer.h>
+#include <mesh_manager.hpp>
 
 
-class CountdownTimer {
+class Hint {
 public:
     bool init(vec2 screen_size);
-    void start_timer(float seconds);
-    void update(float elapsed_time);
-    bool check_times_up();
     void draw(const mat3& projection);
     void destroy();
 
 private:
-    bool init_clock(vec2 screen_size);
     bool init_text();
-    void reset_timer();
     void draw_text(const mat3& projection);
 
-    float remaining_time;
-    bool timer_active;
 
     FT_Library ft;
     FT_Face timer_face;
@@ -48,9 +42,7 @@ private:
 
     std::map<GLchar, Character> characters;
     mat3 out{};
-    Mix_Chunk* ticking_sound;
-    Mix_Chunk* timeout_sound;
 };
 
 
-#endif //CAPTURE_THE_CASTLE_COUNTDOWN_TIMER_HPP
+#endif //CAPTURE_THE_CASTLE_HINT_HPP

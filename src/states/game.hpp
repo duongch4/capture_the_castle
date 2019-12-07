@@ -29,6 +29,7 @@
 #include <ui/countdown_timer.hpp>
 #include <ui/pause_window.hpp>
 #include <ui/soldier_setup_window.hpp>
+#include <ui/hint.hpp>
 
 class Game : public State {
 public:
@@ -92,6 +93,7 @@ private:
     PlayInstructions p1SetUpInstructions;
     PlayInstructions p2SetUpInstructions;
     CountdownTimer timer;
+    Hint hint;
 
     // Particle
     Firework firework;
@@ -116,7 +118,7 @@ private:
     bool init_game();
 
     //Game state
-	enum GameState { START, HELP, WIN, NORMAL, PAUSE, SETUP , FLAG,};
+	enum GameState { START, HELP, WIN, NORMAL, PAUSE, SETUP , FLAG};
     GameState currState;
 	GameState oldState;
     CollisionLayer winner;

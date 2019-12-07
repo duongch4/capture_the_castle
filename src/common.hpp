@@ -113,6 +113,21 @@ struct Texture
 	bool create_from_screen(GLFWwindow const * const window); // Screen texture
 };
 
+struct ivec2 {
+    int x, y;
+};
+
+struct uivec2 {
+    unsigned int x, y;
+};
+
+struct Character {
+    GLuint texture_id;
+    uivec2 size;
+    ivec2 bearing;
+    GLuint advance;
+};
+
 template <typename T> std::string to_string(const T& t) {
     std::ostringstream os;
     os<<t;
