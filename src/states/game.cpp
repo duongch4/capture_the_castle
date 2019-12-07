@@ -93,6 +93,7 @@ bool Game::init_game() {
 
     m_click = Mix_LoadWAV(audio_path("capturethecastle_button_click.wav"));
     m_background_music = Mix_LoadMUS(audio_path("capturethecastle_background.wav"));
+	flag_sound = Mix_LoadWAV(audio_path("capturethecastle_flag_taken.wav"));
 
     if (m_background_music == nullptr)
     {
@@ -375,6 +376,10 @@ void Game::reset() {
         Mix_FreeMusic(m_background_music);
     if (m_click != nullptr)
         Mix_FreeChunk(m_click);
+	if (flag_sound != nullptr)
+	{
+		Mix_FreeChunk(flag_sound);
+	}
     std::cout << "Releasing music" << std::endl;
     std::cout << "Reinitializing game state" << std::endl;
     init_state(m_world);
@@ -391,7 +396,7 @@ void Game::winListener(WinEvent *winEvent) {
 
 void Game::flagListener(FlagEvent *flagEvent)
 {
-	if (flagEvent->flag)
+	if (flagEvent->flag && currState == GameState::NORMAL)
 	{
 		currState = GameState::FLAG;
 		auto &team = ecsManager.getComponent<Team>(flagEvent->flagPlayer);
@@ -408,8 +413,9 @@ void Game::flagListener(FlagEvent *flagEvent)
 		collisionSystem->setFlagMode(flagEvent->flagPlayer);
 		playerInputSystem->setFlagMode(true, flagEvent->flagPlayer, bubble);
 		boxCollisionSystem->setFlagMode(true, flagEvent->flagPlayer, bubble);
+		Mix_PlayChannel(-1, flag_sound, 0);
 	}
-	else
+	else if(flagEvent->flag == false && currState == FLAG)
 	{
 		currState = GameState::NORMAL;
 		playerInputSystem->setFlagMode(false, 0, 0);
@@ -589,6 +595,7 @@ void Game::registerCastle(const Transform& transform, const TeamType& team_type,
                     { castleSprite.width * 0.2f, castleSprite.height * 0.2f }
             }
     );
+	//std::cout << castle << std::endl;
 }
 
 void Game::registerBanditAiSystem()

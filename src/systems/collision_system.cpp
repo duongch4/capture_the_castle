@@ -30,6 +30,7 @@ void CollisionSystem::checkCollision() {
             if (e1_collision.layer < e2_collision.layer){
                 if (e2_collision.layer == CollisionLayer::Castle && (e1_collision.layer == CollisionLayer::PLAYER2 || e1_collision.layer == CollisionLayer::PLAYER1)){
                     if (collideWithCastle(entity1, entity2)){
+						//std::cout << "collide with castle 33" << std::endl;
                         ecsManager.publish(new CollisionEvent (entity1, entity2));
                     }
                 }
@@ -54,6 +55,9 @@ void CollisionSystem::update() {
 		
 		CollisionLayer e1_layer = ecsManager.getComponent<C_Collision>(e1).layer;
 		CollisionLayer e2_layer = ecsManager.getComponent<C_Collision>(e2).layer;
+		//if (e2_layer == CollisionLayer::Castle) {
+			//std::cout << "castle 59  " << collision_queue.size() << std::endl;
+		//}
 
         if ((e1_team == e2_team && !flagMode) ||(flagMode && e1_team == e2_team && e2_layer != CollisionLayer::Castle)) {
             collision_queue.pop();
@@ -74,7 +78,11 @@ void CollisionSystem::update() {
 
 				if (!flagMode)
 				{
+					//e2_layer = ecsManager.getComponent<C_Collision>(e2).layer;
+					//printf("%d\n", e2_layer);
+					//std::cout << "start flag " << e2 << std::endl;
 					ecsManager.publish(new FlagEvent(e1, true));
+					collision_queue.pop();
 					break;
 				}
 
