@@ -13,7 +13,9 @@
 * Field Force for the shield
 * Use of Library: Added a Timer to set soldier, Hint
 * Faster bouncing for bomb
-
+* Improved loading time and memory usage of Tile
+* Added pause state (esc button)
+* Added bandit boss with path finding
 
 ### Bug Fix
 * Refine Castle bounding box
@@ -24,3 +26,4 @@
 * Power-ups spawn on top of each other
 * Fix ASWD help image
 * Random Win State
+* Better collision between wall and player
