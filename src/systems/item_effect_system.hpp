@@ -46,9 +46,11 @@ private:
                 TextureManager::instance().load_from_file(force_field_sprite, false);
                 ecsManager.addComponent<Sprite>(force_field, force_field_sprite);
 
-                Effect force_field_effect{};
-                force_field_effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
-                ecsManager.addComponent<Effect>(force_field, force_field_effect);
+                EffectComponent force_field_effect{
+                    shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")
+                };
+                EffectManager::instance().load_from_file(force_field_effect);
+                ecsManager.addComponent<EffectComponent>(force_field, force_field_effect);
 
                 MeshComponent force_field_mesh{MeshManager::instance().init_mesh(
                         force_field_sprite.width, force_field_sprite.height)};

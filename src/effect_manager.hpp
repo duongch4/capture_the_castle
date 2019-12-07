@@ -15,6 +15,8 @@ struct Effect {
     GLuint vertex;
     GLuint fragment;
     GLuint program;
+    bool load_from_file(const char* vs_path, const char* fs_path);
+    void release();
 };
 
 const int MAX_EFFECT = 2000;
@@ -25,18 +27,17 @@ public:
 
     ~EffectManager();
 
-    bool load_from_file(EffectComponent& ec, bool overwrite);
+    bool load_from_file(EffectComponent& ec, bool overwrite = false);
 
     bool release_effect_by_id(int id);
 
-    void release_effect(Effect& e);
-
     bool release_all();
+
+    GLuint get_program(int id);
 
 protected:
     EffectManager();
 
-    std::string effect_path = data_path "/effect/";
     std::map<int, Effect> idToEffect;
     std::queue<int> availableIds{};
     uint32_t activeEffectCount{};

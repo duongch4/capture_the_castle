@@ -1,5 +1,6 @@
 #include <common.hpp>
 #include <components.hpp>
+#include <effect_manager.hpp>
 
 class MenuBackground
 {

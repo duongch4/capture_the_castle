@@ -12,6 +12,7 @@
 #include <map>
 #include <components.hpp>
 #include <SDL_mixer.h>
+#include <effect_manager.hpp>
 
 struct ivec2 {
     int x, y;

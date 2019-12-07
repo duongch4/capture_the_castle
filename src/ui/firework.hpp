@@ -7,6 +7,7 @@
 #include <mesh_manager.hpp>
 #include <SDL_mixer.h>
 #include <curve.hpp>
+#include <effect_manager.hpp>
 
 #ifndef CAPTURE_THE_CASTLE_FIREWORK_HPP
 #define CAPTURE_THE_CASTLE_FIREWORK_HPP

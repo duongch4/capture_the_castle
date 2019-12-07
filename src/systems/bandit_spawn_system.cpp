@@ -42,9 +42,11 @@ void BanditSpawnSystem::spawn_bandit() {
     });
     ecsManager.addComponent<Team>(bandit, Team{TeamType::BANDIT});
 	ecsManager.addComponent<BanditAiComponent>(bandit, BanditAiComponent{});
-    Effect banditEffect{};
-    banditEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
-    ecsManager.addComponent<Effect>(bandit, banditEffect);
+    EffectComponent banditEffect{
+        shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")
+    };
+    EffectManager::instance().load_from_file(banditEffect);
+    ecsManager.addComponent<EffectComponent>(bandit, banditEffect);
     Sprite banditSprite = {textures_path("bandit_sprite_sheet-01.png")};
     TextureManager::instance().load_from_file(banditSprite);
 	banditSprite.sprite_index = { 0 , 3 };

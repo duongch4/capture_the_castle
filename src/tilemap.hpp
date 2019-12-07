@@ -3,6 +3,7 @@
 #include "common.hpp"
 #include "tile.hpp"
 #include "mesh_manager.hpp"
+#include "effect_manager.hpp"
 #include <vector>
 
 class Tilemap 

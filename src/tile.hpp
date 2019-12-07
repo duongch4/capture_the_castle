@@ -3,6 +3,7 @@
 #include "common.hpp"
 #include "components.hpp"
 #include "mesh_manager.hpp"
+#include "effect_manager.hpp"
 
 // Tile class
 class Tile

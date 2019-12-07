@@ -26,7 +26,7 @@ struct MeshComponent {
 struct EffectComponent {
    const char* vs_name;
    const char* fs_name;
-   int id;
+   int id = -1;
 };
 
 // All data relevant to the motion of the salmon.

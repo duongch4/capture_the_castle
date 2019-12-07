@@ -187,9 +187,11 @@ void PlayerInputSystem::place_bomb(const Tile& tile, const TeamType& team_type) 
     ecsManager.addComponent<CurveMotionComponent>(bomb, CurveMotionComponent{
         vec2{0.f, 0.f}, vec2{6.f, 20.f}, vec2{25.f, 20.f}, vec2{30.f, 0.f}
     });
-    Effect itemEffect{};
-    itemEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
-    ecsManager.addComponent<Effect>(bomb, itemEffect);
+    EffectComponent itemEffect{
+        shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")
+    };
+    EffectManager::instance().load_from_file(itemEffect);
+    ecsManager.addComponent<EffectComponent>(bomb, itemEffect);
     Sprite itemSprite;
     if (team_type == TeamType ::PLAYER1){
         itemSprite = {power_up_path("CaptureTheCastle_powerup_bomb_setRed.png")};
@@ -224,9 +226,11 @@ void PlayerInputSystem::spawn_soldier(
 
 	ecsManager.addComponent<SoldierAiComponent>(soldier, SoldierAiComponent{});
 
-	Effect soldierEffect{};
-	soldierEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
-	ecsManager.addComponent<Effect>(soldier, soldierEffect);
+	EffectComponent soldierEffect{
+	    shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")
+	};
+	EffectManager::instance().load_from_file(soldierEffect);
+	ecsManager.addComponent<EffectComponent>(soldier, soldierEffect);
 	Sprite soldierSprite = { texture_path };
 	TextureManager::instance().load_from_file(soldierSprite);
 	soldierSprite.sprite_index = { 0 , 3 };

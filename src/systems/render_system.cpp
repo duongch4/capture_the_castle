@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <mesh_manager.hpp>
+#include <effect_manager.hpp>
 #include "render_system.hpp"
 
 extern ECSManager ecsManager;
@@ -40,7 +41,7 @@ void SpriteRenderSystem::draw(mat3 projection) {
         auto const& transform = ecsManager.getComponent<Transform>(e);
         auto const& sprite = ecsManager.getComponent<Sprite>(e);
         auto const& mesh = ecsManager.getComponent<MeshComponent>(e);
-        auto const& effect = ecsManager.getComponent<Effect>(e);
+        auto const& effect = ecsManager.getComponent<EffectComponent>(e);
 
         // begin transform
         out = { { 1.f, 0.f, 0.f }, { 0.f, 1.f, 0.f}, { 0.f, 0.f, 1.f} };
@@ -56,7 +57,8 @@ void SpriteRenderSystem::draw(mat3 projection) {
         out = mul(out, S);
 
         // Setting shaders
-        glUseProgram(effect.program);
+        GLuint program = EffectManager::instance().get_program(effect.id);
+        glUseProgram(program);
 
         // Enabling alpha channel for textures
         glEnable(GL_BLEND);
@@ -64,9 +66,9 @@ void SpriteRenderSystem::draw(mat3 projection) {
         glDisable(GL_DEPTH_TEST);
 
         // Getting uniform locations
-        GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
-        GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
-        GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
+        GLint transform_uloc = glGetUniformLocation(program, "transform");
+        GLint color_uloc = glGetUniformLocation(program, "fcolor");
+        GLint projection_uloc = glGetUniformLocation(program, "projection");
 
         // Setting vertices and indices
         MeshManager::instance().bindVAO(mesh.id);
@@ -74,8 +76,8 @@ void SpriteRenderSystem::draw(mat3 projection) {
         MeshManager::instance().bindIBO(mesh.id);
 
         // Input data location as in the vertex buffer
-        GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
-        GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
+        GLint in_position_loc = glGetAttribLocation(program, "in_position");
+        GLint in_texcoord_loc = glGetAttribLocation(program, "in_texcoord");
         glEnableVertexAttribArray(in_position_loc);
         glEnableVertexAttribArray(in_texcoord_loc);
         glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void *) 0);

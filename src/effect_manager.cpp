@@ -52,18 +52,58 @@ bool EffectManager::load_from_file(EffectComponent& ec, bool overwrite) {
         availableIds.pop();
         ++activeEffectCount;
     }
+    Effect new_effect{};
+    bool loaded = new_effect.load_from_file(ec.vs_name, ec.fs_name);
+    if (loaded) {
+        idToEffect[ec.id] = new_effect;
+    }
+    return loaded;
+}
 
+bool EffectManager::release_effect_by_id(int id) {
+    bool result = true;
+    auto effect = idToEffect.find(id);
+    if (effect != idToEffect.end())
+    {
+        effect->second.release();
+    } else {
+        result = false;
+    }
+    return result;
+}
+
+bool EffectManager::release_all() {
+    auto i = idToEffect.begin();
+    while(i != idToEffect.end()) {
+        i->second.release();
+        i = idToEffect.erase(i);
+    }
+    idToEffect.clear();
+    return true;
+}
+
+GLuint EffectManager::get_program(int id) {
+    auto effect = idToEffect.find(id);
+    if (effect != idToEffect.end())
+    {
+        return effect->second.program;
+    }
+    else
+    {
+        return -1;
+    }
+}
+
+bool Effect::load_from_file(const char *vs_path, const char *fs_path) {
     gl_flush_errors();
 
-    Effect new_effect{};
-
     // Opening files
-    std::ifstream vs_is(ec.vs_name);
-    std::ifstream fs_is(ec.fs_name);
+    std::ifstream vs_is(vs_path);
+    std::ifstream fs_is(fs_path);
 
     if (!vs_is.good() || !fs_is.good())
     {
-        fprintf(stderr, "Failed to load shader files %s, %s", ec.vs_name, ec.fs_name);
+        fprintf(stderr, "Failed to load shader files %s, %s", vs_path, fs_path);
         return false;
     }
 
@@ -78,38 +118,38 @@ bool EffectManager::load_from_file(EffectComponent& ec, bool overwrite) {
     GLsizei vs_len = (GLsizei)vs_str.size();
     GLsizei fs_len = (GLsizei)fs_str.size();
 
-    new_effect.vertex = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(new_effect.vertex, 1, &vs_src, &vs_len);
-    new_effect.fragment = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(new_effect.fragment, 1, &fs_src, &fs_len);
+    vertex = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertex, 1, &vs_src, &vs_len);
+    fragment = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragment, 1, &fs_src, &fs_len);
 
     // Compiling
     // Shaders already delete if compilation fails
-    if (!gl_compile_shader(new_effect.vertex))
+    if (!gl_compile_shader(vertex))
         return false;
 
-    if (!gl_compile_shader(new_effect.fragment))
+    if (!gl_compile_shader(fragment))
     {
-        glDeleteShader(new_effect.vertex);
+        glDeleteShader(vertex);
         return false;
     }
 
     // Linking
-    new_effect.program = glCreateProgram();
-    glAttachShader(new_effect.program, new_effect.vertex);
-    glAttachShader(new_effect.program, new_effect.fragment);
-    glLinkProgram(new_effect.program);
+    program = glCreateProgram();
+    glAttachShader(program, vertex);
+    glAttachShader(program, fragment);
+    glLinkProgram(program);
     {
         GLint is_linked = 0;
-        glGetProgramiv(new_effect.program, GL_LINK_STATUS, &is_linked);
+        glGetProgramiv(program, GL_LINK_STATUS, &is_linked);
         if (is_linked == GL_FALSE)
         {
             GLint log_len;
-            glGetProgramiv(new_effect.program, GL_INFO_LOG_LENGTH, &log_len);
+            glGetProgramiv(program, GL_INFO_LOG_LENGTH, &log_len);
             std::vector<char> log(log_len);
-            glGetProgramInfoLog(new_effect.program, log_len, &log_len, log.data());
+            glGetProgramInfoLog(program, log_len, &log_len, log.data());
 
-            release_effect(new_effect);
+            release();
             fprintf(stderr, "Link error: %s", log.data());
             return false;
         }
@@ -117,37 +157,16 @@ bool EffectManager::load_from_file(EffectComponent& ec, bool overwrite) {
 
     if (gl_has_errors())
     {
-        release_effect(new_effect);
+        release();
         fprintf(stderr, "OpenGL errors occured while compiling Effect");
         return false;
     }
-    idToEffect[ec.id] = new_effect;
+
     return true;
 }
 
-bool EffectManager::release_effect_by_id(int id) {
-    bool result = true;
-    auto effect = idToEffect.find(id);
-    if (effect != idToEffect.end())
-    {
-        release_effect(effect->second);
-    } else {
-        result = false;
-    }
-    return result;
-}
-
-void EffectManager::release_effect(Effect& e) {
-    glDeleteProgram(e.program);
-    glDeleteShader(e.vertex);
-    glDeleteShader(e.fragment);
-}
-
-bool EffectManager::release_all() {
-    auto i = idToEffect.begin();
-    while(i != idToEffect.end()) {
-        release_effect(i->second);
-        i = idToEffect.erase(i);
-    }
-    idToEffect.clear();
+void Effect::release() {
+    glDeleteProgram(program);
+    glDeleteShader(vertex);
+    glDeleteShader(fragment);
 }
