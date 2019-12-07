@@ -16,6 +16,7 @@
 * Improved loading time and memory usage of Tile
 * Added pause state (esc button)
 * Added bandit boss with path finding
+* More maze
 
 ### Bug Fix
 * Refine Castle bounding box
