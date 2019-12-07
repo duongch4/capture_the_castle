@@ -13,6 +13,9 @@ extern ECSManager ecsManager;
 void CollisionSystem::init() {
     ecsManager.subscribe(this, &CollisionSystem::collisionListener);
     player_respawn_sound = Mix_LoadWAV(audio_path("capturethecastle_player_respawn.wav"));
+	shield_pop_sound = Mix_LoadWAV(audio_path("capturethecastle_shield_pop.wav"));
+	item_pick_up_sound = Mix_LoadWAV(audio_path("capturethecastle_item_pickup.wav"));
+	bomb_explosion_sound = Mix_LoadWAV(audio_path("capturethecastle_bomb_explosion.wav"));
 	flagMode = false;
 }
 
@@ -68,6 +71,7 @@ void CollisionSystem::update() {
 
             if (e2_layer == CollisionLayer::Castle) {
                 ///handle win event
+
 				if (!flagMode)
 				{
 					ecsManager.publish(new FlagEvent(e1, true));
@@ -90,10 +94,10 @@ void CollisionSystem::update() {
 								ecsManager.publish(new FlagEvent(e2, false));
 								flagMode = false;
 								playerWithFlag = 0;
-								//std::cout << "95 " << flagMode << std::endl;
 								entities_to_be_destroyed.insert(bubble);
 							}
                             player2_item.itemType = ItemType::None;
+                            Mix_PlayChannel(-1, shield_pop_sound, 0);
                         }
                         break;
                     case MazeRegion::PLAYER2:
@@ -104,13 +108,13 @@ void CollisionSystem::update() {
 								ecsManager.publish(new FlagEvent(e1, false));
 								flagMode = false;
 								playerWithFlag = 0;
-								//std::cout << "109 " << flagMode << std::endl;
 								entities_to_be_destroyed.insert(bubble);
 							}
                             Mix_PlayChannel(-1, player_respawn_sound, 0);
                         } else {
                             ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
                             player1_item.itemType = ItemType::None;
+                            Mix_PlayChannel(-1, shield_pop_sound, 0);
                         }
                         break;
                     case MazeRegion::BANDIT:
@@ -129,7 +133,6 @@ void CollisionSystem::update() {
 									ecsManager.publish(new FlagEvent(e1, false));
 									flagMode = false;
 									playerWithFlag = 0;
-									//std::cout << "133 " << flagMode << std::endl;
 									entities_to_be_destroyed.insert(bubble);
 								}
                                 Mix_PlayChannel(-1, player_respawn_sound, 0);
@@ -143,7 +146,6 @@ void CollisionSystem::update() {
 									ecsManager.publish(new FlagEvent(e1, false));
 									flagMode = false;
 									playerWithFlag = 0;
-									//std::cout << "148 " << flagMode << std::endl;
 									entities_to_be_destroyed.insert(bubble);
 								}
                                 Mix_PlayChannel(-1, player_respawn_sound, 0);
@@ -156,7 +158,6 @@ void CollisionSystem::update() {
 								ecsManager.publish(new FlagEvent(e1, false));
 								flagMode = false;
 								playerWithFlag = 0;
-								//std::cout << "161 " << flagMode << std::endl;
 								entities_to_be_destroyed.insert(bubble);
 							}
                             Mix_PlayChannel(-1, player_respawn_sound, 0);
@@ -167,6 +168,7 @@ void CollisionSystem::update() {
 //                    ecsManager.destroyEntity(e2);
                     ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
                     player_item.itemType = ItemType::None;
+                    Mix_PlayChannel(-1, shield_pop_sound, 0);
                 }
             } else if (e2_layer == CollisionLayer::Item) {
                 /// handle item collision
@@ -189,16 +191,18 @@ void CollisionSystem::update() {
 								ecsManager.publish(new FlagEvent(e1, false));
 								flagMode = false;
 								playerWithFlag = 0;
-								//std::cout << "194 " << flagMode << std::endl;
 								entities_to_be_destroyed.insert(bubble);
 							}
                             entities_to_be_destroyed.insert(e2);
-//                            ecsManager.destroyEntity(e2);
+							Mix_PlayChannel(-1, player_respawn_sound, 0);
                         } else {
                             player_item.itemType = ItemType::None;
                             ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
+                            Mix_PlayChannel(-1, shield_pop_sound, 0);
                         }
+                        entities_to_be_destroyed.insert(e2);
                     }
+                    Mix_PlayChannel(-1, bomb_explosion_sound, 0);
                 } else {
                     if (e1_layer != CollisionLayer::Enemy) {
                         //if p1 or p2
@@ -219,9 +223,8 @@ void CollisionSystem::update() {
                             player_item.itemType = ItemType::SHIELD;
                             ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, true));
                         }
+                        Mix_PlayChannel(-1, item_pick_up_sound, 0);
                         entities_to_be_destroyed.insert(e2);
-//                      ecsManager.destroyEntity(e2);
-                        //}
                     }
                 }
             }
@@ -232,9 +235,8 @@ void CollisionSystem::update() {
 
 
     std::set<Entity>::iterator it = entities_to_be_destroyed.begin();
-    //std::cout<<"Things in the set:"<<std::endl;
     while (it != entities_to_be_destroyed.end()) {
-        std::cout<<*it<<std::endl;
+//        std::cout<<*it<<std::endl;
         it++;
     }
 
@@ -269,27 +271,27 @@ bool CollisionSystem::collideWithCastle(Entity player, Entity castle) {
     auto &c_boundingBox = ecsManager.getComponent<C_Collision>(castle).boundingBox;
     auto &c_team = ecsManager.getComponent<Team>(castle).assigned;
     auto &p_team = ecsManager.getComponent<Team>(player).assigned;
-    if (p_team == c_team && !flagMode)
-        return false;
+	if (p_team == c_team && !flagMode)
+		return false;
 
     float pl = p_position.x;
     float pr = pl + p_boundingBox.x;
     float pt = p_position.y;
     float pb = pt + p_boundingBox.y;
 
-    float tt = c_position.y - c_boundingBox.y;
-    float tb = tt + 2 * c_boundingBox.y;
-    float tl = c_position.x - c_boundingBox.x;
-    float tr = tl + 2 * c_boundingBox.x;
+    float ct = c_position.y + 100;
+    float cb = ct + c_boundingBox.y - 100;
+    float cl = c_position.x - 50 ;
+    float cr = cl + c_boundingBox.x + 50;
     CollisionResponse col_res = {false, false, false, false};
 
-    col_res.left = (pr >= tl && pr <= tr); //approach from left
-    col_res.right = (pl <= tr && pl >= tl); //approach from right
-    bool x_over = (pr >= tl && pl <= tl); //overlap
+    col_res.left = (pr >= cl && pr <= cr); //approach from left
+    col_res.right = (pl <= cr && pl >= cl); //approach from right
+    bool x_over = (pr >= cl && pl <= cl); //overlap
 
-    col_res.down = (pt >= tt && pt <= tb); // approach from bottom
-    col_res.up = (pb <= tb && pb >= tt); //approach from top
-    bool y_over = (pb >= tb && pt <= tt); //overlap
+    col_res.down = (pt >= ct && pt <= cb); // approach from bottom
+    col_res.up = (pb <= cb && pb >= ct); //approach from top
+    bool y_over = (pb >= cb && pt <= ct); //overlap
 
     bool x_overlap = col_res.left || col_res.right || x_over;
     bool y_overlap = col_res.down || col_res.up || y_over;
@@ -303,6 +305,18 @@ void CollisionSystem::reset() {
         collision_queue.pop();
     }
     this->entities.clear();
+    if (player_respawn_sound != nullptr) {
+        Mix_FreeChunk(player_respawn_sound);
+    }
+    if (shield_pop_sound != nullptr) {
+        Mix_FreeChunk(shield_pop_sound);
+    }
+    if (item_pick_up_sound != nullptr) {
+        Mix_FreeChunk(item_pick_up_sound);
+    }
+    if (bomb_explosion_sound != nullptr) {
+        Mix_FreeChunk(bomb_explosion_sound);
+    }
 	//tileMap->destroy();
 }
 

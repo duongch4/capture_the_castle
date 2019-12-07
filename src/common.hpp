@@ -7,6 +7,7 @@
 //#define NOMINMAX
 #include <gl3w.h>
 #include <GLFW/glfw3.h>
+#include <sstream>
 
 // Simple utility macros to avoid mistyping directory name, name has to be a string literal
 // audio_path("audio.ogg") -> data/audio/audio.ogg
@@ -21,6 +22,7 @@
 #define mesh_path(name) data_path  "/meshes/" name
 #define power_up_path(name) data_path "/textures/power_ups/" name
 #define maze_path(name) data_path  "/maze/" name
+#define font_path(name) data_path "/fonts/" name
 #define flag_path(name) data_path "/textures/capture_the_flag/" name 
 
 // Not much math is needed and there are already way too many libraries linked (:
@@ -111,79 +113,8 @@ struct Texture
 	bool create_from_screen(GLFWwindow const * const window); // Screen texture
 };
 
-//// An entity boils down to a collection of components,
-//// organized by their in-game context (mesh, effect, motion, etc...)
-//struct Entity {
-//	// projection contains the orthographic projection matrix. As every Entity::draw()
-//	// renders itself it needs it to correctly bind it to its shader.
-//	virtual bool init() = 0;
-//	virtual void draw(const mat3& projection) = 0;
-//	virtual void update(float ms) = 0;
-//	virtual void destroy() = 0;
-//
-//protected:
-//	// Sprite component of Entity for texture
-//	struct SpriteComponent {
-//		Texture texture;
-//	} sprite;
-//
-//    // A Mesh is a collection of a VertexBuffer and an IndexBuffer. A VAO
-//    // represents a Vertex Array Object and is the container for 1 or more Vertex Buffers and
-//    // an Index Buffer.
-//    struct MeshComponent {
-//        GLuint vao;
-//        GLuint vbo;
-//        GLuint ibo;
-//    } mesh;
-//
-//    // Effect component of Entity for Vertex and Fragment shader, which are then put(linked) together in a
-//	// single program that is then bound to the pipeline.
-//	struct EffectComponent {
-//		GLuint vertex;
-//		GLuint fragment;
-//		GLuint program;
-//
-//		bool load_shaders(const char* vs_path, const char* fs_path); // load shaders from files and link into program
-//		void release(); // release shaders and program
-//	} effect;
-//
-//	// All data relevant to the motion of the salmon.
-//	struct MotionComponent {
-//	    vec2 direction;
-//		float speed;
-//	} motion;
-//
-//	// Position of an entity
-//	struct PositionComponent {
-//	    float pos_x;
-//	    float pos_y;
-//	} position;
-//
-//	// Scale is used in the bounding box calculations,
-//	// and so contextually belongs here (for now).
-//	struct PhysicsComponent {
-//		vec2 scale;
-//	} physics;
-//
-//	// Transform component handles transformations passed to the Vertex shader.
-//	// gl Immediate mode equivalent, see the Rendering and Transformations section in the
-//	// specification pdf.
-//	struct TransformComponent {
-//		mat3 out;
-//
-//		void begin();
-//		void scale(vec2 scale);
-//		void translate(vec2 offset);
-//		void end();
-//	} transform;
-//
-//	// Collision component of an entity handles collision testing and collision handling
-//	struct CollisionComponent {
-//        vec2 bounding_box;
-//	} collision;
-//
-//	// Team component to specify an entity belongs to a team
-//	struct TeamComponent {
-//	    Team assigned;
-//    }team;
-//};
+template <typename T> std::string to_string(const T& t) {
+    std::ostringstream os;
+    os<<t;
+    return os.str();
+}

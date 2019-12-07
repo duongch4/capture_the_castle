@@ -26,6 +26,9 @@
 #include <systems/soldier_ai_system.hpp>
 #include <systems/curve_movement_system.hpp>
 #include <systems/item_effect_system.hpp>
+#include <ui/countdown_timer.hpp>
+#include <ui/pause_window.hpp>
+#include <ui/soldier_setup_window.hpp>
 
 class Game : public State {
 public:
@@ -84,6 +87,11 @@ private:
     HelpButton help_btn;
     HelpWindow help_window;
     WinWindow win_window;
+    PauseWindow pause_window;
+    SetupWindow setup_window;
+    PlayInstructions p1SetUpInstructions;
+    PlayInstructions p2SetUpInstructions;
+    CountdownTimer timer;
 
     // Particle
     Firework firework;
@@ -108,10 +116,9 @@ private:
     bool init_game();
 
     //Game state
-    enum GameState { HELP, WIN, NORMAL, FLAG,};
+	enum GameState { START, HELP, WIN, NORMAL, PAUSE, SETUP , FLAG,};
     GameState currState;
     CollisionLayer winner;
-
     World* m_world;
 
     void registerSoldierAiSystem();

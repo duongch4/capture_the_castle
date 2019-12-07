@@ -11,6 +11,9 @@ void PlayerInputSystem::init(std::shared_ptr<Tilemap> tilemap)
 {
 	ecsManager.subscribe(this, &PlayerInputSystem::onKeyListener);
 	ecsManager.subscribe(this, &PlayerInputSystem::onReleaseListener);
+	ecsManager.subscribe(this, &PlayerInputSystem::onTimeoutListener);
+	bomb_set_sound = Mix_LoadWAV(audio_path("capturethecastle_set_bomb.wav"));
+	soldier_set_sound = Mix_LoadWAV(audio_path("capturethecastle_set_soldier.wav"));
 	m_tilemap = tilemap;
 	flag = false;
 }
@@ -50,6 +53,7 @@ void PlayerInputSystem::update()
                             place_bomb(tile, TeamType::PLAYER1);
                             ecsManager.publish(new ItemEvent(e, ItemType::BOMB, false));
                             item.itemType = ItemType::None;
+                            Mix_PlayChannel(-1, bomb_set_sound, 0);
                         }
 					    break;
 					case InputKeys::Q:
@@ -58,6 +62,7 @@ void PlayerInputSystem::update()
 							MazeRegion::PLAYER1, TeamType::PLAYER1,
 							textures_path("red_soldier_sprite_sheet-01.png")
 						);
+                        Mix_PlayChannel(-1, soldier_set_sound, 0);
 						break;
 					default:
 						break;
@@ -93,12 +98,14 @@ void PlayerInputSystem::update()
 							MazeRegion::PLAYER2, TeamType::PLAYER2,
 							textures_path("blue_soldier_sprite_sheet-01.png")
 						);
+						Mix_PlayChannel(-1, soldier_set_sound, 0);
 						break;
                     case InputKeys ::RIGHT_SHIFT:
                         if (item.itemType == ItemType::BOMB){
                             place_bomb(tile, TeamType::PLAYER2);
                             ecsManager.publish(new ItemEvent(e, ItemType::BOMB, false));
                             item.itemType = ItemType::None;
+                            Mix_PlayChannel(-1, bomb_set_sound, 0);
                         }
                         break;
 					default:
@@ -165,7 +172,12 @@ void PlayerInputSystem::onReleaseListener(KeyReleaseEvent* input)
 void PlayerInputSystem::reset() {
     keysPressed.clear();
 	this->entities.clear();
-
+    if (bomb_set_sound != nullptr) {
+        Mix_FreeChunk(bomb_set_sound);
+    }
+    if (soldier_set_sound != nullptr) {
+        Mix_FreeChunk(soldier_set_sound);
+    }
 }
 
 void PlayerInputSystem::place_bomb(const Tile& tile, const TeamType& team_type) {
@@ -184,7 +196,12 @@ void PlayerInputSystem::place_bomb(const Tile& tile, const TeamType& team_type) 
     Effect itemEffect{};
     itemEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
     ecsManager.addComponent<Effect>(bomb, itemEffect);
-    Sprite itemSprite = {power_up_path("CaptureTheCastle_powerup_bomb.png")};
+    Sprite itemSprite;
+    if (team_type == TeamType ::PLAYER1){
+        itemSprite = {power_up_path("CaptureTheCastle_powerup_bomb_setRed.png")};
+    } else if (team_type == TeamType::PLAYER2){
+        itemSprite = {power_up_path("CaptureTheCastle_powerup_bomb_setBlue.png")};
+    }
     TextureManager::instance().load_from_file(itemSprite);
     itemSprite.sprite_size = { itemSprite.width / 7.0f , itemSprite.height / 5.0f };
     ecsManager.addComponent<Sprite>(bomb, itemSprite);
@@ -235,6 +252,14 @@ void PlayerInputSystem::spawn_soldier(
 			{ soldierSprite.width * 0.08f * 0.8f, soldierSprite.height * 0.08f * 0.8f }
 		}
 	);
+}
+
+void PlayerInputSystem::onTimeoutListener(TimeoutEvent *input) {
+	for (auto& e : entities)
+	{
+		auto& transform = ecsManager.getComponent<Transform>(e);
+		transform.position = transform.init_position;
+	}
 }
 
 void PlayerInputSystem::setFlagMode(bool mode, Entity flagPlayer, Entity bubb)

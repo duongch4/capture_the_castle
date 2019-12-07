@@ -3,24 +3,22 @@
 #include "common.hpp"
 #include "components.hpp"
 
-class WinBackground
+class PopUpImage
 {
 
 public:
-    void init(vec2 screen_size);
+    void init(vec2 pos, const char* texture_path);
 
     void destroy();
 
     void draw(const mat3& projection);
 
-    vec2 get_position();
-
-    vec2 get_bounding_box();
+    void setWinnerDp(TeamType team);
 
 private:
     MeshComponent mesh{};
     Effect effect{};
     Transform transform;
-    Texture winbgSprite;
+    Texture imageSprite;
     mat3 out;
 };

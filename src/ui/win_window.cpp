@@ -4,9 +4,9 @@
 
 void WinWindow::init(vec2 screen_size) {
     // Initialize help button
-    winBackground.init(screen_size);
+    winBackground.init(screen_size, textures_path("ui/CaptureTheCastle_win_screen.png"));
     vec2 currPos = winBackground.get_position();
-    winnerDp.init({currPos.x, currPos.y - 100});
+    winnerDp.init({currPos.x, currPos.y - 100}, textures_path("ui/CaptureTheCastle_player1_winner.png"));
     restart_btn.init({currPos.x, currPos.y + 75}, textures_path("ui/CaptureTheCastle_new_game_btn.png"));
     main_btn.init({currPos.x, currPos.y + 150}, textures_path("ui/CaptureTheCastle_main_menu_btn.png"));
     quit_btn.init({currPos.x, currPos.y + 225}, textures_path("ui/CaptureTheCastle_quit_btn.png"));
@@ -19,6 +19,8 @@ void WinWindow::destroy() {
     restart_btn.destroy();
     main_btn.destroy();
     quit_btn.destroy();
+    if (m_click != nullptr)
+        Mix_FreeChunk(m_click);
 }
 
 void WinWindow::draw(const mat3 &projection) {

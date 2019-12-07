@@ -4,10 +4,10 @@
 #include "common.hpp"
 #include "components.hpp"
 #include "closebtn.hpp"
-#include "help_background.hpp"
 #include "ecs/events.hpp"
 #include "popupbtn.hpp"
 #include "play_instructions.hpp"
+#include "popup_background.hpp"
 
 class HelpWindow
 {
@@ -25,12 +25,15 @@ public:
 
     void showHowToPlay();
 
+    void showControls();
+
     void resetWindow();
 
 private:
     CloseButton close_btn;
-    HelpBackground background;
+    PopUpBackground background;
     PopUpButton how_to_play_btn;
+    PopUpButton controls_btn;
     PlayInstructions instructions;
     Mix_Chunk* m_click;
     State curr_state;
