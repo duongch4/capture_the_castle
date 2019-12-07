@@ -62,10 +62,10 @@ void CollisionSystem::update() {
 		//}
 
         if ((e1_team == e2_team && !flagMode) ||
-            (flagMode && e1_team == e2_team && e2_layer != CollisionLayer::Castle)) {
+            (flagMode && e1_team == e2_team && e2 != castle1 && e2 != castle2)) {
             collision_queue.pop();
             break;
-        } else if (flagMode && e1_team == e2_team && e2_layer == CollisionLayer::Castle && e1 == playerWithFlag) {
+        } else if (flagMode && e1_team == e2_team && (e2 == castle1 || e2 == castle2) && e1 == playerWithFlag) {
             ecsManager.publish(new WinEvent(e1));
             break;
         } else {
@@ -73,7 +73,7 @@ void CollisionSystem::update() {
             auto &e2_transform = ecsManager.getComponent<Transform>(e2);
             MazeRegion region = Tilemap::get_region(e1_transform.position.x, e1_transform.position.y);
 
-            if (e2_layer == CollisionLayer::Castle) {
+            if (e2 == castle1 || e2 == castle2) {
                 ///handle win event
 
 				if (!flagMode)
@@ -347,4 +347,10 @@ void CollisionSystem::setFlagMode(Entity flagPlayer) {
 
 void CollisionSystem::setBubble(Entity bubb) {
     bubble = bubb;
+}
+
+void CollisionSystem::setCastle(Entity c1, Entity c2)
+{
+	castle1 = c1;
+	castle2 = c2;
 }

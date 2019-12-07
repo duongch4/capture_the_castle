@@ -579,7 +579,7 @@ Entity Game::registerBubble(Entity player, const char* texture_path)
 	return bubble;
 }
 
-void Game::registerCastle(const Transform& transform, const TeamType& team_type, const char* texture_path)
+Entity Game::registerCastle(const Transform& transform, const TeamType& team_type, const char* texture_path)
 {
     Entity castle = ecsManager.createEntity();
     ecsManager.addComponent<Transform>(castle, transform);
@@ -602,6 +602,7 @@ void Game::registerCastle(const Transform& transform, const TeamType& team_type,
             }
     );
 	//std::cout << castle << std::endl;
+	return castle;
 }
 
 void Game::registerBanditAiSystem()
@@ -774,7 +775,7 @@ void Game::registerCastles()
             { 0.5f, 0.5f },
             { 120.f, m_screen_size.y / 2 }
     };
-    registerCastle(transform_castle1, TeamType::PLAYER1, textures_path("castle/CaptureTheCastle_castle_red.png"));
+	Entity c1 = registerCastle(transform_castle1, TeamType::PLAYER1, textures_path("castle/CaptureTheCastle_castle_red.png"));
 
     // CASTLE 2
     Transform transform_castle2 = Transform{
@@ -783,7 +784,8 @@ void Game::registerCastles()
             { 0.5f, 0.5f },
             { m_screen_size.x - 120.f, m_screen_size.y / 2 }
     };
-    registerCastle(transform_castle2, TeamType::PLAYER2, textures_path("castle/CaptureTheCastle_castle_blue.png"));
+	Entity c2 = registerCastle(transform_castle2, TeamType::PLAYER2, textures_path("castle/CaptureTheCastle_castle_blue.png"));
+	collisionSystem->setCastle(c1, c2);
 }
 
 void Game::registerPlayers(std::vector<Entity>& players)

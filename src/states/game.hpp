@@ -52,7 +52,7 @@ public:
     void registerCastles();
     void registerItemBoard(const Transform& transform, const TeamType& team_type, const char* texture_path);
     Entity registerPlayer(const Transform& transform, const Motion& motion, const TeamType& team_type, const char* texture_path);
-    void registerCastle(const Transform& transform, const TeamType& team_type, const char* texture_path);
+    Entity registerCastle(const Transform& transform, const TeamType& team_type, const char* texture_path);
 	Entity registerBubble(Entity player, const char* texture_path);
 
     void registerBanditAiSystem();

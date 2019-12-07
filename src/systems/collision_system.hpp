@@ -23,7 +23,7 @@ public:
 	void setFlagMode(Entity flagPlayer);
 	void setBubble(Entity bubb);
     void reset() override;
-
+	void setCastle(Entity c1, Entity c2);
 private:
     void collisionListener(CollisionEvent* collisionEvent);
     bool collideWithCastle(Entity player, Entity castle);
@@ -32,6 +32,8 @@ private:
     std::set<Entity> entities_to_be_destroyed;
 	Entity playerWithFlag;
 	Entity bubble;
+	Entity castle1;
+	Entity castle2;
 	bool flagMode;
     Mix_Chunk* player_respawn_sound;
     Mix_Chunk* shield_pop_sound;
