@@ -61,7 +61,6 @@ void PlayerInputSystem::update()
 							MazeRegion::PLAYER1, TeamType::PLAYER1,
 							textures_path("red_soldier_sprite_sheet-01.png")
 						);
-                        Mix_PlayChannel(-1, soldier_set_sound, 0);
 						break;
 					default:
 						break;
@@ -97,7 +96,6 @@ void PlayerInputSystem::update()
 							MazeRegion::PLAYER2, TeamType::PLAYER2,
 							textures_path("blue_soldier_sprite_sheet-01.png")
 						);
-						Mix_PlayChannel(-1, soldier_set_sound, 0);
 						break;
                     case InputKeys ::RIGHT_SHIFT:
                         if (item.itemType == ItemType::BOMB){
@@ -132,6 +130,7 @@ void PlayerInputSystem::handle_soldier_spawn(
 			transform_soldier, motion_soldier,
 			team_type, texture_path
 		);
+        Mix_PlayChannel(-1, soldier_set_sound, 0);
 		++soldier_count;
 		wait_time = 0;
 	}
