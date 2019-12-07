@@ -5,10 +5,10 @@
 #include <iostream>
 #include "box_collision_system.hpp"
 
-void BoxCollisionSystem::init(std::shared_ptr<Tilemap> tilemap)
-{
-	this->tileMap = tilemap;
-	ecsManager.subscribe(this, &BoxCollisionSystem::boxCollisionListener);
+void BoxCollisionSystem::init(std::shared_ptr<Tilemap> tilemap) {
+    this->tileMap = tilemap;
+    ecsManager.subscribe(this, &BoxCollisionSystem::boxCollisionListener);
+	flag = false;
 }
 
 void BoxCollisionSystem::update()
@@ -50,7 +50,12 @@ void BoxCollisionSystem::update()
 				transform.position.x = tile.get_position().x + tile.get_bounding_box().x / 2 + boundingBox.x / 2;
 			}
 		}
-
+		if (flag && e == playerWithFlag)
+		{
+			auto &bubbleTransform = ecsManager.getComponent<Transform>(bubble);
+			bubbleTransform.position.x = transform.position.x;
+			bubbleTransform.position.y = transform.position.y - 20.f;
+		}
 		collision_queue.pop();
 	}
 }
@@ -174,4 +179,11 @@ void BoxCollisionSystem::reset()
 	}
 	collision_queue = {};
 	this->entities.clear();
+}
+
+void BoxCollisionSystem::setFlagMode(bool mode, Entity flagPlayer, Entity bubb)
+{
+	flag = mode;
+	playerWithFlag = flagPlayer;
+	bubble = bubb;
 }

@@ -15,6 +15,7 @@ void PlayerInputSystem::init(std::shared_ptr<Tilemap> tilemap)
 	bomb_set_sound = Mix_LoadWAV(audio_path("capturethecastle_set_bomb.wav"));
 	soldier_set_sound = Mix_LoadWAV(audio_path("capturethecastle_set_soldier.wav"));
 	m_tilemap = tilemap;
+	flag = false;
 }
 
 void PlayerInputSystem::update()
@@ -113,6 +114,11 @@ void PlayerInputSystem::update()
 			++wait_2;
 		}
 		motion.direction = next_dir;
+		if (e == playerWithFlag && flag)
+		{
+			auto& bubbMotion = ecsManager.getComponent<Motion>(bubble);
+			bubbMotion.direction = next_dir;
+		}
 	}
 }
 
@@ -254,9 +260,16 @@ void PlayerInputSystem::spawn_soldier(
 }
 
 void PlayerInputSystem::onTimeoutListener(TimeoutEvent *input) {
-    for (auto& e : entities)
-    {
-        auto& transform = ecsManager.getComponent<Transform>(e);
-        transform.position = transform.init_position;
-    }
+	for (auto& e : entities)
+	{
+		auto& transform = ecsManager.getComponent<Transform>(e);
+		transform.position = transform.init_position;
+	}
+}
+
+void PlayerInputSystem::setFlagMode(bool mode, Entity flagPlayer, Entity bubb)
+{
+	flag = mode;
+	playerWithFlag = flagPlayer;
+	bubble = bubb;
 }

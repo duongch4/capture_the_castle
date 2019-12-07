@@ -31,6 +31,7 @@
 #include <ui/countdown_timer.hpp>
 #include <ui/pause_window.hpp>
 #include <ui/soldier_setup_window.hpp>
+#include <ui/hint.hpp>
 
 class Game : public State {
 public:
@@ -57,7 +58,8 @@ private:
 		const Transform& transform, const Motion& motion,
 		const TeamType& team_type, const CollisionLayer& collision_layer, const char* texture_path
 	);
-    void registerCastle(const Transform& transform, const TeamType& team_type, const char* texture_path);
+    Entity registerCastle(const Transform& transform, const TeamType& team_type, const char* texture_path);
+	Entity registerBubble(Entity player, const char* texture_path);
 
     void registerBanditAiSystem();
 	void registerSoldierAiSystem();
@@ -82,7 +84,7 @@ private:
     // Audio
     Mix_Music* m_background_music;
     Mix_Chunk* m_click;
-
+	Mix_Chunk* flag_sound;
     // Screen size
     vec2 m_screen_size;
 
@@ -102,6 +104,7 @@ private:
     PlayInstructions p1SetUpInstructions;
     PlayInstructions p2SetUpInstructions;
     CountdownTimer timer;
+    Hint hint;
 
     // Particle
     Firework firework;
@@ -123,11 +126,13 @@ private:
 
 
     void winListener(WinEvent* winEvent);
+	void flagListener(FlagEvent* flagEvent);
     bool init_game();
 
     //Game state
-    enum struct GameState { START, HELP, WIN, NORMAL, PAUSE, SETUP};
+    enum struct GameState { START, HELP, WIN, NORMAL, PAUSE, SETUP, FLAG};
     GameState currState;
+	GameState oldState;
     CollisionLayer winner;
     World* m_world;
 };
