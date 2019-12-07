@@ -39,7 +39,7 @@ private:
 		vec3 color = { 0.f, 0.f, 0.f };
 		float mass = 1.f;
 	};
-	static const int MAX_PARTICLE = 500;
+	static const int MAX_PARTICLE = 300;
 	static const int NUM_PARTICLE = 100;
 
 	float air_density = 1.1455f;
@@ -54,12 +54,20 @@ private:
 	const float SPAWN_GROUP_DELAY = 0.f;
 	//static const float SPAWN_GROUP_DELAY = 0.6f;
 
+	const float ENEMY_MASS = 8.f;
+	const float PLAYER_MASS = 5.f;
+
 private:
-	void handle_motion(float seconds);
-	void handle_spawn(float seconds);
+	void handle_motion(const float& dt);
+	void handle_spawn(const float& dt);
 	void handle_particle_life();
-	void handle_collisions();
+	void handle_collisions(const float& dt);
+	bool is_okay_to_collide_with(const CollisionLayer& collision_layer);
 	void handle_particle_particle_collision(Particle& p1, Particle& p2);
+	void handle_particle_entity_collision(
+		RainSystem::Particle& p1, Transform& e_transform, Motion& e_motion,
+		const CollisionLayer& collision_layer, const float& dt
+	);
 	void kaboom(vec2 position);
 
 

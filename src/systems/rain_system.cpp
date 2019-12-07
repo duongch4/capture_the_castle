@@ -84,10 +84,10 @@ void RainSystem::update(const float& ms) {
 	handle_spawn(seconds);
 	handle_particle_life();
 	handle_motion(seconds);
-	handle_collisions();
+	handle_collisions(seconds);
 }
 
-void RainSystem::handle_collisions()
+void RainSystem::handle_collisions(const float& dt)
 {
 	for (size_t i = 0; i < m_particles.size(); ++i)
 	{
@@ -100,35 +100,60 @@ void RainSystem::handle_collisions()
 				handle_particle_particle_collision(p1, p2);
 			}
 		}
-		//for (size_t k = 0; k < turtles.size(); k++)
-		//{
-		//	auto& turtle = turtles[k];
-		//	if (intersect_circle_circle(p1.position, turtle.get_position(), p1.radius, turtle.get_bounding_box().x / 2))
-		//	{
-		//		handle_pebble_turtle_collision(p1, turtle, ms);
-		//	}
-		//}
-		//for (size_t k = 0; k < fish.size(); k++)
-		//{
-		//	auto& fishk = fish[k];
-		//	if (intersect_circle_circle(p1.position, fishk.get_position(), p1.radius, fishk.get_bounding_box().x / 2))
-		//	{
-		//		handle_pebble_fish_collision(p1, fishk, ms);
-		//	}
-		//}
+		for (auto& entity : entities)
+		{
+			const C_Collision collision_comp = ecsManager.getComponent<C_Collision>(entity);
+			const CollisionLayer collision_layer = collision_comp.layer;
+			if (is_okay_to_collide_with(collision_layer))
+			{
+				Transform& e_transform = ecsManager.getComponent<Transform>(entity);
+				if (intersect_circle_circle(p1.position, e_transform.position, p1.radius, collision_comp.radius))
+				{
+					Motion& e_motion = ecsManager.getComponent<Motion>(entity);
+					handle_particle_entity_collision(p1, e_transform, e_motion, collision_layer, dt);
+				}
+			}
 
-		//if (intersect_circle_circle(p1.position, salmon.get_position(), p1.radius, salmon.get_bb_size().x * 1.f))
-		//{
-		//	vec2 salmon_point = { 0.f,0.f };
-		//	if (salmon.exact_collision_pebble(projection, screen, p1.position, p1.radius, &salmon_point))
-		//	{
-		//		handle_pebble_salmon_collision(p1, salmon_point, salmon.get_speed());
-		//	}
-		//}
+		}
 	}
 }
 
-void RainSystem::handle_particle_particle_collision(Particle& p1, Particle& p2)
+void RainSystem::handle_particle_entity_collision(
+	RainSystem::Particle& p1, Transform& e_transform, Motion& e_motion,
+	const CollisionLayer& collision_layer, const float& dt
+)
+{
+	float e_vel_x = e_motion.speed * e_motion.direction.x;
+	float e_vel_y = e_motion.speed * e_motion.direction.y;
+
+	float pos_x = e_transform.position.x - p1.position.x;
+	float pos_y = e_transform.position.y - p1.position.y;
+
+	float vel_x = p1.velocity.x - e_vel_x;
+	float vel_y = p1.velocity.y - e_vel_y;
+	float dotP = pos_x * vel_x + pos_y * vel_y;
+	if (dotP > 0.f)
+	{
+		float e_mass = (collision_layer == CollisionLayer::Enemy) ? ENEMY_MASS : PLAYER_MASS;
+
+		float mass_ratio_1 = 2 * e_mass / (p1.mass + e_mass);
+		float vect_ratio_1 = dot(vec2{ vel_x,vel_y }, vec2{ -pos_x,-pos_y }) / sq_len(vec2{ -pos_x,-pos_y });
+		p1.velocity = sub(p1.velocity, mul(vec2{ -pos_x,-pos_y }, mass_ratio_1 * vect_ratio_1));
+
+		float mass_ratio_2 = 2 * p1.mass / (p1.mass + e_mass);
+		float vect_ratio_2 = dot(vec2{ -vel_x,-vel_y }, vec2{ pos_x,pos_y }) / sq_len(vec2{ pos_x,pos_y });
+		vec2 e_velocity = sub(vec2{ e_vel_x,e_vel_y }, mul(vec2{ pos_x,pos_y }, mass_ratio_2 * vect_ratio_2));
+
+		e_transform.position = add(e_transform.position, mul(e_velocity, dt));
+	}
+}
+
+bool RainSystem::is_okay_to_collide_with(const CollisionLayer& collision_layer)
+{
+	return collision_layer == CollisionLayer::Enemy || collision_layer == CollisionLayer::PLAYER1 || collision_layer == CollisionLayer::PLAYER2;
+}
+
+void RainSystem::handle_particle_particle_collision(RainSystem::Particle& p1, RainSystem::Particle& p2)
 {
 	float pos_x = p2.position.x - p1.position.x;
 	float pos_y = p2.position.y - p1.position.y;
@@ -147,7 +172,7 @@ void RainSystem::handle_particle_particle_collision(Particle& p1, Particle& p2)
 	}
 }
 
-void RainSystem::handle_motion(float dt)
+void RainSystem::handle_motion(const float& dt)
 {
 	// Update each particle's life, velocity, position
 	for (auto& particle : m_particles)
@@ -165,9 +190,9 @@ void RainSystem::handle_motion(float dt)
 	}
 }
 
-void RainSystem::handle_spawn(float seconds)
+void RainSystem::handle_spawn(const float& dt)
 {
-	m_spawn_timer -= seconds;
+	m_spawn_timer -= dt;
 
 	if (m_spawn_timer <= 0)
 	{

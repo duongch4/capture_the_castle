@@ -641,7 +641,10 @@ void Game::registerRainSystem(const vec2& screen)
 	rainSystem = ecsManager.registerSystem<RainSystem>();
 	{
 		Signature signature;
-		signature.set(ecsManager.getComponentType<RainComponent>());
+		//signature.set(ecsManager.getComponentType<RainComponent>());
+		signature.set(ecsManager.getComponentType<Transform>());
+		signature.set(ecsManager.getComponentType<Motion>());
+		signature.set(ecsManager.getComponentType<C_Collision>());
 		ecsManager.setSystemSignature<RainSystem>(signature);
 	}
 	rainSystem->init(screen);
