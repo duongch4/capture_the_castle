@@ -117,10 +117,10 @@ set(SOURCE_FILES
         src/ui/pause_window.hpp
         src/ui/pause_window.cpp
         src/ui/soldier_setup_window.cpp
-        src/ui/soldier_setup_window.hpp
-
+		src/ui/hint.cpp src/ui/hint.hpp
 		src/systems/rain_system.hpp
 		src/systems/rain_system.cpp
+        src/ui/soldier_setup_window.hpp
         src/effect_manager.cpp
         src/effect_manager.hpp
 )

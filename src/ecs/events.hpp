@@ -60,6 +60,18 @@ struct WinEvent: public Event{
     Entity player;
 };
 
+struct FlagEvent: public Event
+{
+	FlagEvent(Entity player, bool mode)
+	{
+		this->flagPlayer = player;
+		this->flag = mode;
+	}
+	~FlagEvent() = default;
+	Entity flagPlayer;
+	bool flag;
+};
+
 struct ItemEvent: public Event{
     ItemEvent(Entity player, ItemType item, bool pick_up){
         this->player = player;

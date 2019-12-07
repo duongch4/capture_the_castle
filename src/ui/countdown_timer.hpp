@@ -14,20 +14,6 @@
 #include <SDL_mixer.h>
 #include <effect_manager.hpp>
 
-struct ivec2 {
-    int x, y;
-};
-
-struct uivec2 {
-    unsigned int x, y;
-};
-
-struct Character {
-    GLuint texture_id;
-    uivec2 size;
-    ivec2 bearing;
-    GLuint advance;
-};
 
 class CountdownTimer {
 public:

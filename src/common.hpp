@@ -23,6 +23,7 @@
 #define power_up_path(name) data_path "/textures/power_ups/" name
 #define maze_path(name) data_path  "/maze/" name
 #define font_path(name) data_path "/fonts/" name
+#define flag_path(name) data_path "/textures/capture_the_flag/" name 
 
 // Not much math is needed and there are already way too many libraries linked (:
 // If you want to do some overloads..
@@ -131,6 +132,21 @@ struct Texture
 	bool load_from_file(const char* path);
 	bool is_valid()const; // True if texture is valid
 	bool create_from_screen(GLFWwindow const * const window); // Screen texture
+};
+
+struct ivec2 {
+    int x, y;
+};
+
+struct uivec2 {
+    unsigned int x, y;
+};
+
+struct Character {
+    GLuint texture_id;
+    uivec2 size;
+    ivec2 bearing;
+    GLuint advance;
 };
 
 template <typename T> std::string to_string(const T& t) {

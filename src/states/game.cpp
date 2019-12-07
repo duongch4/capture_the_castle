@@ -37,7 +37,7 @@ bool Game::init_state(World* world) {
 	registerRainSystem(world->get_screen_size());
 
     ecsManager.subscribe(this, &Game::winListener);
-
+	ecsManager.subscribe(this, &Game::flagListener);
     return init_game();
 }
 
@@ -89,6 +89,7 @@ bool Game::init_game() {
     p1SetUpInstructions.setScale({0.2f, 0.2f});
     p2SetUpInstructions.setScale({0.2f, 0.2f});
     timer.init(m_screen_size);
+    hint.init(m_screen_size);
 
     //--------------------------------------------------------------------------
     // Render all the tiles once to the screen texture
@@ -96,6 +97,7 @@ bool Game::init_game() {
 
     m_click = Mix_LoadWAV(audio_path("capturethecastle_button_click.wav"));
     m_background_music = Mix_LoadMUS(audio_path("capturethecastle_background.wav"));
+	flag_sound = Mix_LoadWAV(audio_path("capturethecastle_flag_taken.wav"));
 
     if (m_background_music == nullptr)
     {
@@ -111,7 +113,7 @@ bool Game::init_game() {
 }
 
 bool Game::update(float elapsed_ms) {
-    if (currState == GameState::NORMAL) {
+    if (currState == GameState::NORMAL || currState == GameState::FLAG) {
         banditSpawnSystem->update(elapsed_ms);
         banditAiSystem->update(elapsed_ms);
         playerInputSystem->update();
@@ -186,10 +188,12 @@ void Game::draw() {
         timer.draw(projection_2D);
         p1SetUpInstructions.draw(projection_2D);
         p2SetUpInstructions.draw(projection_2D);
-    } else if (currState == GameState::NORMAL) {
+    } else if (currState == GameState::NORMAL){
+        rainSystem->draw(projection_2D);
         help_btn.draw(projection_2D);
-
-		rainSystem->draw(projection_2D);
+    } else if (currState == GameState::FLAG)  {
+        help_btn.draw(projection_2D);
+        hint.draw(projection_2D);
     }
 }
 
@@ -240,22 +244,23 @@ void Game::on_key(int key, int action) {
             break;
     }
     if (action == GLFW_PRESS && !(k == InputKeys::ESC || k == InputKeys::DEFAULT)) {
-        if (currState == GameState::NORMAL && !(k == InputKeys::SLASH || k == InputKeys::Q)) {
+        if ((currState == GameState::NORMAL || currState == GameState::FLAG) && !(k == InputKeys::SLASH || k == InputKeys::Q)) {
             ecsManager.publish(new InputKeyEvent(k));
         } else if (currState == GameState::SETUP) {
             ecsManager.publish(new InputKeyEvent(k));
         }
     } else if (action == GLFW_RELEASE && !(k == InputKeys::DEFAULT || k == InputKeys::ESC)) {
-        if (currState == GameState::NORMAL && !(k == InputKeys::SLASH || k == InputKeys::Q)) {
+        if ((currState == GameState::NORMAL || currState == GameState::FLAG) && !(k == InputKeys::SLASH || k == InputKeys::Q)) {
             ecsManager.publish(new KeyReleaseEvent(k));
         } else if (currState == GameState::SETUP) {
             ecsManager.publish(new KeyReleaseEvent(k));
         }
     } else if (action == GLFW_PRESS && k == InputKeys::ESC) {
-        if (currState == GameState::NORMAL) {
+        if (currState == GameState::NORMAL || currState == GameState::FLAG) {
+			oldState = currState;
             currState = GameState::PAUSE;
         } else if(currState == GameState::PAUSE) {
-            currState = GameState::NORMAL;
+            currState = oldState;
         }
     }
 }
@@ -264,7 +269,7 @@ void Game::on_mouse_click(GLFWwindow *pWindow, int button, int action, int mods)
     double xpos, ypos;
     glfwGetCursorPos(pWindow, &xpos, &ypos);
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        if (currState == GameState::NORMAL && help_btn.mouseOnButton({(float) xpos, (float) ypos })) {
+        if ((currState == GameState::NORMAL || currState == GameState::FLAG) && help_btn.mouseOnButton({(float) xpos, (float) ypos })) {
             Mix_PlayChannel(-1, m_click, 0);
             currState = GameState :: HELP;
         } else if (currState == GameState::HELP) {
@@ -335,7 +340,7 @@ void Game::on_mouse_click(GLFWwindow *pWindow, int button, int action, int mods)
 }
 
 void Game::on_mouse_move(GLFWwindow *window, double xpos, double ypos) {
-    if (currState == GameState::NORMAL) {
+    if (currState == GameState::NORMAL || currState == GameState::FLAG) {
         help_btn.onHover(help_btn.mouseOnButton({ (float)xpos, (float) ypos }));
     }
     else if (currState == GameState::HELP) {
@@ -375,12 +380,17 @@ void Game::reset() {
     std::cout << "SetUp Instructions destroyed" << std::endl;
     timer.destroy();
     std::cout << "Timer destroyed" << std::endl;
+    hint.destroy();
     EffectManager::instance().release_all();
     std::cout << "Releasing all shaders" << std::endl;
     if (m_background_music != nullptr)
         Mix_FreeMusic(m_background_music);
     if (m_click != nullptr)
         Mix_FreeChunk(m_click);
+	if (flag_sound != nullptr)
+	{
+		Mix_FreeChunk(flag_sound);
+	}
     std::cout << "Releasing music" << std::endl;
     std::cout << "Reinitializing game state" << std::endl;
     init_state(m_world);
@@ -388,11 +398,40 @@ void Game::reset() {
 
 void Game::winListener(WinEvent *winEvent) {
     // you should only win when in normal game mode, set up should not allow you to win
-    if (currState == GameState::NORMAL) {
+    if (currState == GameState::FLAG) {
         Team winningTeam = ecsManager.getComponent<Team>(winEvent->player);
         win_window.setWinTeam(winningTeam.assigned);
         currState = GameState :: WIN;
     }
+}
+
+void Game::flagListener(FlagEvent *flagEvent)
+{
+	if (flagEvent->flag && currState == GameState::NORMAL)
+	{
+		currState = GameState::FLAG;
+		auto &team = ecsManager.getComponent<Team>(flagEvent->flagPlayer);
+		const char* path;
+		if (team.assigned == TeamType::PLAYER1)
+		{
+			path = flag_path("CaptureTheCastle_bubble_flag_blue.png");
+		}
+		else if (team.assigned == TeamType::PLAYER2)
+		{
+			path = flag_path("CaptureTheCastle_bubble_flag_red.png");
+		}
+		Entity bubble = registerBubble(flagEvent->flagPlayer, path);
+		collisionSystem->setFlagMode(flagEvent->flagPlayer);
+		playerInputSystem->setFlagMode(true, flagEvent->flagPlayer, bubble);
+		boxCollisionSystem->setFlagMode(true, flagEvent->flagPlayer, bubble);
+		Mix_PlayChannel(-1, flag_sound, 0);
+	}
+	else if(flagEvent->flag == false && currState == GameState::FLAG)
+	{
+		currState = GameState::NORMAL;
+		playerInputSystem->setFlagMode(false, 0, 0);
+		boxCollisionSystem->setFlagMode(false, 0, 0);
+	}
 }
 
 void Game::destroy() {
@@ -412,6 +451,7 @@ void Game::destroy() {
     p1SetUpInstructions.destroy();
     p2SetUpInstructions.destroy();
     timer.destroy();
+    hint.destroy();
     firework.destroy();
 	itemSpawnSystem.reset();
 	movementSystem.reset();
@@ -425,6 +465,7 @@ void Game::destroy() {
 	curveMovementSystem.reset();
 	itemBoardSystem.reset();
 	itemEffectSystem.reset();
+	rainSystem.reset();
 }
 
 Game::~Game() {
@@ -517,7 +558,38 @@ Entity Game::registerPlayer(const Transform& transform, const Motion& motion, co
     return player;
 }
 
-void Game::registerCastle(const Transform& transform, const TeamType& team_type, const char* texture_path)
+Entity Game::registerBubble(Entity player, const char* texture_path)
+{
+	auto& transform = ecsManager.getComponent<Transform>(player);
+	Transform transform_bubble = Transform{
+		 { transform.position.x, transform.position.y - 20.f },
+		 // { 120.f - castleWidth, m_screen_size.y / 2 - castleHeight},  debugging purpose
+		 { transform.position.x, transform.position.y - 20.f },
+		 {0.8f, 0.8f },
+		 { transform.position.x, transform.position.y - 20.f }
+	};
+	auto& motion = ecsManager.getComponent<Motion>(player);
+	auto& team = ecsManager.getComponent<Team>(player);
+	Entity bubble = ecsManager.createEntity();
+	ecsManager.addComponent<Transform>(bubble, transform_bubble);
+	ecsManager.addComponent<Motion>(bubble, { {0.f, 0.f}, motion.speed });
+	ecsManager.addComponent<Team>(bubble, team);
+
+	EffectComponent bubbleEffect{shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")};
+	EffectManager::instance().load_from_file(bubbleEffect);
+	ecsManager.addComponent<EffectComponent>(bubble, bubbleEffect);
+	Sprite bubbleSprite = { texture_path };
+	TextureManager::instance().load_from_file(bubbleSprite);
+	bubbleSprite.sprite_size = { (float) bubbleSprite.width , (float)bubbleSprite.height};
+	ecsManager.addComponent<Sprite>(bubble, bubbleSprite);
+	MeshComponent bubbleMesh{};
+	bubbleMesh.id = MeshManager::instance().init_mesh(bubbleSprite.width, bubbleSprite.height);
+	ecsManager.addComponent<MeshComponent>(bubble, bubbleMesh);
+	collisionSystem->setBubble(bubble);
+	return bubble;
+}
+
+Entity Game::registerCastle(const Transform& transform, const TeamType& team_type, const char* texture_path)
 {
     Entity castle = ecsManager.createEntity();
     ecsManager.addComponent<Transform>(castle, transform);
@@ -542,6 +614,8 @@ void Game::registerCastle(const Transform& transform, const TeamType& team_type,
                     { castleSprite.width * 0.2f, castleSprite.height * 0.2f }
             }
     );
+	//std::cout << castle << std::endl;
+	return castle;
 }
 
 void Game::registerBanditAiSystem()
@@ -728,7 +802,7 @@ void Game::registerCastles()
             { 0.5f, 0.5f },
             { 120.f, m_screen_size.y / 2 }
     };
-    registerCastle(transform_castle1, TeamType::PLAYER1, textures_path("castle/CaptureTheCastle_castle_red.png"));
+	Entity c1 = registerCastle(transform_castle1, TeamType::PLAYER1, textures_path("castle/CaptureTheCastle_castle_red.png"));
 
     // CASTLE 2
     Transform transform_castle2 = Transform{
@@ -737,7 +811,8 @@ void Game::registerCastles()
             { 0.5f, 0.5f },
             { m_screen_size.x - 120.f, m_screen_size.y / 2 }
     };
-    registerCastle(transform_castle2, TeamType::PLAYER2, textures_path("castle/CaptureTheCastle_castle_blue.png"));
+	Entity c2 = registerCastle(transform_castle2, TeamType::PLAYER2, textures_path("castle/CaptureTheCastle_castle_blue.png"));
+	collisionSystem->setCastle(c1, c2);
 }
 
 void Game::registerPlayers(std::vector<Entity>& players)
