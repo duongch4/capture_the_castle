@@ -124,6 +124,7 @@ bool Game::update(float elapsed_ms) {
         itemBoardSystem->update();
         curveMovementSystem->update(elapsed_ms);
         itemEffectSystem->update();
+		rainSystem->update(elapsed_ms);
     } else if (currState == GameState::SETUP) {
         playerInputSystem->update();
         boxCollisionSystem->checkCollision();
@@ -186,6 +187,8 @@ void Game::draw() {
         p2SetUpInstructions.draw(projection_2D);
     } else if (currState == GameState::NORMAL) {
         help_btn.draw(projection_2D);
+
+		rainSystem->draw(projection_2D);
     }
 }
 
@@ -562,14 +565,14 @@ void Game::registerBoxCollisionSystem()
 void Game::registerCollisionSystem()
 {
     collisionSystem = ecsManager.registerSystem<CollisionSystem>();
-
-        Signature signature;
-        signature.set(ecsManager.getComponentType<Transform>());
-        signature.set(ecsManager.getComponentType<Team>());
-        signature.set(ecsManager.getComponentType<C_Collision>());
-        // signature.set(ecsManager.getComponentType<Motion>());
-        ecsManager.setSystemSignature<CollisionSystem>(signature);
-
+	{
+		Signature signature;
+		signature.set(ecsManager.getComponentType<Transform>());
+		signature.set(ecsManager.getComponentType<Team>());
+		signature.set(ecsManager.getComponentType<C_Collision>());
+		// signature.set(ecsManager.getComponentType<Motion>());
+		ecsManager.setSystemSignature<CollisionSystem>(signature);
+	}
     collisionSystem->init();
 }
 
@@ -638,10 +641,10 @@ void Game::registerRainSystem(const vec2& screen)
 	rainSystem = ecsManager.registerSystem<RainSystem>();
 	{
 		Signature signature;
-		//signature.set(ecsManager.getComponentType<RainComponent>());
+		signature.set(ecsManager.getComponentType<RainComponent>());
 		ecsManager.setSystemSignature<RainSystem>(signature);
 	}
-	//rainSystem->init(screen);
+	rainSystem->init(screen);
 }
 
 void Game::registerCurveMovementSystem()
@@ -693,7 +696,7 @@ void Game::registerComponents()
     ecsManager.registerComponent<CurveMotionComponent>();
     ecsManager.registerComponent<ItemBoardComponent>();
     ecsManager.registerComponent<PlaceableComponent>();
-
+	ecsManager.registerComponent<RainComponent>();
 }
 
 void Game::registerCastles()

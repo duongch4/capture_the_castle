@@ -130,6 +130,23 @@ struct CurveMotionComponent {
     vec2 p3;
 };
 
-struct RainComponent {};
+struct RainComponent {
+	size_t test;
+};
+
+bool intersect_line_point(float x1, float y1, float x2, float y2, float px, float py);
+bool intersect_point_circle(float px, float py, float cx, float cy, float r);
+bool intersect_line_circle(float x1, float y1, float x2, float y2, float cx, float cy, float r);
+bool intersect_line_line(
+	float x1, float y1, float x2, float y2,
+	float x3, float y3, float x4, float y4
+);
+bool intersect_line_rect(
+	float x1, float y1, float x2, float y2,
+	float rx, float ry, float rw, float rh
+);
+
+float dist(float x1, float y1, float x2, float y2);
+bool intersect_circle_circle(const vec2& c1, const vec2& c2, const float& r1, const float& r2);
 
 #endif //CAPTURE_THE_CASTLE_COMPONENTS_HPP

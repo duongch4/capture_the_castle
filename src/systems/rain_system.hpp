@@ -12,6 +12,7 @@
 #include <ecs/common_ecs.hpp>
 #include <ecs/ecs_manager.hpp>
 #include <components.hpp>
+#include <common.hpp>
 #include <tilemap.hpp>
 #include <curve.hpp>
 #include <mesh_manager.hpp>
@@ -21,29 +22,47 @@ extern ECSManager ecsManager;
 class RainSystem : public System
 {
 public:
-	bool init(std::shared_ptr<Tilemap> tilemap, const std::vector<Entity>& players);
-	void update(float& ms);
 	void reset() override;
 
-public:
-	struct Particle
-	{
-		float life = 0.0f;
-		vec2 position;
-		vec2 velocity;
-		float radius;
-		vec3 color;
-	};
 	bool init(vec2 screen_size);
-
 	void destroy();
-
-	void update(float ms);
-
+	void update(const float& ms);
 	void draw(const mat3& projection);
 
-	void kaboom(vec2 position);
 private:
+	struct Particle
+	{
+		float life = 0.f;
+		vec2 position = { 0.f, 0.f };
+		vec2 velocity = { 0.f, 0.f };
+		float radius = 1.f;
+		vec3 color = { 0.f, 0.f, 0.f };
+		float mass = 1.f;
+	};
+	static const int MAX_PARTICLE = 500;
+	static const int NUM_PARTICLE = 100;
+
+	float air_density = 1.1455f;
+	float air_speed = 1.f;
+	const float DRAG_COEF_SPHERE = 0.47f;
+	const float GRAVITY_ACC = 9.81f;
+	const float PARTICLE_RADIUS = 4.f;
+	const float PARTICLE_LIFE = 4.f;
+
+	const float SPAWN_DELAY = 0.f;
+	//static const float SPAWN_DELAY = 0.1f;
+	const float SPAWN_GROUP_DELAY = 0.f;
+	//static const float SPAWN_GROUP_DELAY = 0.6f;
+
+private:
+	void handle_motion(float seconds);
+	void handle_spawn(float seconds);
+	void handle_particle_life();
+	void handle_collisions();
+	void handle_particle_particle_collision(Particle& p1, Particle& p2);
+	void kaboom(vec2 position);
+
+
 	void next_time();
 	GLuint m_instance_vbo;
 	std::vector<Particle> m_particles;
@@ -55,7 +74,8 @@ private:
 	std::uniform_real_distribution<float> m_dist_PositionY;
 	std::uniform_real_distribution<float> m_dist_Color;
 	std::uniform_real_distribution<float> m_dist_Radian;
-	std::uniform_real_distribution<float> m_dist_Velocity;
+	std::uniform_real_distribution<float> m_dist_VelocityX;
+	std::uniform_real_distribution<float> m_dist_VelocityY;
 	std::uniform_real_distribution<float> m_dist_SpawnTimer;
 
 	Curve m_curve;

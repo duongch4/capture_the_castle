@@ -1,72 +1,68 @@
 #define _USE_MATH_DEFINES
 #include "rain_system.hpp"
 
-static const int MAX_PARTICLE = 2000;
-static const int NUM_PARTICLE = 100;
 constexpr int NUM_SEGMENTS = 8;
-static const float GRAVITY = 500.f;
-static const int PARTICLE_SIZE = 4;
-static const int PARTICLE_LIFE = 4;
-static const float SPAWN_DELAY = 0.1f;
-static const float SPAWN_GROUP_DELAY = 0.6f;
 
 bool RainSystem::init(vec2 screen_size) {
-	return true;
-    //m_rng = std::default_random_engine(std::random_device()());
-    //std::uniform_real_distribution<float> distVelocity(50, 300);
-    //std::uniform_real_distribution<float> distPositionX(0 + screen_size.x / 5, screen_size.x - screen_size.x / 5);
-    //std::uniform_real_distribution<float> distPositionY(0 + screen_size.y / 5, 0 + screen_size.y / 2);
-    //std::uniform_real_distribution<float> distColor(0, 1);
-    //std::uniform_real_distribution<float> distRadian(-M_PI, M_PI);
+    m_rng = std::default_random_engine(std::random_device()());
+	std::uniform_real_distribution<float> distVelocityX(50, 1000);
+	std::uniform_real_distribution<float> distVelocityY(50, 500);
+	std::uniform_real_distribution<float> distPositionX(0, screen_size.x);
+	std::uniform_real_distribution<float> distPositionY(0, 0);
+    std::uniform_real_distribution<float> distColor(0.7, 1);
+	std::uniform_real_distribution<float> distRadian(-M_PI, M_PI);
     //std::uniform_real_distribution<float> distSpawnTimer(0.8, 2.5);
-    //m_dist_PositionX = distPositionX;
-    //m_dist_PositionY = distPositionY;
-    //m_dist_Color = distColor;
-    //m_dist_Radian = distRadian;
-    //m_dist_Velocity = distVelocity;
+    m_dist_PositionX = distPositionX;
+    m_dist_PositionY = distPositionY;
+    m_dist_Color = distColor;
+    m_dist_Radian = distRadian;
+	m_dist_VelocityX = distVelocityX;
+	m_dist_VelocityY = distVelocityY;
     //m_dist_SpawnTimer = distSpawnTimer;
 
-    //m_spawn_timer = SPAWN_DELAY;
-    //m_spawn_count = 0;
+    m_spawn_timer = SPAWN_DELAY;
+    m_spawn_count = 0;
 
-    //m_curve.set_control_points({
-    //    vec2{300.f, 350.f}, vec2{420.f, 30.f}, vec2{1000.f, 30.f}, vec2{1200.f, 350.f}
-    //});
+    m_curve.set_control_points({
+        vec2{300.f, 350.f}, vec2{420.f, 30.f}, vec2{1000.f, 30.f}, vec2{1200.f, 350.f}
+    });
 
-    //std::vector<GLfloat> screen_vertex_buffer_data;
-    //constexpr float z = -0.01f;
+    std::vector<GLfloat> screen_vertex_buffer_data;
+    constexpr float z = -0.01f;
 
-    //for (int i = 0; i < NUM_SEGMENTS; i++) {
-    //    screen_vertex_buffer_data.push_back(std::cos(M_PI * 2.0 * float(i) / (float)NUM_SEGMENTS));
-    //    screen_vertex_buffer_data.push_back(std::sin(M_PI * 2.0 * float(i) / (float)NUM_SEGMENTS));
-    //    screen_vertex_buffer_data.push_back(z);
+    for (int i = 0; i < NUM_SEGMENTS; i++) {
+        screen_vertex_buffer_data.push_back(std::cos(M_PI * 2.0 * float(i) / (float)NUM_SEGMENTS));
+        screen_vertex_buffer_data.push_back(std::sin(M_PI * 2.0 * float(i) / (float)NUM_SEGMENTS));
+        screen_vertex_buffer_data.push_back(z);
 
-    //    screen_vertex_buffer_data.push_back(std::cos(M_PI * 2.0 * float(i + 1) / (float)NUM_SEGMENTS));
-    //    screen_vertex_buffer_data.push_back(std::sin(M_PI * 2.0 * float(i + 1) / (float)NUM_SEGMENTS));
-    //    screen_vertex_buffer_data.push_back(z);
+        screen_vertex_buffer_data.push_back(std::cos(M_PI * 2.0 * float(i + 1) / (float)NUM_SEGMENTS));
+        screen_vertex_buffer_data.push_back(std::sin(M_PI * 2.0 * float(i + 1) / (float)NUM_SEGMENTS));
+        screen_vertex_buffer_data.push_back(z);
 
-    //    screen_vertex_buffer_data.push_back(0);
-    //    screen_vertex_buffer_data.push_back(0);
-    //    screen_vertex_buffer_data.push_back(z);
-    //}
+        screen_vertex_buffer_data.push_back(0);
+        screen_vertex_buffer_data.push_back(0);
+        screen_vertex_buffer_data.push_back(z);
+    }
 
-    //// Clearing errors
-    //gl_flush_errors();
+    // Clearing errors
+    gl_flush_errors();
 
-    //// Vertex Buffer creation
-    //glGenBuffers(1, &mesh.vbo);
-    //glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-    //glBufferData(GL_ARRAY_BUFFER, screen_vertex_buffer_data.size()*sizeof(GLfloat), screen_vertex_buffer_data.data(), GL_STATIC_DRAW);
+    // Vertex Buffer creation
+    glGenBuffers(1, &mesh.vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+    glBufferData(GL_ARRAY_BUFFER, screen_vertex_buffer_data.size()*sizeof(GLfloat), screen_vertex_buffer_data.data(), GL_STATIC_DRAW);
 
-    //glGenBuffers(1, &m_instance_vbo);
-    //glBindBuffer(GL_ARRAY_BUFFER, m_instance_vbo);
+    glGenBuffers(1, &m_instance_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, m_instance_vbo);
 
-    //if (gl_has_errors())
-    //    return false;
+    if (gl_has_errors())
+        return false;
 
     //m_pop = Mix_LoadWAV(audio_path("capturethecastle_firecracker.wav"));
 
-    //return effect.load_from_file(shader_path("firework.vs.glsl"), shader_path("firework.fs.glsl"));
+    return effect.load_from_file(shader_path("firework.vs.glsl"), shader_path("firework.fs.glsl"));
+	//return true;
+
 }
 
 void RainSystem::destroy() {
@@ -83,42 +79,128 @@ void RainSystem::destroy() {
 	m_particles.shrink_to_fit();
 }
 
-void RainSystem::update(float ms) {
+void RainSystem::update(const float& ms) {
     float seconds = ms / 1000;
-    m_spawn_timer -= seconds;
+	handle_spawn(seconds);
+	handle_particle_life();
+	handle_motion(seconds);
+	handle_collisions();
+}
 
-    if (m_spawn_timer <= 0) {
-        // using the points on curve for position
-        kaboom(m_curve.get_curve_points(time));
-        next_time();
-        m_spawn_count++;
-        if (m_spawn_count == 3) {
-            m_spawn_count = 0;
-            m_spawn_timer = SPAWN_GROUP_DELAY;
-        } else {
-            m_spawn_timer = SPAWN_DELAY;
-        }
-    }
+void RainSystem::handle_collisions()
+{
+	for (size_t i = 0; i < m_particles.size(); ++i)
+	{
+		auto& p1 = m_particles[i];
+		for (size_t j = i + 1; j < m_particles.size(); ++j)
+		{
+			auto& p2 = m_particles[j];
+			if (intersect_circle_circle(p1.position, p2.position, p1.radius, p2.radius))
+			{
+				handle_particle_particle_collision(p1, p2);
+			}
+		}
+		//for (size_t k = 0; k < turtles.size(); k++)
+		//{
+		//	auto& turtle = turtles[k];
+		//	if (intersect_circle_circle(p1.position, turtle.get_position(), p1.radius, turtle.get_bounding_box().x / 2))
+		//	{
+		//		handle_pebble_turtle_collision(p1, turtle, ms);
+		//	}
+		//}
+		//for (size_t k = 0; k < fish.size(); k++)
+		//{
+		//	auto& fishk = fish[k];
+		//	if (intersect_circle_circle(p1.position, fishk.get_position(), p1.radius, fishk.get_bounding_box().x / 2))
+		//	{
+		//		handle_pebble_fish_collision(p1, fishk, ms);
+		//	}
+		//}
 
-    // Remove the particle if life is smaller than zero
-    auto particle_it = m_particles.begin();
-    while (particle_it != m_particles.end())
-    {
-        if (particle_it->life <= 0)
-        {
-            particle_it = m_particles.erase(particle_it);
-            continue;
-        }
-        ++particle_it;
-    }
+		//if (intersect_circle_circle(p1.position, salmon.get_position(), p1.radius, salmon.get_bb_size().x * 1.f))
+		//{
+		//	vec2 salmon_point = { 0.f,0.f };
+		//	if (salmon.exact_collision_pebble(projection, screen, p1.position, p1.radius, &salmon_point))
+		//	{
+		//		handle_pebble_salmon_collision(p1, salmon_point, salmon.get_speed());
+		//	}
+		//}
+	}
+}
 
-    // Update each particle's life, velocity, position
-    for (auto& particle : m_particles) {
-        particle.life -= seconds;
-        particle.velocity.y += (GRAVITY * seconds);
-        particle.position = vec2 {particle.position.x + (particle.velocity.x * seconds),
-                                  particle.position.y + (particle.velocity.y * seconds)};
-    }
+void RainSystem::handle_particle_particle_collision(Particle& p1, Particle& p2)
+{
+	float pos_x = p2.position.x - p1.position.x;
+	float pos_y = p2.position.y - p1.position.y;
+	float vel_x = p1.velocity.x - p2.velocity.x;
+	float vel_y = p1.velocity.y - p2.velocity.y;
+	float dotP = pos_x * vel_x + pos_y * vel_y;
+	if (dotP > 0.f)
+	{
+		float mass_ratio_1 = 2 * p2.mass / (p1.mass + p2.mass);
+		float vect_ratio_1 = dot(vec2{ vel_x,vel_y }, vec2{ -pos_x,-pos_y }) / sq_len(vec2{ -pos_x,-pos_y });
+		p1.velocity = sub(p1.velocity, mul(vec2{ -pos_x,-pos_y }, mass_ratio_1 * vect_ratio_1));
+
+		float mass_ratio_2 = 2 * p1.mass / (p1.mass + p2.mass);
+		float vect_ratio_2 = dot(vec2{ -vel_x,-vel_y }, vec2{ pos_x,pos_y }) / sq_len(vec2{ pos_x,pos_y });
+		p2.velocity = sub(p2.velocity, mul(vec2{ pos_x,pos_y }, mass_ratio_2 * vect_ratio_2));
+	}
+}
+
+void RainSystem::handle_motion(float dt)
+{
+	// Update each particle's life, velocity, position
+	for (auto& particle : m_particles)
+	{
+		particle.life -= dt;
+
+		// F = 0.5 * density * speed^2 * drag_coef * surface_area
+		float air_drag_force = 0.5f * air_density * air_speed * air_speed * DRAG_COEF_SPHERE * 4.f * 3.1415f * particle.radius * particle.radius;
+		vec2 force = { -air_drag_force, particle.mass * GRAVITY_ACC };
+		vec2 acc = { force.x / particle.mass, force.y / particle.mass };
+		particle.velocity.x += acc.x * dt;
+		particle.velocity.y += acc.y * dt;
+		particle.position.x += particle.velocity.x * dt;
+		particle.position.y += particle.velocity.y * dt;
+	}
+}
+
+void RainSystem::handle_spawn(float seconds)
+{
+	m_spawn_timer -= seconds;
+
+	if (m_spawn_timer <= 0)
+	{
+		// using the points on curve for position
+		kaboom(vec2{ m_dist_PositionX(m_rng), m_dist_PositionY(m_rng) });
+		//kaboom(m_curve.get_curve_points(time));
+		//next_time();
+		m_spawn_count++;
+		if (m_spawn_count == 100)
+		{
+			m_spawn_count = 0;
+			m_spawn_timer = SPAWN_GROUP_DELAY;
+		}
+		else
+		{
+			m_spawn_timer = SPAWN_DELAY;
+		}
+	}
+}
+
+void RainSystem::handle_particle_life()
+{
+	// Remove the particle if life is smaller than zero
+	auto particle_it = m_particles.begin();
+	while (particle_it != m_particles.end())
+	{
+		if (particle_it->life <= 0)
+		{
+			particle_it = m_particles.erase(particle_it);
+			continue;
+		}
+		++particle_it;
+	}
 }
 
 void RainSystem::kaboom(vec2 position) {
@@ -127,19 +209,21 @@ void RainSystem::kaboom(vec2 position) {
             Particle particle;
 
             float randomRadian = m_dist_Radian(m_rng);
-            float randomVelocity = m_dist_Velocity(m_rng);
+			float randomVelocityX = m_dist_VelocityX(m_rng);
+			float randomVelocityY = m_dist_VelocityY(m_rng);
 
             particle.position = position;
-            particle.velocity.x = randomVelocity * cos(randomRadian);
-            particle.velocity.y = randomVelocity * sin(randomRadian);
-            particle.radius = PARTICLE_SIZE;
+            particle.velocity.x = randomVelocityX * cos(randomRadian);
+            particle.velocity.y = randomVelocityY * sin(randomRadian);
+            particle.radius = PARTICLE_RADIUS;
             particle.life = PARTICLE_LIFE;
-            particle.color = vec3{m_dist_Color(m_rng), m_dist_Color(m_rng), m_dist_Color(m_rng)};
+			//particle.color = vec3{ 0, 0, m_dist_Color(m_rng) };
+			particle.color = vec3{ m_dist_Color(m_rng), m_dist_Color(m_rng), m_dist_Color(m_rng) };
 
             m_particles.emplace_back(particle);
         }
     }
-    Mix_PlayChannel(-1, m_pop, 0);
+    //Mix_PlayChannel(-1, m_pop, 0);
 }
 
 void RainSystem::draw(const mat3& projection) {
@@ -206,5 +290,6 @@ void RainSystem::next_time() {
 
 void RainSystem::reset()
 {
+	this->destroy();
 	this->entities.clear();
 }
