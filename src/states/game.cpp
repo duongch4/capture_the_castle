@@ -371,6 +371,9 @@ void Game::reset() {
     p2SetUpInstructions.destroy();
     std::cout << "SetUp Instructions destroyed" << std::endl;
     timer.destroy();
+    std::cout << "Timer destroyed" << std::endl;
+    EffectManager::instance().release_all();
+    std::cout << "Releasing all shaders" << std::endl;
     if (m_background_music != nullptr)
         Mix_FreeMusic(m_background_music);
     if (m_click != nullptr)
