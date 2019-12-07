@@ -118,8 +118,12 @@ set(SOURCE_FILES
         src/ui/pause_window.cpp
         src/ui/soldier_setup_window.cpp
         src/ui/soldier_setup_window.hpp
+
+		src/systems/rain_system.hpp
+		src/systems/rain_system.cpp
         src/effect_manager.cpp
-        src/effect_manager.hpp)
+        src/effect_manager.hpp
+)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

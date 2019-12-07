@@ -9,11 +9,11 @@ bool Menu::init_state(World *world) {
     vec2 offset = {m_world->get_screen_size().x / 6, m_world->get_screen_size().y / 6};
     vec2 background_pos = background.get_position();
     quit_btn.init({background_pos.x, (float) (background_pos.y + (offset.y * 2.4))}, textures_path("ui/CaptureTheCastle_quit_btn.png"));
-    quit_btn.setScale({0.8, 0.4});
+    quit_btn.setScale({0.8f, 0.4f});
     how_to_play_btn.init({background_pos.x - offset.x, (float) (background_pos.y + (offset.y * 1.5))}, textures_path("ui/CaptureTheCastle_how_to_play_btn.png"));
-    how_to_play_btn.setScale({0.8, 0.4});
+    how_to_play_btn.setScale({0.8f, 0.4f});
     new_game_btn.init({background_pos.x + offset.x, (float) (background_pos.y + (offset.y * 1.5))}, textures_path("ui/CaptureTheCastle_new_game_btn.png"));
-    new_game_btn.setScale({0.8, 0.4});
+    new_game_btn.setScale({0.8f, 0.4f});
 
     m_click = Mix_LoadWAV(audio_path("capturethecastle_button_click.wav"));
     if (m_click == nullptr)

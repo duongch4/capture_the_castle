@@ -11,15 +11,15 @@ bool HowToPlay::init_state(World *world) {
     vec2 background_pos = background.get_position();
     instructions.init({background_pos.x - offset.x, background_pos.y}, textures_path("ui/CaptureTheCastle_how_to_play_instructions.png"));
     main_menu_btn.init({(float)(background_pos.x + offset.x * 1.5), (float) (background_pos.y - 1.5 * offset.y)}, textures_path("ui/CaptureTheCastle_main_menu_btn.png"));
-    main_menu_btn.setScale({0.8, 0.4});
+    main_menu_btn.setScale({0.8f, 0.4f});
     new_game_btn.init({(float)(background_pos.x + offset.x * 1.5), (float) (background_pos.y - (0.5 * offset.y))}, textures_path("ui/CaptureTheCastle_new_game_btn.png"));
-    new_game_btn.setScale({0.8, 0.4});
+    new_game_btn.setScale({0.8f, 0.4f});
     quit_btn.init({(float)(background_pos.x + offset.x * 1.5), (float) (background_pos.y + (0.5 * offset.y))}, textures_path("ui/CaptureTheCastle_quit_btn.png"));
-    quit_btn.setScale({0.8, 0.4});
+    quit_btn.setScale({0.8f, 0.4f});
     controls_btn.init({(float)(background_pos.x + offset.x * 1.5), (float) (background_pos.y + 1.5 * offset.y)}, textures_path("ui/CaptureTheCastle_controls_btn.png"));
-    controls_btn.setScale({0.8, 0.4});
+    controls_btn.setScale({0.8f, 0.4f});
     how_to_btn.init({(float)(background_pos.x + offset.x * 1.5), (float) (background_pos.y + 1.5 * offset.y)}, textures_path("ui/CaptureTheCastle_how_to_play_btn.png"));
-    how_to_btn.setScale({0.8, 0.4});
+    how_to_btn.setScale({0.8f, 0.4f});
 
     m_click = Mix_LoadWAV(audio_path("capturethecastle_button_click.wav"));
     if (m_click == nullptr)

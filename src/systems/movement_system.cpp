@@ -12,8 +12,9 @@
 
 extern ECSManager ecsManager;
 
-void MovementSystem::init() {
-
+void MovementSystem::init(const vec2& screen) {
+	this->screenSize.x = screen.x;
+	this->screenSize.y = screen.y;
 }
 
 void MovementSystem::update(float ms) {
@@ -96,12 +97,6 @@ void MovementSystem::set_sprite_direction(Motion& motion, Sprite& sprite)
 	}
 }
 
-void MovementSystem::setScreenSize(const vec2& screen) {
-    this->screenSize.x = screen.x;
-    this->screenSize.y = screen.y;
-}
-
 void MovementSystem::reset() {
 	this->entities.clear();
-
 }

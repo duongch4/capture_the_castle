@@ -22,8 +22,11 @@ void PopUpButton::init(vec2 pos, const char* texturePath) {
             fprintf(stderr, "Failed to load tile texture!");
         }
     }
-    mesh.id = MeshManager::instance().init_mesh(popupBtnSprite.width, popupBtnSprite.height, popupBtnSprite.width,
-            popupBtnSprite.height / 2, 0, currIndex, 0);
+    mesh.id = MeshManager::instance().init_mesh(
+		popupBtnSprite.width, popupBtnSprite.height,
+		(float)popupBtnSprite.width, (float)popupBtnSprite.height / 2.f,
+		0.f, (float)currIndex, 0
+	);
 }
 
 void PopUpButton::destroy() {
@@ -106,12 +109,18 @@ bool PopUpButton::mouseOnButton(vec2 mouseloc) {
 void PopUpButton::onHover(bool isHovering) {
     if (isHovering && currIndex == 0) {
         currIndex = 1;
-        MeshManager::instance().update_sprite(mesh.id,popupBtnSprite.width, popupBtnSprite.height, popupBtnSprite.width,
-                                               popupBtnSprite.height / 2, 0, currIndex, 0);
+        MeshManager::instance().update_sprite(
+			mesh.id, popupBtnSprite.width, popupBtnSprite.height,
+			popupBtnSprite.width, int(popupBtnSprite.height / 2.f),
+			0, currIndex, 0
+		);
     } else if (!isHovering && currIndex == 1) {
         currIndex = 0;
-        MeshManager::instance().update_sprite(mesh.id,popupBtnSprite.width, popupBtnSprite.height, popupBtnSprite.width,
-                                               popupBtnSprite.height / 2, 0, currIndex, 0);
+        MeshManager::instance().update_sprite(
+			mesh.id, popupBtnSprite.width, popupBtnSprite.height,
+			popupBtnSprite.width, int(popupBtnSprite.height / 2.f),
+			0, currIndex, 0
+		);
     }
 }
 

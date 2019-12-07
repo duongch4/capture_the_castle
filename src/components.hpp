@@ -46,13 +46,14 @@ struct Transform {
 };
 
 // Collision component of an entity handles collision testing and collision handling
-struct C_Collision{
+struct C_Collision {
     CollisionLayer layer;
     float radius;
     vec2 boundingBox;
+    int wait_count = 0;
 };
 
-struct ItemComponent{
+struct ItemComponent {
     bool in_use;
     ItemType itemType;
 };
@@ -62,20 +63,54 @@ struct Team {
     TeamType assigned;
 };
 
-struct BanditSpawnComponent {};
-struct BanditAiComponent {};
+struct BanditSpawnComponent {
+	BanditType type;
+};
+
+struct BanditAiComponent {
+	BanditState	state;
+	size_t idle_time;
+	size_t chase_time;
+	size_t patrol_time;
+	vec2 prev_dir;
+};
+
 struct ItemBoardComponent {};
-struct PlaceableComponent{};
+struct PlaceableComponent {};
 
 struct PlayerInputControlComponent {};
 
-struct SoldierAiComponent {};
+struct SoldierAiComponent {
+	SoldierState state;
+	size_t idle_time;
+	size_t patrol_time;
+	vec2 prev_dir;
+};
 
-struct CurveMotionComponent{
+struct CurveMotionComponent {
     vec2 p0;
     vec2 p1;
     vec2 p2;
     vec2 p3;
 };
+
+struct RainComponent {
+	size_t test;
+};
+
+bool intersect_line_point(float x1, float y1, float x2, float y2, float px, float py);
+bool intersect_point_circle(float px, float py, float cx, float cy, float r);
+bool intersect_line_circle(float x1, float y1, float x2, float y2, float cx, float cy, float r);
+bool intersect_line_line(
+	float x1, float y1, float x2, float y2,
+	float x3, float y3, float x4, float y4
+);
+bool intersect_line_rect(
+	float x1, float y1, float x2, float y2,
+	float rx, float ry, float rw, float rh
+);
+
+float dist(float x1, float y1, float x2, float y2);
+bool intersect_circle_circle(const vec2& c1, const vec2& c2, const float& r1, const float& r2);
 
 #endif //CAPTURE_THE_CASTLE_COMPONENTS_HPP

@@ -61,7 +61,6 @@ void PlayerInputSystem::update()
 							MazeRegion::PLAYER1, TeamType::PLAYER1,
 							textures_path("red_soldier_sprite_sheet-01.png")
 						);
-                        Mix_PlayChannel(-1, soldier_set_sound, 0);
 						break;
 					default:
 						break;
@@ -97,7 +96,6 @@ void PlayerInputSystem::update()
 							MazeRegion::PLAYER2, TeamType::PLAYER2,
 							textures_path("blue_soldier_sprite_sheet-01.png")
 						);
-						Mix_PlayChannel(-1, soldier_set_sound, 0);
 						break;
                     case InputKeys ::RIGHT_SHIFT:
                         if (item.itemType == ItemType::BOMB){
@@ -132,6 +130,7 @@ void PlayerInputSystem::handle_soldier_spawn(
 			transform_soldier, motion_soldier,
 			team_type, texture_path
 		);
+        Mix_PlayChannel(-1, soldier_set_sound, 0);
 		++soldier_count;
 		wait_time = 0;
 	}
@@ -199,7 +198,6 @@ void PlayerInputSystem::place_bomb(const Tile& tile, const TeamType& team_type) 
         itemSprite = {power_up_path("CaptureTheCastle_powerup_bomb_setBlue.png")};
     }
     TextureManager::instance().load_from_file(itemSprite);
-    itemSprite.sprite_size = { itemSprite.width / 7.0f , itemSprite.height / 5.0f };
     ecsManager.addComponent<Sprite>(bomb, itemSprite);
     MeshComponent itemMesh{MeshManager::instance().init_mesh(
             itemSprite.width, itemSprite.height)};
@@ -224,7 +222,14 @@ void PlayerInputSystem::spawn_soldier(
 	ecsManager.addComponent<Transform>(soldier, transform);
 	ecsManager.addComponent<Motion>(soldier, motion);
 
-	ecsManager.addComponent<SoldierAiComponent>(soldier, SoldierAiComponent{});
+	ecsManager.addComponent<SoldierAiComponent>(
+		soldier,
+		SoldierAiComponent{
+			SoldierState::IDLE,
+			0,0,
+			vec2{ 0.f,0.f }
+		}
+	);
 
 	EffectComponent soldierEffect{
 	    shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")
@@ -233,7 +238,7 @@ void PlayerInputSystem::spawn_soldier(
 	ecsManager.addComponent<EffectComponent>(soldier, soldierEffect);
 	Sprite soldierSprite = { texture_path };
 	TextureManager::instance().load_from_file(soldierSprite);
-	soldierSprite.sprite_index = { 0 , 3 };
+	soldierSprite.sprite_index = { 0 , 0 };
 	soldierSprite.sprite_size = { soldierSprite.width / 7.0f , soldierSprite.height / 5.0f };
 	ecsManager.addComponent<Sprite>(soldier, soldierSprite);
 	MeshComponent soldierMesh{};

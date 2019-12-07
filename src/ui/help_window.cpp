@@ -4,12 +4,12 @@
 
 void HelpWindow::init(vec2 screen_size) {
     // Initialize help button
-    curr_state = CONTROLS;
+    curr_state = State::CONTROLS;
     background.init(screen_size, textures_path("ui/CaptureTheCastle_help_screen.png"));
     vec2 currPos = background.get_position();
     close_btn.init({currPos.x + 410, currPos.y - 280});
     instructions.init({currPos.x, currPos.y + 22 }, textures_path("ui/CaptureTheCastle_game_control_instructions.png"));
-    instructions.setScale({0.275, 0.275});
+    instructions.setScale({0.275f, 0.275f});
     how_to_play_btn.init({currPos.x + 200, currPos.y + 220},
                           textures_path("ui/CaptureTheCastle_how_to_play_btn.png"));
     controls_btn.init({currPos.x + 200, currPos.y + 220},
@@ -36,7 +36,7 @@ void HelpWindow::draw(const mat3 &projection) {
     background.draw(projection);
     close_btn.draw(projection);
     instructions.draw(projection);
-    if (curr_state == HOWTOPLAY) {
+    if (curr_state == State::HOWTOPLAY) {
         controls_btn.draw(projection);
     } else {
         how_to_play_btn.draw(projection);
@@ -62,7 +62,7 @@ ButtonActions HelpWindow::checkButtonClicks(vec2 mouseloc) {
 
 void HelpWindow::checkButtonHovers(vec2 mouseloc) {
     close_btn.onHover(close_btn.mouseOnButton(mouseloc));
-    if (curr_state == HOWTOPLAY) {
+    if (curr_state == State::HOWTOPLAY) {
         controls_btn.onHover(controls_btn.mouseOnButton(mouseloc));
     } else {
         how_to_play_btn.onHover(how_to_play_btn.mouseOnButton(mouseloc));
@@ -70,25 +70,25 @@ void HelpWindow::checkButtonHovers(vec2 mouseloc) {
 }
 
 void HelpWindow::showHowToPlay() {
-    curr_state = HOWTOPLAY;
+    curr_state = State::HOWTOPLAY;
     instructions.loadNewInstruction(textures_path("ui/CaptureTheCastle_how_to_play_instructions.png"));
-    instructions.setScale({0.2, 0.2});
+    instructions.setScale({0.2f, 0.2f});
     vec2 pos = background.get_position();
     instructions.setPosition({pos.x, pos.y - 22});
 }
 
 void HelpWindow::showControls() {
-    curr_state = CONTROLS;
+    curr_state = State::CONTROLS;
     instructions.loadNewInstruction(textures_path("ui/CaptureTheCastle_game_control_instructions.png"));
-    instructions.setScale({0.275, 0.275});
+    instructions.setScale({0.275f, 0.275f});
     vec2 pos = background.get_position();
     instructions.setPosition({pos.x, pos.y + 22});
 }
 
 void HelpWindow::resetWindow() {
-    curr_state = CONTROLS;
+    curr_state = State::CONTROLS;
     instructions.loadNewInstruction(textures_path("ui/CaptureTheCastle_game_control_instructions.png"));
-    instructions.setScale({0.275, 0.275});
+    instructions.setScale({0.275f, 0.275f});
     vec2 pos = background.get_position();
     instructions.setPosition({pos.x, pos.y + 22});
 }

@@ -19,7 +19,7 @@ class HowToPlay : public State {
 
 private:
     ButtonActions checkButtonClicks(vec2 mouseloc);
-    enum Page { GOALS, CONTROLS };
+    enum struct Page { GOALS, CONTROLS };
 
     HowToPlayBackground background;
     PlayInstructions instructions;
