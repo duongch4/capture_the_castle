@@ -9,7 +9,7 @@
 bool Hint::init(vec2 screen_size) {
 
     characters.clear();
-    clock_transform = Transform {
+    text_transform = Transform {
             {screen_size.x / 2 + 215, screen_size.y / 2 - 330},
             {screen_size.x / 2, screen_size.y / 2 - 335},
             {0.2f, 0.2f},
@@ -101,10 +101,7 @@ bool Hint::init_text() {
 }
 
 void Hint::destroy() {
-    clock_effect.release();
-    MeshManager::instance().release(clock_mesh.id);
     characters.clear();
-
     glDeleteBuffers(1, &text_mesh.vbo);
     glDeleteBuffers(1, &text_mesh.ibo);
     glDeleteVertexArrays(1, &text_mesh.vao);
@@ -112,65 +109,14 @@ void Hint::destroy() {
 }
 
 void Hint::draw(const mat3 &projection) {
-
-    out = { { 1.f, 0.f, 0.f }, { 0.f, 1.f, 0.f}, { 0.f, 0.f, 1.f} };
-
-    // apply translation
-    float offset_x = clock_transform.position.x;
-    float offset_y = clock_transform.position.y;
-    mat3 T = { { 1.f, 0.f, 0.f },{ 0.f, 1.f, 0.f },{ offset_x, offset_y, 1.f } };
-    out = mul(out, T);
-
-    // apply scale
-    mat3 S = { {clock_transform.scale.x, 0.f, 0.f },{ 0.f, clock_transform.scale.y, 0.f },{ 0.f, 0.f, 1.f } };
-    out = mul(out, S);
-
-    // Setting shaders
-    glUseProgram(clock_effect.program);
-
-    // Enabling alpha channel for textures
-    glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDisable(GL_DEPTH_TEST);
-
-    // Getting uniform locations for glUniform* calls
-    GLint transform_uloc = glGetUniformLocation(clock_effect.program, "transform");
-    GLint color_uloc = glGetUniformLocation(clock_effect.program, "fcolor");
-    GLint projection_uloc = glGetUniformLocation(clock_effect.program, "projection");
-
-    // Setting vertices and indices
-    MeshManager::instance().bindVAO(clock_mesh.id);
-    MeshManager::instance().bindVBO(clock_mesh.id);
-    MeshManager::instance().bindIBO(clock_mesh.id);
-
-    // Input data location as in the vertex buffer
-    GLint in_position_loc = glGetAttribLocation(clock_effect.program, "in_position");
-    GLint in_texcoord_loc = glGetAttribLocation(clock_effect.program, "in_texcoord");
-    glEnableVertexAttribArray(in_position_loc);
-    glEnableVertexAttribArray(in_texcoord_loc);
-    glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)nullptr);
-    glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
-
-    // Enabling and binding texture to slot 0
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, clock_texture.id);
-
-    // Setting uniform values to the currently bound program
-    glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&out);
-    float color[] = {1, 1, 1};
-    glUniform3fv(color_uloc, 1, color);
-    glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
-
-    // Drawing!
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-
     draw_text(projection);
 }
 
 void Hint::draw_text(const mat3 &projection) {
     std::string text = "FLAG BEARER CAN BE ATTACKED IN ANY ZONE!";
     int half_width = text.length() * max_text_width / 2;
-    float x = clock_transform.position.x - half_width;
-    float y = clock_transform.position.y - 5;
+    float x = text_transform.position.x - half_width;
+    float y = text_transform.position.y - 5;
     float scale = 1.0f;
     // Setting shaders
     glUseProgram(text_effect.program);

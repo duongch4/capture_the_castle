@@ -138,6 +138,7 @@ void World::destroy() {
     m_state->destroy();
     TextureManager::instance().unload_all_textures();
     MeshManager::instance().release_all();
+    EffectManager::instance().release_all();
     glfwDestroyWindow(m_window);
 }
 

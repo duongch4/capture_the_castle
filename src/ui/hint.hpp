@@ -13,6 +13,7 @@
 #include <components.hpp>
 #include <SDL_mixer.h>
 #include <mesh_manager.hpp>
+#include <effect_manager.hpp>
 
 
 class Hint {
@@ -34,11 +35,7 @@ private:
     vec3 text_colour;
     Mesh text_mesh{};
     Effect text_effect;
-
-    MeshComponent clock_mesh{};
-    Effect clock_effect{};
-    Transform clock_transform{};
-    Texture clock_texture;
+    Transform text_transform{};
 
     std::map<GLchar, Character> characters;
     mat3 out{};

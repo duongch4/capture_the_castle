@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL_mixer.h>
+#include <effect_manager.hpp>
 #include "common.hpp"
 #include "components.hpp"
 

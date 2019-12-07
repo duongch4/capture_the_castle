@@ -1,4 +1,5 @@
 
+#include <effect_manager.hpp>
 #include "game.hpp"
 
 Game::Game() = default;
@@ -188,6 +189,7 @@ void Game::draw() {
         p1SetUpInstructions.draw(projection_2D);
         p2SetUpInstructions.draw(projection_2D);
     } else if (currState == GameState::NORMAL){
+        rainSystem->draw(projection_2D);
         help_btn.draw(projection_2D);
     } else if (currState == GameState::FLAG)  {
         help_btn.draw(projection_2D);
@@ -377,7 +379,10 @@ void Game::reset() {
     p2SetUpInstructions.destroy();
     std::cout << "SetUp Instructions destroyed" << std::endl;
     timer.destroy();
+    std::cout << "Timer destroyed" << std::endl;
     hint.destroy();
+    EffectManager::instance().release_all();
+    std::cout << "Releasing all shaders" << std::endl;
     if (m_background_music != nullptr)
         Mix_FreeMusic(m_background_music);
     if (m_click != nullptr)
@@ -460,6 +465,7 @@ void Game::destroy() {
 	curveMovementSystem.reset();
 	itemBoardSystem.reset();
 	itemEffectSystem.reset();
+	rainSystem.reset();
 }
 
 Game::~Game() {
@@ -470,9 +476,12 @@ void Game::registerItemBoard(const Transform& transform, const TeamType& team_ty
     Entity itemBoard = ecsManager.createEntity();
     ecsManager.addComponent<Transform>(itemBoard, transform);
     ecsManager.addComponent<Team>(itemBoard, Team{ team_type });
-    Effect itemBoardEffect{};
-    itemBoardEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
-    ecsManager.addComponent<Effect>(itemBoard, itemBoardEffect);
+    EffectComponent itemBoardEffect{
+        shader_path("textured.vs.glsl"),
+        shader_path("textured.fs.glsl")
+    };
+    EffectManager::instance().load_from_file(itemBoardEffect);
+    ecsManager.addComponent<EffectComponent>(itemBoard, itemBoardEffect);
     Sprite itemBoardSprite = { texture_path };
     TextureManager::instance().load_from_file(itemBoardSprite);
     ecsManager.addComponent<Sprite>(itemBoard, itemBoardSprite);
@@ -497,9 +506,12 @@ void Game::registerItemBoard(const Transform& transform, const TeamType& team_ty
     ecsManager.addComponent<Transform>(picked_up_item, item_transform);
     ecsManager.addComponent<ItemBoardComponent>(picked_up_item, ItemBoardComponent{});
     ecsManager.addComponent<Team>(picked_up_item, Team{ team_type });
-    Effect itemEffect{};
-    itemEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
-    ecsManager.addComponent<Effect>(picked_up_item, itemEffect);
+    EffectComponent itemEffect{
+            shader_path("textured.vs.glsl"),
+            shader_path("textured.fs.glsl")
+    };
+    EffectManager::instance().load_from_file(itemEffect);
+    ecsManager.addComponent<EffectComponent>(picked_up_item, itemEffect);
     Sprite itemSprite = {power_up_path("CaptureTheCastle_no_item.png")};
     TextureManager::instance().load_from_file(itemSprite);
     itemSprite.sprite_index = { 0 , 0 };
@@ -518,9 +530,12 @@ Entity Game::registerPlayer(const Transform& transform, const Motion& motion, co
     ecsManager.addComponent<Motion>(player, motion);
     ecsManager.addComponent<Team>(player, Team{ team_type });
     ecsManager.addComponent<PlayerInputControlComponent>(player, PlayerInputControlComponent{});
-    Effect playerEffect{};
-    playerEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
-    ecsManager.addComponent<Effect>(player, playerEffect);
+    EffectComponent playerEffect{
+        shader_path("textured.vs.glsl"),
+        shader_path("textured.fs.glsl")
+    };
+    EffectManager::instance().load_from_file(playerEffect);
+    ecsManager.addComponent<EffectComponent>(player, playerEffect);
     Sprite playerSprite = { texture_path };
     TextureManager::instance().load_from_file(playerSprite);
     playerSprite.sprite_index = { 0 , 0 };
@@ -560,9 +575,9 @@ Entity Game::registerBubble(Entity player, const char* texture_path)
 	ecsManager.addComponent<Motion>(bubble, { {0.f, 0.f}, motion.speed });
 	ecsManager.addComponent<Team>(bubble, team);
 
-	Effect bubbleEffect{};
-	bubbleEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
-	ecsManager.addComponent<Effect>(bubble, bubbleEffect);
+	EffectComponent bubbleEffect{shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")};
+	EffectManager::instance().load_from_file(bubbleEffect);
+	ecsManager.addComponent<EffectComponent>(bubble, bubbleEffect);
 	Sprite bubbleSprite = { texture_path };
 	TextureManager::instance().load_from_file(bubbleSprite);
 	bubbleSprite.sprite_size = { (float) bubbleSprite.width , (float)bubbleSprite.height};
@@ -579,9 +594,12 @@ Entity Game::registerCastle(const Transform& transform, const TeamType& team_typ
     Entity castle = ecsManager.createEntity();
     ecsManager.addComponent<Transform>(castle, transform);
     ecsManager.addComponent<Team>(castle, Team{ team_type });
-    Effect castleEffect{};
-    castleEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
-    ecsManager.addComponent<Effect>(castle, castleEffect);
+    EffectComponent castleEffect{
+        shader_path("textured.vs.glsl"),
+        shader_path("textured.fs.glsl")
+    };
+    EffectManager::instance().load_from_file(castleEffect);
+    ecsManager.addComponent<EffectComponent>(castle, castleEffect);
     Sprite castleSprite = { texture_path };
     TextureManager::instance().load_from_file(castleSprite);
     ecsManager.addComponent<Sprite>(castle, castleSprite);
@@ -665,7 +683,7 @@ void Game::registerSpriteRenderSystem()
     spriteRenderSystem = ecsManager.registerSystem<SpriteRenderSystem>();
     {
         Signature signature;
-        signature.set(ecsManager.getComponentType<Effect>());
+        signature.set(ecsManager.getComponentType<EffectComponent>());
         signature.set(ecsManager.getComponentType<Sprite>());
         signature.set(ecsManager.getComponentType<MeshComponent>());
         signature.set(ecsManager.getComponentType<Transform>());
@@ -760,7 +778,7 @@ void Game::registerComponents()
     ecsManager.registerComponent<Motion>();
     ecsManager.registerComponent<Transform>();
     ecsManager.registerComponent<Team>();
-    ecsManager.registerComponent<Effect>();
+    ecsManager.registerComponent<EffectComponent>();
     ecsManager.registerComponent<Sprite>();
     ecsManager.registerComponent<MeshComponent>();
     ecsManager.registerComponent<C_Collision>();

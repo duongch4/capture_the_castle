@@ -21,49 +21,12 @@ struct Sprite {
 // an Index Buffer.
 struct MeshComponent {
     int id;
-    //bool init(int width, int height);
-	/**
-	* Initialize the mesh with a sprite in a sprite sheet
-	*
-	* The previous init function only works on a single sprite,
-	* this init function takes additional parameters to get
-	* the correct sprite on a sprite sheet.
-	*
-	* @param textureWidth  The width of the entire texture/spritesheet, in pixels.
-	* @param textureHeight The height of the entire texture/spritesheet, in pixels.
-	* @param spriteWidth   The width of a single sprite in the texture/spritesheet, in pixels.
-	* @param spriteHeight  The height of a single sprite in the texture/spritesheet, in pixels.
-	* @param spriteIndexX  The x index of the sprite in the texture/spritesheet,
-	*		                top left is 0 and going right will increase the value
-	* @param spriteIndexY  The y index of the sprite in the texture/spritesheet,
-	*					    top left is 0 and going down will increase the value
-	* @param spriteGap     The gap/padding between each sprite in the texture/spritesheet, in pixels.
-	*                      Enter 0 if there is no gap in the sprite sheet
-	* @return boolean      True if the mesh is created successfully, false otherwise.
-	*/
-//
-//	bool init(
-//		int textureWidth, int textureHeight, float spriteWidth, float spriteHeight,
-//		float spriteIndexX, float spriteIndexY, int spriteGap
-//	);
-//
-//	// Very similar to the init function, but this will only update the vertex
-//	// buffer object instead of generating a new vertex buffer object.
-//	bool updateSprite(int textureWidth, int textureHeight, int spriteWidth, int spriteHeight,
-//		int spriteIndexX, int spriteIndexY, int spriteGap);
-//
-//  void release();
-
 };
 
-// Effect component of Entity for Vertex and Fragment shader, which are then put(linked) together in a
-// single program that is then bound to the pipeline.
-struct Effect {
-    GLuint vertex;
-    GLuint fragment;
-    GLuint program;
-    bool load_from_file(const char* vs_path, const char* fs_path);
-    void release();
+struct EffectComponent {
+   const char* vs_name;
+   const char* fs_name;
+   int id = -1;
 };
 
 // All data relevant to the motion of the salmon.

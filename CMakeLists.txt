@@ -42,7 +42,6 @@ set(SOURCE_FILES
 		src/systems/soldier_ai_system.cpp
         src/texture_manager.cpp
         src/mesh_manager.cpp
-        src/components.cpp
         src/world.cpp
         src/background.cpp
         src/tile.cpp
@@ -121,7 +120,10 @@ set(SOURCE_FILES
 		src/ui/hint.cpp src/ui/hint.hpp
 		src/systems/rain_system.hpp
 		src/systems/rain_system.cpp
-        src/ui/soldier_setup_window.hpp)
+        src/ui/soldier_setup_window.hpp
+        src/effect_manager.cpp
+        src/effect_manager.hpp
+)
 
 if (IS_OS_MAC)
     include_directories(/usr/local/include)

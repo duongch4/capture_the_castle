@@ -63,9 +63,11 @@ void ItemSpawnSystem::spawn_item(){
             nextPos
     });
 
-    Effect itemEffect{};
-    itemEffect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl"));
-    ecsManager.addComponent<Effect>(item, itemEffect);
+    EffectComponent itemEffect{
+        shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")
+    };
+    EffectManager::instance().load_from_file(itemEffect);
+    ecsManager.addComponent<EffectComponent>(item, itemEffect);
     Sprite itemSprite = {power_up_path("CaptureTheCastle_powerup_bomb.png")};
     if (t == 0)
         itemSprite = {power_up_path("CaptureTheCastle_powerup_shield.png")};

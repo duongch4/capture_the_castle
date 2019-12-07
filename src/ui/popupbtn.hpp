@@ -1,5 +1,6 @@
 #pragma once
 
+#include <effect_manager.hpp>
 #include "common.hpp"
 #include "components.hpp"
 

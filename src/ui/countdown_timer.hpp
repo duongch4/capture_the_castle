@@ -12,6 +12,7 @@
 #include <map>
 #include <components.hpp>
 #include <SDL_mixer.h>
+#include <effect_manager.hpp>
 
 
 class CountdownTimer {
