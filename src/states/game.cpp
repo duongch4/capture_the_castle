@@ -192,9 +192,9 @@ void Game::draw() {
         rainSystem->draw(projection_2D);
         help_btn.draw(projection_2D);
     } else if (currState == GameState::FLAG)  {
+		rainSystem->draw(projection_2D);
         help_btn.draw(projection_2D);
         hint.draw(projection_2D);
-        rainSystem->draw(projection_2D);
     }
 }
 
