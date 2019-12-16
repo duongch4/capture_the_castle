@@ -29,17 +29,19 @@ public:
 private:
 	int SHIELD_EFFECT_COUNT = 15;
 private:
-	void handle_item_collision(Entity& e2, CollisionLayer e1_layer, Entity& e1, Transform& e1_transform);
-	void handle_shield_collision(CollisionLayer e1_layer, Entity& e1, ItemComponent& item, Entity& e2);
-	void handle_shield_collision_with_other_player(Entity& e1, ItemComponent& item, Entity& e2);
+	void handle_item_collision(Entity& e2, Entity& e1, CollisionLayer e1_layer, Transform& e1_transform);
+	void handle_shield_collision(Entity& e1, CollisionLayer e1_layer, Entity& e2, ItemComponent& item);
+	void handle_shield_collision_with_other_player(Entity& e1, Entity& e2, ItemComponent& item);
 	void handle_bomb_collision(CollisionLayer e1_layer, Entity& e1, Entity& e2, Transform& e1_transform);
 	void handle_bomb_player_collision(Entity& e1, Transform& e1_transform, Entity& e2);
 	void handle_bomb_player_collision_with_shield(ItemComponent& player_item, Entity& e1);
 	void handle_bomb_player_collision_no_shield(Transform& e1_transform, Entity& e1, Entity& e2);
 	void handle_bomb_enemy_collision(Entity& e1, Entity& e2);
+	
 	void handle_player_enemy_collision(MazeRegion region, const Entity & player, TeamType player_team, Transform & player_transform, Entity & enemy);
 	void handle_player_enemy_collision_with_shield(Entity & enemy, const Entity & player, ItemComponent& player_item);
 	void handle_player_enemy_collision_no_shield(MazeRegion region, const Entity & player, TeamType player_team, Transform & player_transform);
+	
 	void handle_player_player_collision(MazeRegion region, Entity & player1, Entity & player2, Transform & player1_transform, Transform & player2_transform);
 	void handle_player_player_collision_with_flag(const Entity & player1, const Entity & player2, Transform & player1_transform, Transform & player2_transform);
 	void handle_player_player_collision_no_flag(MazeRegion region, const Entity & player1, const Entity & player2, Transform & player1_transform, Transform & player2_transform);

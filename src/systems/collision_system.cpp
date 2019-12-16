@@ -101,7 +101,7 @@ void CollisionSystem::update()
 			}
 			else if (e2_layer == CollisionLayer::Item)
 			{
-				handle_item_collision(e2, e1_layer, e1, e1_transform);
+				handle_item_collision(e2, e1, e1_layer, e1_transform);
 			}
 			collision_queue.pop();
 		}
@@ -120,57 +120,57 @@ void CollisionSystem::update()
 
 }
 
-void CollisionSystem::handle_item_collision(Entity& e2, CollisionLayer e1_layer, Entity& e1, Transform& e1_transform)
+void CollisionSystem::handle_item_collision(Entity& item, Entity& e1, CollisionLayer e1_layer, Transform& e1_transform)
 {
 	/// handle item collision
-	auto& item = ecsManager.getComponent<ItemComponent>(e2);
+	auto& item_comp = ecsManager.getComponent<ItemComponent>(item);
 	/// Bomb in_use, respawn player, delete enemy, delete itself
-	if (item.in_use && item.itemType == ItemType::BOMB)
+	if (item_comp.in_use && item_comp.itemType == ItemType::BOMB)
 	{
-		handle_bomb_collision(e1_layer, e1, e2, e1_transform);
+		handle_bomb_collision(e1_layer, e1, item, e1_transform);
 	}
 	else
 	{
-		handle_shield_collision(e1_layer, e1, item, e2);
+		handle_shield_collision(e1, e1_layer, item, item_comp);
 	}
 }
 
-void CollisionSystem::handle_shield_collision(CollisionLayer e1_layer, Entity& e1, ItemComponent& item, Entity& e2)
+void CollisionSystem::handle_shield_collision(Entity& player, CollisionLayer player_layer, Entity& item, ItemComponent& item_comp)
 {
-	if (e1_layer != CollisionLayer::Enemy)
+	if (player_layer != CollisionLayer::Enemy)
 	{
-		handle_shield_collision_with_other_player(e1, item, e2);
+		handle_shield_collision_with_other_player(player, item, item_comp);
 	}
 }
 
-void CollisionSystem::handle_shield_collision_with_other_player(Entity& e1, ItemComponent& item, Entity& e2)
+void CollisionSystem::handle_shield_collision_with_other_player(Entity& player, Entity& item, ItemComponent& item_comp)
 {
 	//if p1 or p2
-	auto& player_item = ecsManager.getComponent<ItemComponent>(e1);
+	auto& player_item = ecsManager.getComponent<ItemComponent>(player);
 	// Remove the current item from the player
 	if (player_item.itemType == ItemType::SHIELD)
 	{
-		ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
+		ecsManager.publish(new ItemEvent(player, ItemType::SHIELD, false));
 	}
 	else if (player_item.itemType == ItemType::BOMB)
 	{
-		ecsManager.publish(new ItemEvent(e1, ItemType::BOMB, false));
+		ecsManager.publish(new ItemEvent(player, ItemType::BOMB, false));
 	}
 	// Pickup new item
-	if (item.itemType == ItemType::BOMB)
+	if (item_comp.itemType == ItemType::BOMB)
 	{
 		// pickup bomb
 		player_item.itemType = ItemType::BOMB;
-		ecsManager.publish(new ItemEvent(e1, ItemType::BOMB, true));
+		ecsManager.publish(new ItemEvent(player, ItemType::BOMB, true));
 	}
 	else
 	{
 		// pick up shield and use shield
 		player_item.itemType = ItemType::SHIELD;
-		ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, true));
+		ecsManager.publish(new ItemEvent(player, ItemType::SHIELD, true));
 	}
 	Mix_PlayChannel(-1, item_pick_up_sound, 0);
-	entities_to_be_destroyed.insert(e2);
+	entities_to_be_destroyed.insert(item);
 }
 
 void CollisionSystem::handle_bomb_collision(CollisionLayer e1_layer, Entity& e1, Entity& e2, Transform& e1_transform)
