@@ -127,7 +127,7 @@ void CollisionSystem::handle_item_collision(Entity& item, Entity& e1, CollisionL
 	/// Bomb in_use, respawn player, delete enemy, delete itself
 	if (item_comp.in_use && item_comp.itemType == ItemType::BOMB)
 	{
-		handle_bomb_in_use_collision(e1_layer, e1, item, e1_transform);
+		handle_bomb_in_use_collision(item, e1, e1_layer, e1_transform);
 	}
 	else
 	{
@@ -173,62 +173,62 @@ void CollisionSystem::handle_item_pickup_removal(Entity& player, Entity& item, I
 	entities_to_be_destroyed.insert(item);
 }
 
-void CollisionSystem::handle_bomb_in_use_collision(CollisionLayer e1_layer, Entity& e1, Entity& item, Transform& e1_transform)
+void CollisionSystem::handle_bomb_in_use_collision(Entity& bomb, Entity& e1, CollisionLayer e1_layer, Transform& e1_transform)
 {
 	if (e1_layer == CollisionLayer::Enemy)
 	{
-		handle_bomb_enemy_collision(e1, item);
+		handle_bomb_enemy_collision(e1, bomb);
 	}
 	else
 	{
-		handle_bomb_player_collision(e1, e1_transform, item);
+		handle_bomb_player_collision(e1, e1_transform, bomb);
 	}
 	Mix_PlayChannel(-1, bomb_explosion_sound, 0);
 }
 
-void CollisionSystem::handle_bomb_player_collision(Entity& e1, Transform& e1_transform, Entity& e2)
+void CollisionSystem::handle_bomb_player_collision(Entity& player, Transform& player_transform, Entity& bomb)
 {
 	// spawn player back to init location
-	auto& player_item = ecsManager.getComponent<ItemComponent>(e1);
+	auto& player_item = ecsManager.getComponent<ItemComponent>(player);
 	if (player_item.itemType != ItemType::SHIELD)
 	{
-		handle_bomb_player_collision_no_shield(e1_transform, e1, e2);
+		handle_bomb_player_collision_no_shield(player_transform, player, bomb);
 	}
 	else
 	{
-		handle_bomb_player_collision_with_shield(player_item, e1);
+		handle_bomb_player_collision_with_shield(player_item, player);
 	}
-	entities_to_be_destroyed.insert(e2);
+	entities_to_be_destroyed.insert(bomb);
 }
 
-void CollisionSystem::handle_bomb_player_collision_with_shield(ItemComponent& player_item, Entity& e1)
+void CollisionSystem::handle_bomb_player_collision_with_shield(ItemComponent& player_shield, Entity& player)
 {
-	player_item.itemType = ItemType::None;
-	ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
+	player_shield.itemType = ItemType::None;
+	ecsManager.publish(new ItemEvent(player, ItemType::SHIELD, false));
 	Mix_PlayChannel(-1, shield_pop_sound, 0);
 }
 
-void CollisionSystem::handle_bomb_player_collision_no_shield(Transform& e1_transform, Entity& e1, Entity& e2)
+void CollisionSystem::handle_bomb_player_collision_no_shield(Transform& player_transform, Entity& player, Entity& bomb)
 {
-	e1_transform.position = e1_transform.init_position;
-	if (flagMode && e1 == playerWithFlag)
+	player_transform.position = player_transform.init_position;
+	if (flagMode && (player == playerWithFlag))
 	{
-		ecsManager.publish(new FlagEvent(e1, false));
+		ecsManager.publish(new FlagEvent(player, false));
 		flagMode = false;
 		playerWithFlag = 0;
 		entities_to_be_destroyed.insert(bubble);
 	}
-	entities_to_be_destroyed.insert(e2);
+	entities_to_be_destroyed.insert(bomb);
 	Mix_PlayChannel(-1, player_respawn_sound, 0);
 }
 
-void CollisionSystem::handle_bomb_enemy_collision(Entity& e1, Entity& e2)
+void CollisionSystem::handle_bomb_enemy_collision(Entity& enemy, Entity& bomb)
 {
-	entities_to_be_destroyed.insert(e1);
-	entities_to_be_destroyed.insert(e2);
+	entities_to_be_destroyed.insert(enemy);
+	entities_to_be_destroyed.insert(bomb);
 }
 
-void CollisionSystem::handle_player_enemy_collision(MazeRegion region, const Entity & player, TeamType player_team, Transform & player_transform, Entity & enemy)
+void CollisionSystem::handle_player_enemy_collision(MazeRegion region, const Entity& player, TeamType player_team, Transform& player_transform, Entity& enemy)
 {
 	auto& player_item = ecsManager.getComponent<ItemComponent>(player);
 	if (player_item.itemType != ItemType::SHIELD)
@@ -241,7 +241,7 @@ void CollisionSystem::handle_player_enemy_collision(MazeRegion region, const Ent
 	}
 }
 
-void CollisionSystem::handle_player_enemy_collision_with_shield(Entity & enemy, const Entity & player, ItemComponent& player_item)
+void CollisionSystem::handle_player_enemy_collision_with_shield(Entity& enemy, const Entity& player, ItemComponent& player_item)
 {
 	entities_to_be_destroyed.insert(enemy);
 	ecsManager.publish(new ItemEvent(player, ItemType::SHIELD, false));
@@ -249,7 +249,7 @@ void CollisionSystem::handle_player_enemy_collision_with_shield(Entity & enemy, 
 	Mix_PlayChannel(-1, shield_pop_sound, 0);
 }
 
-void CollisionSystem::handle_player_enemy_collision_no_shield(MazeRegion region, const Entity & player, TeamType player_team, Transform & player_transform)
+void CollisionSystem::handle_player_enemy_collision_no_shield(MazeRegion region, const Entity& player, TeamType player_team, Transform& player_transform)
 {
 	switch (region)
 	{
@@ -295,7 +295,7 @@ void CollisionSystem::handle_player_enemy_collision_no_shield(MazeRegion region,
 	}
 }
 
-void CollisionSystem::handle_player_player_collision(MazeRegion region, Entity & player1, Entity & player2, Transform & player1_transform, Transform & player2_transform)
+void CollisionSystem::handle_player_player_collision(MazeRegion region, Entity& player1, Entity& player2, Transform& player1_transform, Transform& player2_transform)
 {
 	///player vs player event
 	if (!flagMode)
@@ -308,7 +308,7 @@ void CollisionSystem::handle_player_player_collision(MazeRegion region, Entity &
 	}
 }
 
-void CollisionSystem::handle_player_player_collision_with_flag(const Entity & player1, const Entity & player2, Transform & player1_transform, Transform & player2_transform)
+void CollisionSystem::handle_player_player_collision_with_flag(const Entity& player1, const Entity& player2, Transform& player1_transform, Transform& player2_transform)
 {
 	if (player1 == playerWithFlag)
 	{
@@ -366,7 +366,7 @@ void CollisionSystem::handle_player_player_collision_with_flag(const Entity & pl
 	}
 }
 
-void CollisionSystem::handle_player_player_collision_no_flag(MazeRegion region, const Entity & player1, const Entity & player2, Transform & player1_transform, Transform & player2_transform)
+void CollisionSystem::handle_player_player_collision_no_flag(MazeRegion region, const Entity& player1, const Entity& player2, Transform& player1_transform, Transform& player2_transform)
 {
 	auto& player2_item = ecsManager.getComponent<ItemComponent>(player2);
 	auto& player1_item = ecsManager.getComponent<ItemComponent>(player1);
