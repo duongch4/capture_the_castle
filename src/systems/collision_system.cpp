@@ -127,23 +127,23 @@ void CollisionSystem::handle_item_collision(Entity& item, Entity& e1, CollisionL
 	/// Bomb in_use, respawn player, delete enemy, delete itself
 	if (item_comp.in_use && item_comp.itemType == ItemType::BOMB)
 	{
-		handle_bomb_collision(e1_layer, e1, item, e1_transform);
+		handle_bomb_in_use_collision(e1_layer, e1, item, e1_transform);
 	}
 	else
 	{
-		handle_shield_collision(e1, e1_layer, item, item_comp);
+		handle_item_not_bomb_in_use_collision(e1, e1_layer, item, item_comp);
 	}
 }
 
-void CollisionSystem::handle_shield_collision(Entity& player, CollisionLayer player_layer, Entity& item, ItemComponent& item_comp)
+void CollisionSystem::handle_item_not_bomb_in_use_collision(Entity& player, CollisionLayer player_layer, Entity& item, ItemComponent& item_comp)
 {
 	if (player_layer != CollisionLayer::Enemy)
 	{
-		handle_shield_collision_with_other_player(player, item, item_comp);
+		handle_item_pickup_removal(player, item, item_comp);
 	}
 }
 
-void CollisionSystem::handle_shield_collision_with_other_player(Entity& player, Entity& item, ItemComponent& item_comp)
+void CollisionSystem::handle_item_pickup_removal(Entity& player, Entity& item, ItemComponent& item_comp)
 {
 	//if p1 or p2
 	auto& player_item = ecsManager.getComponent<ItemComponent>(player);
@@ -163,7 +163,7 @@ void CollisionSystem::handle_shield_collision_with_other_player(Entity& player, 
 		player_item.itemType = ItemType::BOMB;
 		ecsManager.publish(new ItemEvent(player, ItemType::BOMB, true));
 	}
-	else
+	else if (item_comp.itemType == ItemType::SHIELD)
 	{
 		// pick up shield and use shield
 		player_item.itemType = ItemType::SHIELD;
@@ -173,15 +173,15 @@ void CollisionSystem::handle_shield_collision_with_other_player(Entity& player, 
 	entities_to_be_destroyed.insert(item);
 }
 
-void CollisionSystem::handle_bomb_collision(CollisionLayer e1_layer, Entity& e1, Entity& e2, Transform& e1_transform)
+void CollisionSystem::handle_bomb_in_use_collision(CollisionLayer e1_layer, Entity& e1, Entity& item, Transform& e1_transform)
 {
 	if (e1_layer == CollisionLayer::Enemy)
 	{
-		handle_bomb_enemy_collision(e1, e2);
+		handle_bomb_enemy_collision(e1, item);
 	}
 	else
 	{
-		handle_bomb_player_collision(e1, e1_transform, e2);
+		handle_bomb_player_collision(e1, e1_transform, item);
 	}
 	Mix_PlayChannel(-1, bomb_explosion_sound, 0);
 }
@@ -368,10 +368,12 @@ void CollisionSystem::handle_player_player_collision_with_flag(const Entity & pl
 
 void CollisionSystem::handle_player_player_collision_no_flag(MazeRegion region, const Entity & player1, const Entity & player2, Transform & player1_transform, Transform & player2_transform)
 {
+	auto& player2_item = ecsManager.getComponent<ItemComponent>(player2);
+	auto& player1_item = ecsManager.getComponent<ItemComponent>(player1);
+
 	switch (region)
 	{
 	case MazeRegion::PLAYER1:
-		auto& player2_item = ecsManager.getComponent<ItemComponent>(player2);
 		if (player2_item.itemType == ItemType::SHIELD)
 		{
 			ecsManager.getComponent<C_Collision>(player2).shield_effect_count = SHIELD_EFFECT_COUNT;
@@ -392,7 +394,6 @@ void CollisionSystem::handle_player_player_collision_no_flag(MazeRegion region, 
 		}
 		break;
 	case MazeRegion::PLAYER2:
-		auto& player1_item = ecsManager.getComponent<ItemComponent>(player1);
 		if (player1_item.itemType == ItemType::SHIELD)
 		{
 			ecsManager.getComponent<C_Collision>(player1).shield_effect_count = SHIELD_EFFECT_COUNT;

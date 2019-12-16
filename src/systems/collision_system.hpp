@@ -30,9 +30,9 @@ private:
 	int SHIELD_EFFECT_COUNT = 15;
 private:
 	void handle_item_collision(Entity& e2, Entity& e1, CollisionLayer e1_layer, Transform& e1_transform);
-	void handle_shield_collision(Entity& e1, CollisionLayer e1_layer, Entity& e2, ItemComponent& item);
-	void handle_shield_collision_with_other_player(Entity& e1, Entity& e2, ItemComponent& item);
-	void handle_bomb_collision(CollisionLayer e1_layer, Entity& e1, Entity& e2, Transform& e1_transform);
+	void handle_item_not_bomb_in_use_collision(Entity& e1, CollisionLayer e1_layer, Entity& e2, ItemComponent& item);
+	void handle_item_pickup_removal(Entity& e1, Entity& e2, ItemComponent& item);
+	void handle_bomb_in_use_collision(CollisionLayer e1_layer, Entity& e1, Entity& e2, Transform& e1_transform);
 	void handle_bomb_player_collision(Entity& e1, Transform& e1_transform, Entity& e2);
 	void handle_bomb_player_collision_with_shield(ItemComponent& player_item, Entity& e1);
 	void handle_bomb_player_collision_no_shield(Transform& e1_transform, Entity& e1, Entity& e2);
