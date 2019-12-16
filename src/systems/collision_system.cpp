@@ -52,22 +52,6 @@ void CollisionSystem::checkCollision()
 
 void CollisionSystem::update()
 {
-	for (auto const& entity : entities)
-	{
-		auto& collision = ecsManager.getComponent<C_Collision>(entity);
-		if (collision.layer == CollisionLayer::PLAYER1 || collision.layer == CollisionLayer::PLAYER2)
-		{
-			auto& item = ecsManager.getComponent<ItemComponent>(entity);
-			if (item.itemType != ItemType::SHIELD && collision.wait_count >= 0)
-			{
-				collision.wait_count -= 1;
-			}
-			else
-			{
-				collision.wait_count = 20;
-			}
-		}
-	}
 	entities_to_be_destroyed.clear();
 	while (collision_queue.size() > 0)
 	{
@@ -324,47 +308,62 @@ void CollisionSystem::handle_player_player_collision(Entity& e1, Entity& e2, Maz
 	}
 	else
 	{
-		handle_player_player_collision_with_flag(e1, e2, e1_transform, e2_transform);
+		handle_player_player_collision_with_flag(e1, e2, e1_transform, e2_transform, player1_item, player2_item);
 	}
 }
 
-void CollisionSystem::handle_player_player_collision_with_flag(const Entity& e1, const Entity& e2, Transform& e1_transform, Transform& e2_transform)
+void CollisionSystem::handle_player_player_collision_with_flag(const Entity& e1, const Entity& e2, Transform& e1_transform, Transform& e2_transform, ItemComponent& player1_item, ItemComponent& player2_item)
 {
-	auto& player1_item = ecsManager.getComponent<ItemComponent>(e1).itemType;
-	auto& player2_item = ecsManager.getComponent<ItemComponent>(e2).itemType;
-
 	if (e1 == playerWithFlag)
 	{
-		if (player1_item != ItemType::SHIELD)
+		if (player1_item.itemType == ItemType::SHIELD)
 		{
+			ecsManager.getComponent<C_Collision>(e1).shield_effect_count = SHIELD_EFFECT_COUNT;
+			ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
+			player1_item.itemType = ItemType::None;
+			Mix_PlayChannel(-1, shield_pop_sound, 0);
+		}
+		else
+		{
+			int& wait = ecsManager.getComponent<C_Collision>(e1).shield_effect_count;
+			if (wait > 0)
+			{
+				wait--;
+				return;
+			}
 			e1_transform.position = e1_transform.init_position;
 			Mix_PlayChannel(-1, player_respawn_sound, 0);
+
 			ecsManager.publish(new FlagEvent(e1, false));
 			flagMode = false;
 			playerWithFlag = 0;
 			entities_to_be_destroyed.insert(bubble);
 		}
-		else
-		{
-			player1_item = ItemType::None;
-			Mix_PlayChannel(-1, shield_pop_sound, 0);
-		}
 	}
 	else if (e2 == playerWithFlag)
 	{
-		if (player1_item != ItemType::SHIELD)
+		if (player2_item.itemType == ItemType::SHIELD)
 		{
+			ecsManager.getComponent<C_Collision>(e2).shield_effect_count = SHIELD_EFFECT_COUNT;
+			ecsManager.publish(new ItemEvent(e2, ItemType::SHIELD, false));
+			player2_item.itemType = ItemType::None;
+			Mix_PlayChannel(-1, shield_pop_sound, 0);
+		}
+		else
+		{
+			int& wait = ecsManager.getComponent<C_Collision>(e2).shield_effect_count;
+			if (wait > 0)
+			{
+				wait--;
+				return;
+			}
 			e2_transform.position = e2_transform.init_position;
 			Mix_PlayChannel(-1, player_respawn_sound, 0);
+
 			ecsManager.publish(new FlagEvent(e2, false));
 			flagMode = false;
 			playerWithFlag = 0;
 			entities_to_be_destroyed.insert(bubble);
-		}
-		else
-		{
-			player2_item = ItemType::None;
-			Mix_PlayChannel(-1, shield_pop_sound, 0);
 		}
 	}
 }
@@ -374,29 +373,43 @@ void CollisionSystem::handle_player_player_collision_no_flag(MazeRegion region, 
 	switch (region)
 	{
 	case MazeRegion::PLAYER1:
-		if (player2_item.itemType != ItemType::SHIELD)
+		if (player2_item.itemType == ItemType::SHIELD)
 		{
-			e2_transform.position = e2_transform.init_position;
-			Mix_PlayChannel(-1, player_respawn_sound, 0);
-		}
-		else
-		{
+			ecsManager.getComponent<C_Collision>(e2).shield_effect_count = SHIELD_EFFECT_COUNT;
 			ecsManager.publish(new ItemEvent(e2, ItemType::SHIELD, false));
 			player2_item.itemType = ItemType::None;
 			Mix_PlayChannel(-1, shield_pop_sound, 0);
 		}
-		break;
-	case MazeRegion::PLAYER2:
-		if (player1_item.itemType != ItemType::SHIELD)
-		{
-			e1_transform.position = e1_transform.init_position;
-			Mix_PlayChannel(-1, player_respawn_sound, 0);
-		}
 		else
 		{
+			int& wait = ecsManager.getComponent<C_Collision>(e2).shield_effect_count;
+			if (wait > 0)
+			{
+				wait--;
+				break;
+			}
+			e2_transform.position = e2_transform.init_position;
+			Mix_PlayChannel(-1, player_respawn_sound, 0);
+		}
+		break;
+	case MazeRegion::PLAYER2:
+		if (player1_item.itemType == ItemType::SHIELD)
+		{
+			ecsManager.getComponent<C_Collision>(e1).shield_effect_count = SHIELD_EFFECT_COUNT;
 			ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
 			player1_item.itemType = ItemType::None;
 			Mix_PlayChannel(-1, shield_pop_sound, 0);
+		}
+		else
+		{
+			int& wait = ecsManager.getComponent<C_Collision>(e1).shield_effect_count;
+			if (wait > 0)
+			{
+				wait--;
+				break;
+			}
+			e1_transform.position = e1_transform.init_position;
+			Mix_PlayChannel(-1, player_respawn_sound, 0);
 		}
 		break;
 	case MazeRegion::BANDIT:
