@@ -2,7 +2,7 @@
 # team members:
 Shizuko Akamoto\
 Bang Chi Duong\
-Chee Yew (Jonathan) Lim\ 
+Chee Yew (Jonathan) Lim\
 Jun Ling\
 Katrina Tan\
 Tianyan Zhu
