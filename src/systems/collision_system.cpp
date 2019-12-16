@@ -97,7 +97,7 @@ void CollisionSystem::update()
 			}
 			else if (e2_layer == CollisionLayer::Enemy)
 			{
-				handle_player_enemy_collision(e1, region, e1_team, e1_transform, e2);
+				handle_player_enemy_collision(region, e1, e1_team, e1_transform, e2);
 			}
 			else if (e2_layer == CollisionLayer::Item)
 			{
@@ -228,38 +228,38 @@ void CollisionSystem::handle_bomb_enemy_collision(Entity& e1, Entity& e2)
 	entities_to_be_destroyed.insert(e2);
 }
 
-void CollisionSystem::handle_player_enemy_collision(const Entity& e1, MazeRegion region, TeamType e1_team, Transform& e1_transform, Entity& e2)
+void CollisionSystem::handle_player_enemy_collision(MazeRegion region, const Entity & player, TeamType player_team, Transform & player_transform, Entity & enemy)
 {
-	auto& player_item = ecsManager.getComponent<ItemComponent>(e1);
+	auto& player_item = ecsManager.getComponent<ItemComponent>(player);
 	if (player_item.itemType != ItemType::SHIELD)
 	{
-		handle_player_enemy_collision_no_shield(region, e1_team, e1_transform, e1);
+		handle_player_enemy_collision_no_shield(region, player, player_team, player_transform);
 	}
 	else
 	{
-		handle_player_enemy_collision_with_shield(e2, e1, player_item);
+		handle_player_enemy_collision_with_shield(enemy, player, player_item);
 	}
 }
 
-void CollisionSystem::handle_player_enemy_collision_with_shield(Entity& e2, const Entity& e1, ItemComponent& player_item)
+void CollisionSystem::handle_player_enemy_collision_with_shield(Entity & enemy, const Entity & player, ItemComponent& player_item)
 {
-	entities_to_be_destroyed.insert(e2);
-	ecsManager.publish(new ItemEvent(e1, ItemType::SHIELD, false));
+	entities_to_be_destroyed.insert(enemy);
+	ecsManager.publish(new ItemEvent(player, ItemType::SHIELD, false));
 	player_item.itemType = ItemType::None;
 	Mix_PlayChannel(-1, shield_pop_sound, 0);
 }
 
-void CollisionSystem::handle_player_enemy_collision_no_shield(MazeRegion region, TeamType e1_team, Transform& e1_transform, const Entity& e1)
+void CollisionSystem::handle_player_enemy_collision_no_shield(MazeRegion region, const Entity & player, TeamType player_team, Transform & player_transform)
 {
 	switch (region)
 	{
 	case MazeRegion::PLAYER1:
-		if (e1_team == TeamType::PLAYER2)
+		if (player_team == TeamType::PLAYER2)
 		{
-			e1_transform.position = e1_transform.init_position;
-			if (flagMode && e1 == playerWithFlag)
+			player_transform.position = player_transform.init_position;
+			if (flagMode && player == playerWithFlag)
 			{
-				ecsManager.publish(new FlagEvent(e1, false));
+				ecsManager.publish(new FlagEvent(player, false));
 				flagMode = false;
 				playerWithFlag = 0;
 				entities_to_be_destroyed.insert(bubble);
@@ -268,12 +268,12 @@ void CollisionSystem::handle_player_enemy_collision_no_shield(MazeRegion region,
 		}
 		break;
 	case MazeRegion::PLAYER2:
-		if (e1_team == TeamType::PLAYER1)
+		if (player_team == TeamType::PLAYER1)
 		{
-			e1_transform.position = e1_transform.init_position;
-			if (flagMode && e1 == playerWithFlag)
+			player_transform.position = player_transform.init_position;
+			if (flagMode && player == playerWithFlag)
 			{
-				ecsManager.publish(new FlagEvent(e1, false));
+				ecsManager.publish(new FlagEvent(player, false));
 				flagMode = false;
 				playerWithFlag = 0;
 				entities_to_be_destroyed.insert(bubble);
@@ -282,10 +282,10 @@ void CollisionSystem::handle_player_enemy_collision_no_shield(MazeRegion region,
 		}
 		break;
 	case MazeRegion::BANDIT:
-		e1_transform.position = e1_transform.init_position;
-		if (flagMode && e1 == playerWithFlag)
+		player_transform.position = player_transform.init_position;
+		if (flagMode && player == playerWithFlag)
 		{
-			ecsManager.publish(new FlagEvent(e1, false));
+			ecsManager.publish(new FlagEvent(player, false));
 			flagMode = false;
 			playerWithFlag = 0;
 			entities_to_be_destroyed.insert(bubble);
