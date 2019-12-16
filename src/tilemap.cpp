@@ -317,8 +317,8 @@ std::vector<std::vector<int>> Tilemap::load_map()
 
     // Randomly choose one of the maze to load
     std::mt19937 rng;
-    rng.seed(time(NULL));
-    std::uniform_int_distribution<int> distribution(0,fileArray.size() - 1);
+    rng.seed((unsigned int)time(NULL));
+    std::uniform_int_distribution<int> distribution(0, (int)fileArray.size() - 1);
     int randomMazeIndex = distribution(rng);
     std::string mazeName = fileArray[randomMazeIndex] + ext;
 
@@ -327,7 +327,7 @@ std::vector<std::vector<int>> Tilemap::load_map()
 
     try {
         // Load the maze file
-        std::string fileToLoad = maze_path() + mazeName;
+        std::string fileToLoad = maze_path("") + mazeName;
         std::ifstream inputStream(fileToLoad);
 
         if (!inputStream) {

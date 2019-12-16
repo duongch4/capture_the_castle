@@ -78,7 +78,7 @@ private:
     void renderTilesToScreenTexture();
 
 private:
-	const float COUNTDOWN_TIMER = 30.f;
+	const float COUNTDOWN_TIMER = 3.f;
 
 private:
     // Audio
