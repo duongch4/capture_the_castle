@@ -76,6 +76,7 @@ private:
 	void registerRainSystem(const vec2& screen);
 
     void renderTilesToScreenTexture();
+    void releaseAllOtherKeysWhenEscPressed();
 
 private:
 	const float COUNTDOWN_TIMER = 25.f;
