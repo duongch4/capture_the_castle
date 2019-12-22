@@ -22,7 +22,7 @@ bool Hint::init(vec2 screen_size) {
 
 bool Hint::init_text() {
     face_height = 25;
-    text_colour = vec3{0.09, 0.47, 0.15};
+    text_colour = vec3{ 0.09f, 0.47f, 0.15f };
     if (FT_Init_FreeType(&ft))
         return false;
     if (FT_New_Face(ft, font_path("coopbl.ttf"), 0, &timer_face))
@@ -114,7 +114,7 @@ void Hint::draw(const mat3 &projection) {
 
 void Hint::draw_text(const mat3 &projection) {
     std::string text = "FLAG BEARER CAN BE ATTACKED IN ANY ZONE!";
-    int half_width = text.length() * max_text_width / 2;
+    float half_width = (float)(text.length() * max_text_width / 2.f);
     float x = text_transform.position.x - half_width;
     float y = text_transform.position.y - 5;
     float scale = 1.0f;

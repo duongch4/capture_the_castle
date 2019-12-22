@@ -44,7 +44,6 @@ private:
     std::uniform_real_distribution<float> m_dist_Color;
     std::uniform_real_distribution<float> m_dist_Radian;
     std::uniform_real_distribution<float> m_dist_Velocity;
-    std::uniform_real_distribution<float> m_dist_SpawnTimer;
 
     Curve m_curve;
 

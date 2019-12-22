@@ -15,18 +15,16 @@ static const float SPAWN_GROUP_DELAY = 0.6f;
 
 bool Firework::init(vec2 screen_size) {
     m_rng = std::default_random_engine(std::random_device()());
-    std::uniform_real_distribution<float> distVelocity(50, 300);
-    std::uniform_real_distribution<float> distPositionX(0 + screen_size.x / 5, screen_size.x - screen_size.x / 5);
-    std::uniform_real_distribution<float> distPositionY(0 + screen_size.y / 5, 0 + screen_size.y / 2);
-    std::uniform_real_distribution<float> distColor(0, 1);
-    std::uniform_real_distribution<float> distRadian(-M_PI, M_PI);
-    std::uniform_real_distribution<float> distSpawnTimer(0.8, 2.5);
+    std::uniform_real_distribution<float> distVelocity(50.f, 300.f);
+    std::uniform_real_distribution<float> distPositionX(0.f + screen_size.x / 5.f, screen_size.x - screen_size.x / 5.f);
+    std::uniform_real_distribution<float> distPositionY(0.f + screen_size.y / 5.f, 0.f + screen_size.y / 2.f);
+    std::uniform_real_distribution<float> distColor(0.f, 1.f);
+    std::uniform_real_distribution<float> distRadian((float)-M_PI, (float)M_PI);
     m_dist_PositionX = distPositionX;
     m_dist_PositionY = distPositionY;
     m_dist_Color = distColor;
     m_dist_Radian = distRadian;
     m_dist_Velocity = distVelocity;
-    m_dist_SpawnTimer = distSpawnTimer;
 
     m_spawn_timer = SPAWN_DELAY;
     m_spawn_count = 0;
@@ -39,12 +37,12 @@ bool Firework::init(vec2 screen_size) {
     constexpr float z = -0.01f;
 
     for (int i = 0; i < NUM_SEGMENTS; i++) {
-        screen_vertex_buffer_data.push_back(std::cos(M_PI * 2.0 * float(i) / (float)NUM_SEGMENTS));
-        screen_vertex_buffer_data.push_back(std::sin(M_PI * 2.0 * float(i) / (float)NUM_SEGMENTS));
+		screen_vertex_buffer_data.push_back(std::cos((float)(M_PI * 2.0 * i) / (float)NUM_SEGMENTS));
+        screen_vertex_buffer_data.push_back(std::sin((float)(M_PI * 2.0 * i) / (float)NUM_SEGMENTS));
         screen_vertex_buffer_data.push_back(z);
 
-        screen_vertex_buffer_data.push_back(std::cos(M_PI * 2.0 * float(i + 1) / (float)NUM_SEGMENTS));
-        screen_vertex_buffer_data.push_back(std::sin(M_PI * 2.0 * float(i + 1) / (float)NUM_SEGMENTS));
+		screen_vertex_buffer_data.push_back(std::cos((float)(M_PI * 2.0 * (i + 1)) / (float)NUM_SEGMENTS));
+		screen_vertex_buffer_data.push_back(std::sin((float)(M_PI * 2.0 * (i + 1)) / (float)NUM_SEGMENTS));
         screen_vertex_buffer_data.push_back(z);
 
         screen_vertex_buffer_data.push_back(0);
@@ -189,7 +187,7 @@ void Firework::draw(const mat3& projection) {
     glVertexAttribDivisor(3, 1);
 
     // Draw using instancing
-    glDrawArraysInstanced(GL_TRIANGLES, 0, NUM_SEGMENTS*3, m_particles.size());
+    glDrawArraysInstanced(GL_TRIANGLES, 0, NUM_SEGMENTS*3, (GLsizei)m_particles.size());
 
     // Reset divisor
     glVertexAttribDivisor(1, 0);

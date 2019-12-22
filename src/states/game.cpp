@@ -192,9 +192,9 @@ void Game::draw() {
         rainSystem->draw(projection_2D);
         help_btn.draw(projection_2D);
     } else if (currState == GameState::FLAG)  {
+		rainSystem->draw(projection_2D);
         help_btn.draw(projection_2D);
         hint.draw(projection_2D);
-        rainSystem->draw(projection_2D);
     }
 }
 
@@ -257,6 +257,7 @@ void Game::on_key(int key, int action) {
             ecsManager.publish(new KeyReleaseEvent(k));
         }
     } else if (action == GLFW_PRESS && k == InputKeys::ESC) {
+        releaseAllOtherKeysWhenEscPressed();
         if (currState == GameState::NORMAL || currState == GameState::FLAG) {
 			oldState = currState;
             currState = GameState::PAUSE;
@@ -264,6 +265,20 @@ void Game::on_key(int key, int action) {
             currState = oldState;
         }
     }
+}
+
+void Game::releaseAllOtherKeysWhenEscPressed()
+{
+    ecsManager.publish(new KeyReleaseEvent(InputKeys::S));
+    ecsManager.publish(new KeyReleaseEvent(InputKeys::W));
+    ecsManager.publish(new KeyReleaseEvent(InputKeys::A));
+    ecsManager.publish(new KeyReleaseEvent(InputKeys::D));
+    ecsManager.publish(new KeyReleaseEvent(InputKeys::UP));
+    ecsManager.publish(new KeyReleaseEvent(InputKeys::DOWN));
+    ecsManager.publish(new KeyReleaseEvent(InputKeys::LEFT));
+    ecsManager.publish(new KeyReleaseEvent(InputKeys::RIGHT));
+    ecsManager.publish(new KeyReleaseEvent(InputKeys::LEFT_SHIFT));
+    ecsManager.publish(new KeyReleaseEvent(InputKeys::RIGHT_SHIFT));
 }
 
 void Game::on_mouse_click(GLFWwindow *pWindow, int button, int action, int mods) {
@@ -312,16 +327,6 @@ void Game::on_mouse_click(GLFWwindow *pWindow, int button, int action, int mods)
                     break;
                 case (ButtonActions::CLOSE):
                     currState = GameState::NORMAL;
-                    ecsManager.publish(new KeyReleaseEvent(InputKeys::S));
-                    ecsManager.publish(new KeyReleaseEvent(InputKeys::W));
-                    ecsManager.publish(new KeyReleaseEvent(InputKeys::A));
-                    ecsManager.publish(new KeyReleaseEvent(InputKeys::D));
-                    ecsManager.publish(new KeyReleaseEvent(InputKeys::UP));
-                    ecsManager.publish(new KeyReleaseEvent(InputKeys::DOWN));
-                    ecsManager.publish(new KeyReleaseEvent(InputKeys::LEFT));
-                    ecsManager.publish(new KeyReleaseEvent(InputKeys::RIGHT));
-                    ecsManager.publish(new KeyReleaseEvent(InputKeys::LEFT_SHIFT));
-                    ecsManager.publish(new KeyReleaseEvent(InputKeys::RIGHT_SHIFT));
                     break;
                 default:
                     break;
