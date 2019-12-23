@@ -1,4 +1,6 @@
 // internal
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+
 #include "common.hpp"
 #include "world.hpp"
 
