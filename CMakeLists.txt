@@ -25,7 +25,7 @@ endif ()
 # Create executable target
 
 # Generate the shader folder location to the header
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/project_path.hpp.in" "${CMAKE_CURRENT_SOURCE_DIR}/src/project_path.hpp")
+# configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/project_path.hpp.in" "${CMAKE_CURRENT_SOURCE_DIR}/src/project_path.hpp")
 
 # You can switch to use the file GLOB for simplicity but at your own risk
 # file(GLOB SOURCE_FILES src/*.cpp src/*.hpp)
