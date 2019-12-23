@@ -44,6 +44,7 @@ bool RainSystem::init(const vec2& screen_size) {
         return false;
 
     m_pop = Mix_LoadWAV(audio_path("capturethecastle_hail.wav"));
+	Mix_VolumeChunk(m_pop, 64);
 
     return effect.load_from_file(shader_path("firework.vs.glsl"), shader_path("firework.fs.glsl"));
 }
