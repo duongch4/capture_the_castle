@@ -1,3 +1,6 @@
+// Remove console when launching game
+//#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+
 // internal
 #include "common.hpp"
 #include "world.hpp"
